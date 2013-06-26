@@ -21,5 +21,9 @@ For the reasons described in "Known problems" section the install procedure is t
     
     > export LD_LIBRARY_PATH="path to the folder containing pylibrmn.so":$LD_LIBRARY_PATH
 
-* Clone this repository (using ssh: git clone git@github.com:guziy/pylibrmn.git ) and add the root of the cloned directory to the PYTHONPATH env. variable
+* Clone this repository using ssh: 
+
+    > git clone git@github.com:guziy/pylibrmn.git
+
+and add the root of the cloned directory to the PYTHONPATH env. variable (i.e. the folder created by the clone command)
 
