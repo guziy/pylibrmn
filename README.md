@@ -17,7 +17,7 @@ For the reasons described in "Known problems" section the install procedure is t
 
     > make  
     > //put this line to your .profile, so that it is still there after reboot or logout
-    > export LD_LIBRARY_PATH=<path to the folder containing pylibrmn.so>:$LD_LIBRARY_PATH
+    > export LD_LIBRARY_PATH="path to the folder containing pylibrmn.so":$LD_LIBRARY_PATH
 
 * Add the root of the cloned directory to the PYTHONPATH env. variable
 
