@@ -8,9 +8,18 @@ Known problems
 I haven't figured out yet how to make setup.py use pgi compilers for creating dynamic library....
 That is why "pyhon setup.py install" won't work. That is why I am alsosupplying the Makefile in order to help creating the dynamic library.
 
+Requirements
+==========
+This package is a wrapper around the FORTRAN version of librmn, so it needs this library installed.
+
+* librmn.a
+* ctypes (a python package)
+* numpy (python package)
+
+
+
 Install
 =======
-* This package is a wrapper around the fortran version of librmn, so it needs this library installed.
 
 For the reasons described in "Known problems" section the install procedure is this complicated:
 
@@ -74,6 +83,11 @@ Now tt is a dictionary
 
 Since we have only one date in the file, the list of levels is retreived as follows:
 
+    In [9]: tt.keys()
+    Out[9]: [datetime.datetime(2009, 1, 31, 0, 0)]
+    
+    In [10]: tt_3d = tt.items()[0][1]
+    
     In [13]: tt_3d.keys()
     Out[13]:
     [0.10000000149011612,
