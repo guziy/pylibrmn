@@ -6,7 +6,7 @@ Known problems
 =========
 
 I haven't figured out yet how to make setup.py use pgi compilers for creating dynamic library....
-That is why "pyhon setup.py install" won't work. That is why I am alsosupplying the Makefile in order to help creating the dynamic library.
+That is why "pyhon setup.py install" won't work. That is why I am also supplying the Makefile in order to help creating the dynamic library.
 
 Requirements
 ==========
