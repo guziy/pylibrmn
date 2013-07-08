@@ -10,6 +10,7 @@ That is why "pyhon setup.py install" won't work. That is why I am alsosupplying 
 
 Install
 =======
+* This package is a wrapper around the fortran version of librmn, so it needs this library installed.
 
 For the reasons described in "Known problems" section the install procedure is this complicated:
 
