@@ -27,3 +27,8 @@ For the reasons described in "Known problems" section the install procedure is t
 
 and add the pylibrmn/src from the cloned directory to the PYTHONPATH env. variable (i.e. the folder created by the clone command)
 
+* Then fire up ipython and import the RPN class as follows:
+         
+         from rpn.rpn import RPN
+         rObj = RPN("path_to_my_rpn_file")
+    
