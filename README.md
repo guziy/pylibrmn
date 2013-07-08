@@ -49,7 +49,7 @@ This is an example we worked through with Kamel.
 
     In [5]: r = RPN("mean_TEMP")
 
-r.g<TAB> gives you the list of methods with names starting with g:
+r.g+TAB gives you the list of methods with names starting with g:
    
     In [6]: r.g
             r.get_2D_field_on_all_levels                          r.get_current_validity_date                           r.get_longitudes_and_latitudes
