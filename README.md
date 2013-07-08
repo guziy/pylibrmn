@@ -21,7 +21,7 @@ For the reasons described in "Known problems" section the install procedure is t
     
     > export LD_LIBRARY_PATH="path to the folder containing pylibrmn.so":$LD_LIBRARY_PATH
 
-* Clone this repository using ssh (or just download .zip archive exported by github): 
+* Clone this repository using git through ssh (or just download .zip archive exported by github): 
 
     > git clone git@github.com:guziy/pylibrmn.git
 
