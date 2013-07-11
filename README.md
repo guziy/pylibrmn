@@ -43,8 +43,15 @@ and add the pylibrmn/src from the cloned directory to the PYTHONPATH env. variab
          from rpn.rpn import RPN
          rObj = RPN("path_to_my_rpn_file")
 
-* Note: in order to install on guillimin, you have to use Makefile.guill, and load ssm package for gfortran beforehand 
-(TODO: show the example once guillimin is up). To make using the specified make file do the following:
+* Note: in order to install on guillimin, you have to use Makefile.guill, and load ssm package for gfortran beforehand (from the cmmand line).
+
+        . s.ssmuse.dot gfortran-4.6
+
+To see what else can be used through ssm, do:
+        
+        s.list_ssm_shortcuts
+
+To make using the specified make file do the following:
          
         make -f Makefile.guill
 
