@@ -24,11 +24,11 @@ Install
 
 For the reasons described in "Known problems" section the install procedure is this complicated:
 
-* Create the dynamic library libpyrmn.so and add the path to the containing folder to LD_LIBRARY_PATH environment variable.
+* Create the dynamic library `libpyrmn.so` and add the path to the containing folder to `LD_LIBRARY_PATH` environment variable.
 
         make
   
-  put the next line to your .profile, so that it is still there after reboot or logout
+  put the next line to your `.profile`, so that it is still there after reboot or logout
   
         export LD_LIBRARY_PATH="path to the folder containing libpyrmn.so":$LD_LIBRARY_PATH
 
@@ -36,14 +36,14 @@ For the reasons described in "Known problems" section the install procedure is t
 
         git clone git@github.com:guziy/pylibrmn.git
 
-  and add the pylibrmn/src from the cloned directory to the PYTHONPATH env. variable (i.e. the folder created by the clone command)
+  and add the `pylibrmn/src` from the cloned directory to the `PYTHONPATH` env. variable (i.e. the folder created by the clone command)
 
-* Then fire up ipython and import the RPN class as follows:
+* Then fire up ipython and import the `RPN` class as follows:
          
          from rpn.rpn import RPN
          rObj = RPN("path_to_my_rpn_file")
 
-* Note: in order to install on guillimin, you have to use Makefile.guill, and load ssm package for gfortran beforehand (from the cmmand line).
+* Note: in order to install on guillimin, you have to use `Makefile.guill`, and load ssm package for gfortran beforehand (from the cmmand line).
 
         . s.ssmuse.dot gfortran-4.6
 
@@ -63,7 +63,7 @@ This is an example we've worked through with Kamel.
 
     In [5]: r = RPN("mean_TEMP")
 
-r.g+TAB gives you the list of methods with names starting with g:
+`r.g`+TAB gives you the list of methods with names starting with g:
    
     In [6]: r.g
             r.get_2D_field_on_all_levels                          r.get_current_validity_date                           r.get_longitudes_and_latitudes
@@ -91,7 +91,7 @@ We were interested in the mean temperature field (3D) with a single date, to get
 
     In [8]: tt = r.get_4d_field("TT")
     
-Now tt is a dictionary 
+Now `tt` is a dictionary 
     
     {time: {level: temperature_2d_field}}
 
