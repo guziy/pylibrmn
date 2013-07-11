@@ -51,7 +51,7 @@ and add the pylibrmn/src from the cloned directory to the PYTHONPATH env. variab
 Example
 =======
 
-This is an example we worked through with Kamel.
+This is an example we've worked through with Kamel.
 
     In [5]: r = RPN("mean_TEMP")
 
