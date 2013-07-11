@@ -47,11 +47,11 @@ and add the pylibrmn/src from the cloned directory to the PYTHONPATH env. variab
 
         . s.ssmuse.dot gfortran-4.6
 
-To see what else can be used through ssm, do:
+  To see what else can be used through ssm, do:
         
         s.list_ssm_shortcuts
 
-To make using the specified make file do the following:
+  To make using the specified make file do the following:
          
         make -f Makefile.guill
 
