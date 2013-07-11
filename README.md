@@ -36,7 +36,7 @@ For the reasons described in "Known problems" section the install procedure is t
 
         git clone git@github.com:guziy/pylibrmn.git
 
-and add the pylibrmn/src from the cloned directory to the PYTHONPATH env. variable (i.e. the folder created by the clone command)
+  and add the pylibrmn/src from the cloned directory to the PYTHONPATH env. variable (i.e. the folder created by the clone command)
 
 * Then fire up ipython and import the RPN class as follows:
          
