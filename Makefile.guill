@@ -14,7 +14,7 @@ OBJ = $(patsubst %.c, %.o, $(notdir $(SOURCES_C))) \
 
 all : $(OBJ)
 	@echo $(OBJ)
-	$(FC) -shared $(OBJ) -o rmnlib.so -lrmns_013
+	$(FC) -shared $(OBJ) -o libpyrmn.so -lrmns_013
 	
 
 %.o : %.c
