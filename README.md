@@ -24,13 +24,13 @@ Install
 
 For the reasons described in "Known problems" section the install procedure is this complicated:
 
-* Create the dynamic library pylibrmn.so and add the path to the containing folder to LD_LIBRARY_PATH environment variable.
+* Create the dynamic library libpyrmn.so and add the path to the containing folder to LD_LIBRARY_PATH environment variable.
 
         make
   
   put the next line to your .profile, so that it is still there after reboot or logout
   
-        export LD_LIBRARY_PATH="path to the folder containing pylibrmn.so":$LD_LIBRARY_PATH
+        export LD_LIBRARY_PATH="path to the folder containing libpyrmn.so":$LD_LIBRARY_PATH
 
 * Clone this repository using git through ssh (or just download .zip archive exported by github): 
 
