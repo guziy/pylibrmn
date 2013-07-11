@@ -96,42 +96,50 @@ Since we have only one date in the file, the list of levels is retreived as foll
     
     In [13]: tt_3d.keys()
     Out[13]:
-    [0.10000000149011612,
-     0.5,
-     3.0,
-     900.0,
-     5.0,
-     1.0,
-     10.0,
-     15.0,
-     400.0,
-     20.0,
-     150.0,
-     925.0,
-     30.0,
-     800.0,
-     550.0,
-     300.0,
-     50.0,
-     950.0,
-     700.0,
-     650.0,
-     450.0,
-     70.0,
-     200.0,
-     975.0,
-     850.0,
-     600.0,
-     350.0,
-     100.0,
-     1000.0,
-     500.0,
-     250.0]
+        [0.10000000149011612,
+         0.5,
+         3.0,
+         900.0,
+         5.0,
+         1.0,
+         10.0,
+         15.0,
+         400.0,
+         20.0,
+         150.0,
+         925.0,
+         30.0,
+         800.0,
+         550.0,
+         300.0,
+         50.0,
+         950.0,
+         700.0,
+         650.0,
+         450.0,
+         70.0,
+         200.0,
+         975.0,
+         850.0,
+         600.0,
+         350.0,
+         100.0,
+         1000.0,
+         500.0,
+         250.0]
 
 Now if you want to get longitudes and latitudes corresponding to the last extracted field, you do this:
 
     In [28]: lons2d, lats2d = r.get_longitudes_and_latitudes_for_the_last_read_rec()
 
 And voilà you are ready to plot or analyze further your data.
+
+Acknowledgements
+=======
+Thanks are to the following contributors:
+* M. Valin (for help porting to guillimin)
+* K. Winger and B. Dugas (for explainations and discussins on the internals of the Fortran version of librmn)
+* K. Chikhar (for help in creating the documentation)
+
 
     
