@@ -359,8 +359,6 @@ class RPN():
             return None
         else:
             return self._get_data_by_key(key)
-        pass
-
 
     def get_records_for_foreacst_hour(self, var_name="", forecast_hour=None, level_kind=level_kinds.ARBITRARY):
         """
@@ -399,15 +397,10 @@ class RPN():
 
             res[lev] = data
             key = self._dll.fstsui_wrapper(self._file_unit, byref(ni), byref(nj), byref(nk))
-        print in_typvar.value
-
-        #  if key < 0: raise Exception('varname = {0}, at level {1} is not found  in {2}.'.format(varname, level, self.path))
-
         return res
 
     def get_output_step_in_seconds(self):
         raise Exception("Not yet implemented")
-
 
     def get_list_of_varnames(self):
         """
@@ -437,10 +430,8 @@ class RPN():
 
         return np.unique(names)
 
-
     def suppress_log_messages(self):
         self._dll.fstopc_wrapper("MSGLVL", "SYSTEM", 0)
-
 
     def close(self):
         self._dll.fstfrm_wrapper(self._file_unit)
@@ -481,10 +472,12 @@ class RPN():
 
         return key
 
-    def get_3D_record_for_name_and_level(self, varname='', level=-1,
-                                         level_kind=level_kinds.ARBITRARY):
+    def get_record_for_name_and_level(self, varname='', level=-1,
+                                      level_kind=level_kinds.ARBITRARY):
         """
-        TODO: add comments
+        Search and return 2d field for a given `vaname` and `level`
+        If there are many such records in the rpn file (i.e. for different time steps), then the first one is returned
+        Possible `level_kind` values are listed in rpn.level_kinds module
         """
         ni = c_int(0)
         nj = c_int(0)
@@ -764,8 +757,8 @@ class RPN():
         query, and returns the 2d field, if the rcord is 3d then it takes the 2d subset
         corresponding to the first 3rd dimension
         """
-        return self.get_3D_record_for_name_and_level(varname=varname, level=level,
-                                                     level_kind=level_kind)[:, :, 0]
+        return self.get_record_for_name_and_level(varname=varname, level=level,
+                                                  level_kind=level_kind)[:, :, 0]
 
     def _get_record_info(self, key, verbose=False, update_current_info=True):
         """
