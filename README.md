@@ -8,6 +8,9 @@ Example
 =======
 
 This is an example we've worked through with Kamel.
+Import the module and use it.
+
+    In [4]: from rpn.rpn import RPN
 
     In [5]: r = RPN("mean_TEMP")
 
