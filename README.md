@@ -7,7 +7,8 @@ The wrapping is done using ctypes python package
 Example
 =======
 
-This is an example we've worked through with Kamel.
+This is an example we've worked through with Kamel. You can find more usage examples [here] (https://github.com/guziy/pylibrmn/tree/master/src/rpn_use_examples).
+
 Import the module and use it.
 
     In [4]: from rpn.rpn import RPN
