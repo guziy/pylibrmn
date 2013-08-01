@@ -53,7 +53,6 @@ class RPN():
         except OSError:
             self._dll = CDLL('lib/libpyrmn.so')
 
-
         self.VARNAME_DEFAULT = 8 * ' '
         self.VARTYPE_DEFAULT = 4 * ' '
         self.ETIKET_DEFAULT = 16 * ' '
@@ -150,7 +149,7 @@ class RPN():
             c_char_p,
             POINTER(c_int), POINTER(c_int), POINTER(c_int), POINTER(c_int),
             POINTER(c_float), POINTER(c_float), POINTER(c_float), POINTER(c_float),
-            ]
+        ]
 
         self._dll.fstprm_wrapper.argtypes = [
             c_int,
@@ -373,6 +372,7 @@ class RPN():
         #TODO: make sure it works, read on datev and ip2 parameters
         """
         from termcolor import colored
+
         ip1 = c_int(-1)
         ip2 = c_int(forecast_hour)
         ip3 = c_int(-1)
@@ -509,10 +509,8 @@ class RPN():
         #int fstinf_wrapper(int iun, int *ni, int *nj, int *nk, int datev,char *in_etiket,
         #             int ip1, int ip2, int ip3, char *in_typvar, char *in_nomvar)
 
-
         key = self._dll.fstinf_wrapper(self._file_unit, byref(ni), byref(nj), byref(nk), datev, etiket,
-                                       ip1, ip2, ip3, in_typvar, in_nomvar
-        )
+                                       ip1, ip2, ip3, in_typvar, in_nomvar)
 
         #print in_typvar.value
         #print "key({0}) = {1}".format(varname, key)
@@ -523,11 +521,9 @@ class RPN():
 
         return self._get_data_by_key(key)
 
-
     def _get_data_by_key(self, record_key):
         """
         Get data record corresponding to the record_key
-
         :type record_key: c_int
         """
         self._get_record_info(record_key)
@@ -536,16 +532,67 @@ class RPN():
         ni, nj, nk = self._current_info["shape"]
         data = np.zeros((nk.value * nj.value * ni.value,), dtype=the_type)
 
-
         #read the record
         self._dll.fstluk_wrapper(data.ctypes.data_as(POINTER(c_float)), record_key, ni, nj, nk)
 
         data = np.reshape(data, (ni.value, nj.value, nk.value), order='F')
         return data
 
+    def get_grid_parameters_for_the_last_read_rec(self):
+        """
+        :return grid type and grid parameters in a dictionary
+        """
+        if self._current_info is None:
+            raise Exception("No records has been read yet, or its metadata has not yet been saved.")
+
+        data_ips = self._current_info["ip"]
+        data_ig = self._current_info['ig']
+
+
+        datev = c_int(-1)
+
+        result = {}
+
+        x1 = c_float(-1)
+        x2 = c_float(-1)
+        x3 = c_float(-1)
+        x4 = c_float(-1)
+
+        # find out info about the coordinates for the last read record
+        in_nomvar = create_string_buffer(">>")
+        in_typvar = create_string_buffer(self.VARTYPE_DEFAULT)
+
+        ni, nj, nk = [c_int(-1) for _ in range(3)]
+        etiket = create_string_buffer(self.ETIKET_DEFAULT)
+
+        # ips for the coordinate record
+        ip1, ip2, ip3 = data_ig[:3]
+
+        key = self._dll.fstinf_wrapper(self._file_unit, byref(ni), byref(nj), byref(nk), datev, etiket,
+                                       ip1, ip2, ip3, in_typvar, in_nomvar)
+        info = self._get_record_info(key, update_current_info=False)
+        coord_ig = info["ig"]
+
+        grid_type = info["grid_type"]
+        self._dll.cig_to_xg_wrapper(grid_type,
+                                    byref(x1), byref(x2), byref(x3), byref(x4),
+                                    coord_ig[0], coord_ig[1], coord_ig[2], coord_ig[3])
+
+        result["grid_type"] = grid_type.value
+        if grid_type.value == "L":  # real lat lon grid
+            result["ll_lat"] = x1.value
+            result["ll_lon"] = x2.value
+            result["dlat"] = x3.value
+            result["dlon"] = x4.value
+        elif grid_type.value == "E":
+            result["lat1"] = x1.value
+            result["lon1"] = x2.value
+            result["lat2"] = x3.value
+            result["lon2"] = x4.value
+
+        return result
 
     def get_longitudes_and_latitudes_for_the_last_read_rec(self):
-
         """
         finds georeference
         """
@@ -583,7 +630,7 @@ class RPN():
         datev = c_int(-1)
         etiket = create_string_buffer(self.ETIKET_DEFAULT)
 
-        print ig
+        #print ig
         ip1, ip2, ip3 = ig[:3]
         in_typvar = create_string_buffer(self.VARTYPE_DEFAULT)
 
@@ -622,7 +669,7 @@ class RPN():
         self._dll.gdll_wrapper(ezgdef, lats_2d.ctypes.data_as(POINTER(c_float)),
                                lons_2d.ctypes.data_as(POINTER(c_float)))
 
-        print "lon params = ", lons_2d.shape, np.min(lons_2d), np.max(lons_2d)
+        #print "lon params = ", lons_2d.shape, np.min(lons_2d), np.max(lons_2d)
         return np.transpose(lons_2d), np.transpose(lats_2d)
 
         pass
@@ -703,7 +750,6 @@ class RPN():
 
         return np.transpose(lons_2d), np.transpose(lats_2d)
 
-
     def reset_current_info(self):
         self._current_info = None
 
@@ -723,8 +769,7 @@ class RPN():
         return self.get_3D_record_for_name_and_level(varname=varname, level=level,
                                                      level_kind=level_kind)[:, :, 0]
 
-
-    def _get_record_info(self, key, verbose=False):
+    def _get_record_info(self, key, verbose=False, update_current_info=True):
         """
         store the properties of the record with key, to the internal dictionary
         """
@@ -786,13 +831,17 @@ class RPN():
             #print 'current grid type ', self.current_grid_type
 
         try:
-            dateo_s = self._dateo_to_string(extra1.value)
+            dateo_s = self._dateo_to_string(dateo.value)
             the_dateo = datetime.strptime(dateo_s, self._dateo_format)
         except Exception, e:
-            print e
-            print( dateo.value )
-            print "dateo is corrupted using default: 20010101000000"
-            the_dateo = datetime.strptime("20010101000000", self._dateo_format)
+            try:
+                dateo_s = self._dateo_to_string(extra1.value)
+                the_dateo = datetime.strptime(dateo_s, self._dateo_format)
+            except Exception, e1:
+                print e1
+                print(dateo.value)
+                print "dateo is corrupted using default: 20010101000000"
+                the_dateo = datetime.strptime("20010101000000", self._dateo_format)
 
         #        if the_dateo.year // 100 != self.start_century:
         #            year = self.start_century * 100 + the_dateo.year % 100
@@ -810,13 +859,13 @@ class RPN():
                   "nbits": nbits,
                   "grid_type": grid_type,
                   "dateo_rpn_format": dateo,
-                  "extra1": extra1
-        }
-        self._current_info = result  # update info from the last read record
+                  "extra1": extra1}
+
+        if update_current_info:
+            self._current_info = result  # update info from the last read record
 
         #self._set_origin_date(date_o=the_dateo)
         return result
-
 
     def _get_current_data_type(self):
         #determine datatype of the data inside the
@@ -841,7 +890,6 @@ class RPN():
             return np.float16
         else:
             raise Exception("nbits is: {0}".format(nbits))
-
 
     def get_next_record(self):
         """

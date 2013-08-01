@@ -42,27 +42,23 @@ if armnlib in os.environ:
 else:
     raise Exception("ARMNLIB variable is not defined")
 
-
-
 module_wrap = Extension(
-     ".libpyrmn",
-     include_dirs=includes,
-     libraries=libraries,
-     library_dirs=library_dirs,
-     sources=["rmn_wrapper.c"]
-
-
-)
+    "rpn.libpyrmn",
+    include_dirs=includes,
+    libraries=libraries,
+    library_dirs=library_dirs,
+    sources=["rmn_wrapper.c"])
 
 setup(
     name='pyrmnlib',
     version='0.0.1',
-    packages=['rpn', 'rpn.tests', 'rpn_utils'],
+    packages=['rpn', 'rpn.tests', 'rpn_use_examples'],
     package_dir={'': 'src'},
     url='',
     license='',
     author='huziy',
     author_email='guziy.sasha@gmail.com',
     description='',
-    ext_modules=[ module_wrap ]
+    #ext_modules=[module_wrap]
+    # well, it is not ready yet for pgi so the extension should be installed separately
 )
