@@ -19,7 +19,7 @@ Import the module and use it.
 
     In [6]: r.g
             r.get_2D_field_on_all_levels                          r.get_current_validity_date                           r.get_longitudes_and_latitudes
-            r.get_3D_record_for_name_and_level                    r.get_dateo_of_last_read_record                       r.get_longitudes_and_latitudes_for_the_last_read_rec
+            r.get_record_for_name_and_level                    r.get_dateo_of_last_read_record                       r.get_longitudes_and_latitudes_for_the_last_read_rec
             r.get_4d_field                                        r.get_datetime_for_the_last_read_record               r.get_next_record
             r.get_4d_field_fc_hour_as_time                        r.get_first_record_for_name                           r.get_number_of_records
             r.get_all_time_records_for_name                       r.get_first_record_for_name_and_level                 r.get_output_step_in_seconds
@@ -150,7 +150,8 @@ For the reasons described in "Known problems" section the install procedure is t
 Install using `setup.py`
 ========================
 
-An alternative way to install this module:
+An alternative way to install this module (you might need to have sudo rights to do it in your default python installation or use
+virtualenv to create the writable environment):
 
 1. Install the python wrapper to the site-pacakges directory. `--record` is used so you know which files are copied
        and where (it creates the file files.txt with the list of installed files which you could delete when uninstalling).
