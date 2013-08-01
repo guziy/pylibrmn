@@ -60,13 +60,13 @@ Install using `setup.py`
 
 An alternative way to install this module:
 
-1. Install the python wrapper to the site-pacakges directory. --record is used so you know which files are copied
+1. Install the python wrapper to the site-pacakges directory. `--record` is used so you know which files are copied
        and where (it creates the file files.txt with the list of installed files which you could delete when uninstalling).
 
         python setup.py install --record files.txt
 
-2. Compile the libpyrmn.so as discussed in the Install section and put it somewhere in your LD_LIBRARY_PATH.
-     I have put it in the site-packages/python2.7/ directory, since it is already in my LD_LIBRARY_PATH.
+2. Compile the `libpyrmn.so` as discussed in the Install section and put it somewhere in your `LD_LIBRARY_PATH`.
+     I have put it in the `site-packages/python2.7/` directory, since it is already in my `LD_LIBRARY_PATH`.
 
 
 Example
