@@ -88,7 +88,6 @@ class RPN():
 
         self.nrecords = self._dll.fstouv_wrapper(self._file_unit, options)
 
-
         #set argument and return types of the library functions
         #fstinf
         self._dll.fstinf_wrapper.restype = c_int
@@ -547,7 +546,6 @@ class RPN():
 
         data_ips = self._current_info["ip"]
         data_ig = self._current_info['ig']
-
 
         datev = c_int(-1)
 

@@ -58,7 +58,7 @@ setup(
     license='',
     author='huziy',
     author_email='guziy.sasha@gmail.com',
-    description='',
+    description='', requires=['numpy'],
     #ext_modules=[module_wrap]
     # well, it is not ready yet for pgi so the extension should be installed separately
 )
