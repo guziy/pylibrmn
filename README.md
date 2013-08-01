@@ -44,9 +44,20 @@ and add the pylibrmn/src from the cloned directory to the PYTHONPATH env. variab
          rObj = RPN("path_to_my_rpn_file")
 
 * Note: in order to install on guillimin, you have to use Makefile.guill, and load ssm package for gfortran beforehand 
-(TODO: show the example once guillimin is up). To make using the specified make file do the following:
-         
+
         make -f Makefile.guill
+
+Install using `setup.py`
+========================
+
+An alternative way to install this module:
+    1. Install the python wrapper to the site-pacakges directory. --record is used so you know which files are copied
+       and where (it creates the file files.txt with the list of installed files which you could delete when uninstalling).
+
+        python setup.py install --record files.txt
+
+    2. Compile the libpyrmn.so as discussed in the Install section and put it somewhere in your LD_LIBRARY_PATH.
+     I have put it in the site-packages/python2.7/ directory, since it is already in my LD_LIBRARY_PATH.
 
 
 Example
