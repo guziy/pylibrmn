@@ -75,9 +75,9 @@ class TestRpn(RPN):
         err4 = np.abs(lon2 - params["lon2"])
 
         ok_(err1 < err_max, msg="the lat1 accuracy is not very good: {0}".format(err1))
-        ok_(err2 < err_max, msg="the lat1 accuracy is not very good: {0}".format(err2))
-        ok_(err3 < err_max, msg="the lat1 accuracy is not very good: {0}".format(err3))
-        ok_(err4 < err_max, msg="the lat1 accuracy is not very good: {0}".format(err4))
+        ok_(err2 < err_max, msg="the lon1 accuracy is not very good: {0}".format(err2))
+        ok_(err3 < err_max, msg="the lat2 accuracy is not very good: {0}".format(err3))
+        ok_(err4 < err_max, msg="the lon2 accuracy is not very good: {0}".format(err4))
 
     def test_if_grid_type_is_correct(self):
         """
@@ -85,7 +85,7 @@ class TestRpn(RPN):
         """
         self.get_first_record_for_name(self.defaultVarName)
         info = self.get_grid_parameters_for_the_last_read_rec()
-        ok_(info["grid_type"] == "E", msg="Expected {0} but got {1} instead".format("Z", info["grid_type"]))
+        ok_(info["grid_type"] == "E", msg="Expected {0} but got {1} instead".format("E", info["grid_type"]))
 
     def teardown(self):
         """
