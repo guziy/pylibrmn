@@ -154,11 +154,12 @@ An alternative way to install this module (you might need to have sudo rights to
 virtualenv to create the writable environment):
 
 1. Install the python wrapper to the site-pacakges directory. `--record` is used so you know which files are copied
-       and where (it creates the file files.txt with the list of installed files which you could delete when uninstalling).
+   and where (it creates the file files.txt with the list of installed files which you could delete when uninstalling).
 
         python setup.py install --record files.txt
 
-2. Compile the `libpyrmn.so` as discussed in the Install section and put it somewhere in your `LD_LIBRARY_PATH`.
+   It will create `libpyrmn.so` in the current directory.
+2. Put the compiled library somewhere in your `LD_LIBRARY_PATH`.
      I have put it in the `site-packages/python2.7/` directory, since it is already in my `LD_LIBRARY_PATH`.
 
 
