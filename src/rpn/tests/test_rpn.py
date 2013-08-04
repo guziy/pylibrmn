@@ -59,7 +59,7 @@ class TestRpn(RPN):
         metadata accuracy required is +/- 1.0e-5
         """
         self.get_first_record_for_name("I5")
-        params = self.get_grid_parameters_for_the_last_read_rec()
+        params = self.get_proj_parameters_for_the_last_read_rec()
 
         #these are taken from gemclim_settings.nml
         lat1 = 52.0
@@ -84,7 +84,7 @@ class TestRpn(RPN):
             Test grid type extraction
         """
         self.get_first_record_for_name(self.defaultVarName)
-        info = self.get_grid_parameters_for_the_last_read_rec()
+        info = self.get_proj_parameters_for_the_last_read_rec()
         ok_(info["grid_type"] == "E", msg="Expected {0} but got {1} instead".format("E", info["grid_type"]))
 
     def teardown(self):

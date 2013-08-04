@@ -530,7 +530,7 @@ class RPN():
         data = np.reshape(data, (ni.value, nj.value, nk.value), order='F')
         return data
 
-    def get_grid_parameters_for_the_last_read_rec(self):
+    def get_proj_parameters_for_the_last_read_rec(self):
         """
         :return grid type and grid parameters in a dictionary
         """
