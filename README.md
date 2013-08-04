@@ -104,10 +104,6 @@ This package is a wrapper around the FORTRAN version of librmn, so it needs this
 * numpy (python package)
 * nose (if you want to run tests)
 
-Getting the library
-=====================
-
-
 
 Install
 ========================
