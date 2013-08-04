@@ -13,7 +13,7 @@ import os
 armnlib = "ARMNLIB"
 armnlib_path = ""
 
-
+native_lib_filename = "libpyrmn.so"
 
 libraries = ["rmn"]
 library_dirs = []
@@ -39,6 +39,16 @@ if armnlib in os.environ:
     #library_dirs.append()
     library_dirs.append(os.path.join(path1_lib, ec_arch))
 
+    ##build native library using the Makefile
+    import subprocess
+    subprocess.call(["make"])
+    if os.path.isfile(native_lib_filename):
+        print "The '{0}' was created. Now you need to add '{1}' to LD_LIBRARY_PATH variable, or put the compiled file" \
+              "into one of the folders from the list in your current LD_LIBRARY_PATH='{2}'" \
+              "".format(native_lib_filename, os.getcwd(), os.environ["LD_LIBRARY_PATH"])
+    else:
+        raise Exception("Failed to build '{0}'".format(native_lib_filename))
+
 else:
     raise Exception("ARMNLIB variable is not defined")
 
@@ -59,6 +69,7 @@ setup(
     author='huziy',
     author_email='guziy.sasha@gmail.com',
     description='', requires=['numpy'],
+    #package_data={'': ['libpyrmn.so']}
     #ext_modules=[module_wrap]
     # well, it is not ready yet for pgi so the extension should be installed separately
 )
