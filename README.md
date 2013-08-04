@@ -104,36 +104,30 @@ This package is a wrapper around the FORTRAN version of librmn, so it needs this
 * numpy (python package)
 * nose (if you want to run tests)
 
-Known problems
-=========
+Getting the library
+=====================
 
-I haven't figured out yet how to make setup.py use pgi compilers for creating dynamic library....
-That is why "pyhon setup.py install" won't work. That is why I am also supplying the Makefile in order to help creating the dynamic library.
 
 
 Install
-=======
+========================
 
-For the reasons described in "Known problems" section the install procedure is this complicated:
+An alternative way to install this module (you might need to have sudo rights to do it in your default python installation or use
+virtualenv to create the writable environment):
 
-* Create the dynamic library `libpyrmn.so` and add the path to the containing folder to `LD_LIBRARY_PATH` environment variable.
-
-        make
-  
-  put the next line to your `.profile`, so that it is still there after reboot or logout
-  
-        export LD_LIBRARY_PATH="path to the folder containing libpyrmn.so":$LD_LIBRARY_PATH
-
-* Clone this repository using git through ssh (or just download .zip archive exported by github): 
+* Clone this repository using git (or just download .zip archive exported by github):
 
         git clone git@github.com:guziy/pylibrmn.git
 
-  and add the `pylibrmn/src` from the cloned directory to the `PYTHONPATH` env. variable (i.e. the folder created by the clone command)
+* Install the python wrapper to the site-pacakges directory. `--record` is used so you know which files are copied
+   and where (it creates the file files.txt with the list of installed files which you could delete when uninstalling).
 
-* Then fire up ipython and import the `RPN` class as follows:
-         
-         from rpn.rpn import RPN
-         rObj = RPN("path_to_my_rpn_file")
+        python setup.py install --record files.txt
+
+   It will create `libpyrmn.so` in the current directory.
+
+* Put the compiled library somewhere in your `LD_LIBRARY_PATH`.
+     I have put it in the `site-packages/python2.7/` directory, since it is already in my `LD_LIBRARY_PATH`.
 
 * Note: in order to install on guillimin, you have to use `Makefile.guill`, and load ssm package for gfortran beforehand (from the cmmand line).
 
@@ -143,24 +137,11 @@ For the reasons described in "Known problems" section the install procedure is t
         
         s.list_ssm_shortcuts
 
-  To make using the specified make file do the following:
+  To make using the specified make file (`Makefile.guill` in this case) you could do the following:
          
-        make -f Makefile.guill
-
-Install using `setup.py`
-========================
-
-An alternative way to install this module (you might need to have sudo rights to do it in your default python installation or use
-virtualenv to create the writable environment):
-
-1. Install the python wrapper to the site-pacakges directory. `--record` is used so you know which files are copied
-   and where (it creates the file files.txt with the list of installed files which you could delete when uninstalling).
-
-        python setup.py install --record files.txt
-
-   It will create `libpyrmn.so` in the current directory.
-2. Put the compiled library somewhere in your `LD_LIBRARY_PATH`.
-     I have put it in the `site-packages/python2.7/` directory, since it is already in my `LD_LIBRARY_PATH`.
+        mv Makefile Makefile.default
+        mv Makefile.guill Makefile
+        python setup.py install
 
 
 
