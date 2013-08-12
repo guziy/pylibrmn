@@ -126,14 +126,15 @@ def test_polar_stereographic():
     msg_tpl += "\n Expected: {0}"
     msg_tpl += "\n Got: {1}"
 
-    print lons[10, 10], lons[11, 11]
-    print lats[10, 10], lats[11, 11]
-
-
-    #test
+    #test with expected values from the EC website
     expect = 226.50 - 360.0
     msg = msg_tpl.format(expect, lons[10, 10])
     ok_(np.abs(lons[10, 10] - expect) < 1.0e-2, msg=msg)
+
+    #latitudes
+    expect = 41.25
+    msg = msg_tpl.format(expect, lats[-11, -11])
+    ok_(np.abs(lats[-11, -11] - expect) < 1.0e-2, msg=msg)
 
 
 
