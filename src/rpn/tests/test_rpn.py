@@ -9,7 +9,7 @@ class TestRpn(RPN):
         """
         Note a new object TestRpn is created for each test
         """
-        path = "test.rpn"
+        path = "data/test.rpn"
         RPN.__init__(self, path=path)
         self.defaultVarName = "I5"
 
@@ -92,7 +92,7 @@ class TestRpn(RPN):
 
 
 def test_get_records_for_foreacst_hour():
-    path = "test.rpn"
+    path = "data/test.rpn"
 
     rObj = RPN(path)
     nRecords = rObj.get_number_of_records()
@@ -115,7 +115,7 @@ def test_polar_stereographic():
     """
     Testing polar stereographic grid functions
     """
-    path = "mappe.rpnw"
+    path = "data/mappe.rpnw"
     r = RPN(path)
     mk = r.get_first_record_for_name("MK")
 
