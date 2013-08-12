@@ -628,7 +628,6 @@ class RPN():
                 hem = ps.NORTHERN_HEM
             else:
                 hem = ps.SOUTHERN_HEM
-            print pole_i.value, pole_j.value, dgrw.value, d60.value, ni, nj
             return ps.get_longitudes_and_latitudes_2d_for_ps_grid(pole_i.value,
                                                                   pole_j.value,
                                                                   d60.value,

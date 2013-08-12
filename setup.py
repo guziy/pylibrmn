@@ -62,7 +62,7 @@ module_wrap = Extension(
 setup(
     name='pyrmnlib',
     version='0.0.1',
-    packages=['rpn', 'rpn.tests', 'rpn_use_examples'],
+    packages=['rpn', 'rpn.util', 'rpn.tests', 'rpn_use_examples'],
     package_dir={'': 'src'},
     url='',
     license='',
