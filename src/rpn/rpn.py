@@ -593,6 +593,7 @@ class RPN():
         ig = self._current_info['ig']
 
         grid_type = self._current_info[self.GRID_TYPE]
+        ni, nj, nk = map(lambda x: x.value, self._current_info["shape"])
 
         if grid_type.value.strip().upper() == "L":
             ll_lat = c_float(-1)
@@ -603,8 +604,6 @@ class RPN():
                                         byref(ll_lat), byref(ll_lon), byref(dlat), byref(dlon),
                                         ig[0], ig[1], ig[2], ig[3])
 
-            ni, nj, nk = map(lambda x: x.value, self._current_info["shape"])
-
             ll_latv = ll_lat.value
             ll_lonv = ll_lon.value
             dlonv = dlon.value
@@ -614,6 +613,27 @@ class RPN():
             lats1d = dlatv * np.arange(nj) + ll_latv
 
             return np.meshgrid(lats1d, lons1d)
+
+        if grid_type.value.strip().upper() in ["N", "S"]:
+            from util import polar_stereographic as ps
+            pole_i = c_float(-1)
+            pole_j = c_float(-1)
+            d60 = c_float(-1)
+            dgrw = c_float(-1)
+            self._dll.cig_to_xg_wrapper(grid_type,
+                                        byref(pole_i), byref(pole_j), byref(d60), byref(dgrw),
+                                        ig[0], ig[1], ig[2], ig[3])
+
+            if grid_type.value.strip().upper() == "N":
+                hem = ps.NORTHERN_HEM
+            else:
+                hem = ps.SOUTHERN_HEM
+            print pole_i.value, pole_j.value, dgrw.value, d60.value, ni, nj
+            return ps.get_longitudes_and_latitudes_2d_for_ps_grid(pole_i.value,
+                                                                  pole_j.value,
+                                                                  d60.value,
+                                                                  dgrw.value, ni, nj,
+                                                                  hemisphere=hem)
 
         ni = c_int(0)
         nj = c_int(0)
@@ -663,8 +683,6 @@ class RPN():
         #print "lon params = ", lons_2d.shape, np.min(lons_2d), np.max(lons_2d)
         return np.transpose(lons_2d), np.transpose(lats_2d)
 
-        pass
-
     #get longitudes for the record
     def get_longitudes_and_latitudes(self):
         """
@@ -672,6 +690,9 @@ class RPN():
 
         An rpn file can contain several
         """
+
+        print "Warning this function is deprecated, it works only for Z grid types \n" \
+              "Please use RPN.get_longitudes_and_latitudes_for_the_last_read_rec()"
 
         key = self.get_key_of_any_record()
         info = self._get_record_info(key, verbose=True)  # sets grid type
@@ -723,7 +744,7 @@ class RPN():
 
 
         #print 'grid type: ',  self.current_grid_type
-        grid_type = create_string_buffer("Z") #create_string_buffer(self.current_grid_type)
+        grid_type = create_string_buffer("Z")  # create_string_buffer(self.current_grid_type)
         grid_reference = create_string_buffer(self.current_grid_reference)
 
         ezgdef = self._dll.ezgdef_fmem_wrapper(c_int(n_lons), c_int(n_lats),
@@ -862,13 +883,8 @@ class RPN():
         #determine datatype of the data inside the
         data_type = self._current_info["data_type"].value
         nbits = self._current_info["nbits"].value
-
-        #print("data_type = ", data_type)
-        #print(nbits)
-
-        #print data_type, nbits
         if nbits == 32:
-            if data_type in [data_types.IEEE_floating_point, data_types.compressed_IEEE]:
+            if data_type in [data_types.IEEE_floating_point, data_types.compressed_IEEE, data_types.floating_point]:
                 return np.float32
             elif data_type == data_types.signed_integer:
                 #print "data_type = ", data_type
@@ -1008,7 +1024,7 @@ class RPN():
             level = self.get_current_level(level_kind=level_kind)
             time = self.get_datetime_for_the_last_read_record()
 
-            if not result.has_key(time):
+            if time not in result:
                 result[time] = {}
 
             time_slice = result[time]
@@ -1276,11 +1292,10 @@ def test_select_by_date():
 
 
 if __name__ == "__main__":
-    import application_properties
 
-    application_properties.set_current_directory()
     #test_select_by_date()
     #test_dateo()
-    test()
+    #test()
+    test_rpnw()
     # test_get_all_records_for_name()
     print "Hello World"
