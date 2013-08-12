@@ -40,9 +40,6 @@ class TestRpn(RPN):
         ok_(expect == got,
             msg="Date of origin is not what is expected.\nExpected: {0}\nGot: {1}".format(expect, got))
 
-
-
-
     def test_get_varnames(self):
         """
             Test if the var names are retrieved correctly
@@ -114,9 +111,36 @@ def test_get_records_for_foreacst_hour():
     rObj.close()
 
 
+def test_polar_stereographic():
+    """
+    Testing polar stereographic grid functions
+    """
+    path = "mappe.rpnw"
+    r = RPN(path)
+    mk = r.get_first_record_for_name("MK")
+
+    #print r.get_proj_parameters_for_the_last_read_rec()
+    lons, lats = r.get_longitudes_and_latitudes_for_the_last_read_rec()
+    amno_link = "http://www.cccma.ec.gc.ca/data/grids/geom_crcm_amno_182x174.shtml"
+    msg_tpl = "Geenrated longitudes are not the same as {0}".format(amno_link)
+    msg_tpl += "\n Expected: {0}"
+    msg_tpl += "\n Got: {1}"
+
+    print lons[10, 10], lons[11, 11]
+    print lats[10, 10], lats[11, 11]
+
+
+    #test
+    expect = 226.50 - 360.0
+    msg = msg_tpl.format(expect, lons[10, 10])
+    ok_(np.abs(lons[10, 10] - expect) < 1.0e-2, msg=msg)
+
+
+
+
+
 def teardown():
     print "tearing down the test suite"
-
 
 if __name__ == "__main__":
     theTest = TestRpn()
