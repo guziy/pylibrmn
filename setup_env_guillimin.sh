@@ -1,2 +1,3 @@
 
-. s.ssmuse.dot gfortran-4.6
+. s.ssmuse.dot gfortran
+. s.ssmuse.dot fulldev
