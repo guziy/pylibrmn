@@ -84,6 +84,19 @@ class TestRpn(RPN):
         info = self.get_proj_parameters_for_the_last_read_rec()
         ok_(info["grid_type"] == "E", msg="Expected {0} but got {1} instead".format("E", info["grid_type"]))
 
+
+    def test_get_4d_field(self):
+        """
+            Test getting a 4d field in time and space
+        """
+        data = self.get_4d_field(self.defaultVarName)
+        ntimes = len(data)
+        print data, len(data), ntimes
+        nlevs = len(data.items()[0][1])
+        msg = "The test file should contain {2} on 1 level at 1 timestep, not nlevs={0} and ntimes={1}"
+        ok_(ntimes == 1 and nlevs == 1,
+            msg= msg.format(nlevs, ntimes, self.defaultVarName))
+
     def teardown(self):
         """
             Called after each test

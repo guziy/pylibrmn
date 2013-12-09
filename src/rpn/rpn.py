@@ -1023,10 +1023,10 @@ class RPN():
             level = self.get_current_level(level_kind=level_kind)
             time = self.get_datetime_for_the_last_read_record()
 
-            if time not in result:
-                result[time] = {}
+            time_slice = result.get(time, {})
+            if not len(time_slice):
+                result[time] = time_slice
 
-            time_slice = result[time]
             time_slice[level] = data1
 
             data1 = self.get_next_record()
@@ -1295,6 +1295,5 @@ if __name__ == "__main__":
     #test_select_by_date()
     #test_dateo()
     #test()
-    test_rpnw()
     # test_get_all_records_for_name()
     print "Hello World"
