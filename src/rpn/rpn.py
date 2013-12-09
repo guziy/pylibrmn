@@ -50,7 +50,8 @@ class RPN():
         self.path = path
         try:
             self._dll = CDLL('libpyrmn.so')
-        except OSError:
+        except OSError, err:
+            print err
             self._dll = CDLL('lib/libpyrmn.so')
 
         self.VARNAME_DEFAULT = 8 * ' '

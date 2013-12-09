@@ -1,0 +1,31 @@
+
+
+
+FC = s.f90
+CC = s.cc
+
+
+
+SOURCES_C = $(wildcard *.c) 
+SOURCES_F = $(wildcard *.f)
+OBJ = $(patsubst %.c, %.o, $(notdir $(SOURCES_C))) \
+      $(patsubst %.f, %.o, $(notdir $(SOURCES_F))) 
+	
+
+all : $(OBJ)
+	@echo $(OBJ)
+	$(FC) -shared $(OBJ) -o libpyrmn.so -lrmns_013
+	
+
+%.o : %.c
+	$(CC) -c -g $< -o $@
+
+%.o : %.f
+	$(FC) -c -g $< -o $@
+	#gfortran -fPIC -c -g $< -o $@
+
+
+
+clean:
+	rm -f $(OBJ)
+	rm -f *.so
