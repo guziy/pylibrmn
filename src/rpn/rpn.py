@@ -38,8 +38,9 @@ class RPN():
         write_2D_field(self, name = '', level = 1, level_kind = level_kinds.ARBITRARY, data = None )
     """
     GRID_TYPE = "grid_type"
+    log_messages_disabled = False
 
-    def __init__(self, path='', mode='r', start_century=19, ip_new_style=True):
+    def __init__(self, path='', mode='r', start_century=19, ip_new_style=True, print_log_messages=False):
         """
               start_century - is used for the calculation of the origin date, because
               of its ambiguous format MMDDYYR
@@ -299,6 +300,12 @@ class RPN():
         self._dll.fstopc_wrapper.restype = c_int
 
 
+        #Disable log messages
+        if not self.log_messages_disabled and not print_log_messages:
+            self.suppress_log_messages()
+            self.log_messages_disabled = True
+
+
     def _dateo_to_string(self, dateo_int):
         """
         return dateo as string
@@ -392,7 +399,7 @@ class RPN():
 
             if lev in res.keys():
                 msg = "WARNING: this file contains more than one field {0} for the level {1}, " \
-                      "eading only the first one".format(var_name, lev)
+                      "reading only the first one".format(var_name, lev)
                 print colored(msg, color="red")
                 break
 
@@ -617,6 +624,7 @@ class RPN():
 
         if grid_type.value.strip().upper() in ["N", "S"]:
             from util import polar_stereographic as ps
+
             pole_i = c_float(-1)
             pole_j = c_float(-1)
             d60 = c_float(-1)
@@ -707,8 +715,6 @@ class RPN():
         ip2 = c_int(-1)
         ip3 = c_int(-1)
 
-
-
         #read longitudes
         in_nomvar = '>>'
         in_nomvar = create_string_buffer(in_nomvar[:2])
@@ -723,9 +729,7 @@ class RPN():
 
         #print 'hor_key = ', hor_key
 
-
         lons = self._get_data_by_key(hor_key)[:, 0, 0]
-
 
         #read latitudes
         in_nomvar = '^^'
@@ -845,15 +849,16 @@ class RPN():
         try:
             dateo_s = self._dateo_to_string(dateo.value)
             the_dateo = datetime.strptime(dateo_s, self._dateo_format)
-        except Exception, e:
+        except ValueError:
             try:
                 dateo_s = self._dateo_to_string(extra1.value)
                 the_dateo = datetime.strptime(dateo_s, self._dateo_format)
             except Exception, e1:
                 print e1
                 print(dateo.value)
-                print "dateo is corrupted using default: 20010101000000"
-                the_dateo = datetime.strptime("20010101000000", self._dateo_format)
+                dateo_s = "{0}010101000000".format(self.start_century)
+                print "dateo is corrupted using default:{0}".format(dateo_s)
+                the_dateo = datetime.strptime(dateo_s, self._dateo_format)
 
         #        if the_dateo.year // 100 != self.start_century:
         #            year = self.start_century * 100 + the_dateo.year % 100
@@ -1292,7 +1297,6 @@ def test_select_by_date():
 
 
 if __name__ == "__main__":
-
     #test_select_by_date()
     #test_dateo()
     #test()
