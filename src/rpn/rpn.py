@@ -376,8 +376,6 @@ class RPN():
         :param level_kind:
         #TODO: make sure it works, read on datev and ip2 parameters
         """
-        from termcolor import colored
-
         ip1 = c_int(-1)
         ip2 = c_int(forecast_hour)
         ip3 = c_int(-1)
@@ -400,7 +398,7 @@ class RPN():
             if lev in res.keys():
                 msg = "WARNING: this file contains more than one field {0} for the level {1}, " \
                       "reading only the first one".format(var_name, lev)
-                print colored(msg, color="red")
+                print msg
                 break
 
             res[lev] = data
