@@ -1250,6 +1250,9 @@ class RPN():
         for k, v in self._current_info.iteritems():
             if hasattr(v, "value"):
                 v = v.value
+            if hasattr(v, "__iter__"):
+                if hasattr(v[0], "value"):
+                    v = [vi.value for vi in v]
             info_copy[k] = v
 
         return info_copy
