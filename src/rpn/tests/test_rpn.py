@@ -1,6 +1,7 @@
 from nose.tools import ok_
 from rpn.rpn import RPN
 import numpy as np
+
 __author__ = 'huziy'
 
 
@@ -12,6 +13,28 @@ class TestRpn(RPN):
         path = "data/test.rpn"
         RPN.__init__(self, path=path)
         self.defaultVarName = "I5"
+
+    def test_get_longitudes_and_latitudes_of_the_last_read_record(self):
+        """
+        Test get_longitudes_and_latitudes_for_the_last_read_rec
+        and get_next_record
+        """
+        data = []
+        nrecords_read = 0
+        nrecords_total = self.get_number_of_records()
+        while data is not None:
+            data = self.get_next_record()
+            if data is None:
+                break
+            nrecords_read += 1
+
+            if self.get_current_info()["varname"] == self.defaultVarName:
+                _, _ = self.get_longitudes_and_latitudes_for_the_last_read_rec()
+
+        ok_(nrecords_read == nrecords_total,
+            "Number of records read = {0} is not equal to the"
+            " total number of records in the file = {1}".format(nrecords_read, nrecords_total))
+
 
     def test_dateo(self):
         """
@@ -95,7 +118,7 @@ class TestRpn(RPN):
         nlevs = len(data.items()[0][1])
         msg = "The test file should contain {2} on 1 level at 1 timestep, not nlevs={0} and ntimes={1}"
         ok_(ntimes == 1 and nlevs == 1,
-            msg= msg.format(nlevs, ntimes, self.defaultVarName))
+            msg=msg.format(nlevs, ntimes, self.defaultVarName))
 
     def teardown(self):
         """
@@ -150,11 +173,9 @@ def test_polar_stereographic():
     ok_(np.abs(lats[-11, -11] - expect) < 1.0e-2, msg=msg)
 
 
-
-
-
 def teardown():
     print "tearing down the test suite"
+
 
 if __name__ == "__main__":
     theTest = TestRpn()

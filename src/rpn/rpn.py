@@ -596,6 +596,9 @@ class RPN():
         if self._current_info is None:
             raise Exception("No records has been read yet, or its metadata has not yet been saved.")
 
+        #Make sure the internal info is not modified by the extraction of coordinates
+        _info_backup = self._current_info
+
         ig = self._current_info['ig']
 
         grid_type = self._current_info[self.GRID_TYPE]
@@ -685,6 +688,8 @@ class RPN():
 
         self._dll.gdll_wrapper(ezgdef, lats_2d.ctypes.data_as(POINTER(c_float)),
                                lons_2d.ctypes.data_as(POINTER(c_float)))
+
+        self._current_info = _info_backup
 
         #print "lon params = ", lons_2d.shape, np.min(lons_2d), np.max(lons_2d)
         return np.transpose(lons_2d), np.transpose(lats_2d)
@@ -1230,12 +1235,17 @@ class RPN():
         return result
 
 
-    @property
     def get_current_info(self):
         """
         return current info of just read record
         """
-        return self._current_info
+        info_copy = {}
+        for k, v in self._current_info.iteritems():
+            if hasattr(v, "value"):
+                v = v.value
+            info_copy[k] = v
+
+        return info_copy
 
 
 def test():
