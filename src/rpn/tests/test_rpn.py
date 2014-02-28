@@ -23,7 +23,6 @@ def test_write_field_2d_clean():
     v0, v1 = data.mean(), data1.mean()
 
     ok_(abs(v1 - v0) <= 1e-6, "Saved ({0}) and retrieved ({1}) means are not the same.".format(v0, v1))
-
     os.remove(tfile)
 
 
@@ -44,12 +43,7 @@ def test_rite_field_2d_64bits():
     v0, v1 = data.mean(), data1.mean()
 
     ok_(abs(v1 - v0) <= 1e-15, "Saved ({0}) and retrieved ({1}) means are not the same.".format(v0, v1))
-
     os.remove(tfile)
-
-
-
-
 
 
 class TestRpn(RPN):
@@ -59,7 +53,7 @@ class TestRpn(RPN):
         """
         path = "data/test.rpn"
         RPN.__init__(self, path=path)
-        self.defaultVarName = "I5"
+        self.default_var_name = "I5"
 
     def test_get_longitudes_and_latitudes_of_the_last_read_record(self):
         """
@@ -75,19 +69,18 @@ class TestRpn(RPN):
                 break
             nrecords_read += 1
 
-            if self.get_current_info()["varname"] == self.defaultVarName:
+            if self.get_current_info()["varname"] == self.default_var_name:
                 _, _ = self.get_longitudes_and_latitudes_for_the_last_read_rec()
 
         ok_(nrecords_read == nrecords_total,
             "Number of records read = {0} is not equal to the"
             " total number of records in the file = {1}".format(nrecords_read, nrecords_total))
 
-
     def test_dateo(self):
         """
          Test dateo calculation
         """
-        field = self.get_first_record_for_name(self.defaultVarName)
+        field = self.get_first_record_for_name(self.default_var_name)
         print(self.get_dateo_of_last_read_record())
         #print(self._dateo_to_string(-1274695862))
 
@@ -101,7 +94,7 @@ class TestRpn(RPN):
         """
          Test valid date calculation
         """
-        field = self.get_first_record_for_name(self.defaultVarName)
+        field = self.get_first_record_for_name(self.default_var_name)
         print(self.get_dateo_of_last_read_record())
         #print(self._dateo_to_string(-1274695862))
 
@@ -150,22 +143,21 @@ class TestRpn(RPN):
         """
             Test grid type extraction
         """
-        self.get_first_record_for_name(self.defaultVarName)
+        self.get_first_record_for_name(self.default_var_name)
         info = self.get_proj_parameters_for_the_last_read_rec()
         ok_(info["grid_type"] == "E", msg="Expected {0} but got {1} instead".format("E", info["grid_type"]))
-
 
     def test_get_4d_field(self):
         """
             Test getting a 4d field in time and space
         """
-        data = self.get_4d_field(self.defaultVarName)
+        data = self.get_4d_field(self.default_var_name)
         ntimes = len(data)
         print data, len(data), ntimes
         nlevs = len(data.items()[0][1])
         msg = "The test file should contain {2} on 1 level at 1 timestep, not nlevs={0} and ntimes={1}"
         ok_(ntimes == 1 and nlevs == 1,
-            msg=msg.format(nlevs, ntimes, self.defaultVarName))
+            msg=msg.format(nlevs, ntimes, self.default_var_name))
 
     def teardown(self):
         """
@@ -177,21 +169,21 @@ class TestRpn(RPN):
 def test_get_records_for_foreacst_hour():
     path = "data/test.rpn"
 
-    rObj = RPN(path)
-    nRecords = rObj.get_number_of_records()
+    r_obj = RPN(path)
+    n_records = r_obj.get_number_of_records()
 
-    print nRecords
+    print n_records
 
-    res = rObj.get_records_for_foreacst_hour(var_name="I5", forecast_hour=108072)
+    res = r_obj.get_records_for_foreacst_hour(var_name="I5", forecast_hour=108072)
     ok_(len(res) == 1, msg="SWE has only one vertical level ..., not {0} ".format(len(res)))
 
-    res = rObj.get_records_for_foreacst_hour(var_name="I5", forecast_hour=10)
+    res = r_obj.get_records_for_foreacst_hour(var_name="I5", forecast_hour=10)
     ok_(len(res) == 0)
-    ok_(nRecords == 3, msg="The number of records is not what I've expected ")
+    ok_(n_records == 3, msg="The number of records is not what I've expected ")
 
     #assert_(len(res) == 1, msg="Only one record in the file for the forecast_hour = 0")
 
-    rObj.close()
+    r_obj.close()
 
 
 def test_polar_stereographic():
