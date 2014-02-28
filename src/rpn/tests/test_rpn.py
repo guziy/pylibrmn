@@ -5,6 +5,53 @@ import numpy as np
 __author__ = 'huziy'
 
 
+def test_write_field_2d_clean():
+    """
+    Testing write 2d field
+
+    """
+    import os
+    tfile = "temp.rpn"
+    r = RPN(tfile, mode="w")
+    data = np.random.randn(10, 10)
+    data = data.astype(np.float32)
+    r.write_2d_field_clean(data, properties={"name": "RAND"})
+    r.close()
+
+    r = RPN(tfile)
+    data1 = r.get_first_record_for_name("RAND")
+    v0, v1 = data.mean(), data1.mean()
+
+    ok_(abs(v1 - v0) <= 1e-6, "Saved ({0}) and retrieved ({1}) means are not the same.".format(v0, v1))
+
+    os.remove(tfile)
+
+
+def test_rite_field_2d_64bits():
+    """
+    Test writing a 64 bit precision
+    """
+    import os
+    tfile = "temp.rpn"
+    r = RPN(tfile, mode="w")
+    data = np.random.randn(10, 10)
+    data = data.astype(np.float64)
+    r.write_2d_field_clean(data, properties={"name": "RAND", "nbits": -64})
+    r.close()
+
+    r = RPN(tfile)
+    data1 = r.get_first_record_for_name("RAND")
+    v0, v1 = data.mean(), data1.mean()
+
+    ok_(abs(v1 - v0) <= 1e-15, "Saved ({0}) and retrieved ({1}) means are not the same.".format(v0, v1))
+
+    os.remove(tfile)
+
+
+
+
+
+
 class TestRpn(RPN):
     def __init__(self):
         """

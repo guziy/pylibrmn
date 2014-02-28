@@ -1073,6 +1073,14 @@ class RPN():
         #assert x1 == ip1.value, "x1 = {0}, ip1.value = {1}".format(x1, ip1.value)
         return int(ip1.value)
 
+    def write_2d_field_clean(self, data, properties=None):
+        """
+        This method is a wrapper that should be used from external callers
+        @param data: numpy array 2D
+        @param properties: a dict, contains variable attributes (no ctypes)
+                attributes: name, level, level_kind ...
+        """
+        self.write_2D_field(data=data, **properties)
 
     def write_2D_field(self, name='', level=1, level_kind=level_kinds.ARBITRARY,
                        data=None, grid_type='Z', ig=None, ip=None, typ_var="P",
@@ -1097,6 +1105,13 @@ class RPN():
         Note: currently the datatypes of the input field is limited to the array of float32
         dateo could be passed as string and as int (in rpn format)
         """
+
+        if nbits == -32:
+            data = data.astype(np.float32)
+        elif nbits == -64:
+            data = data.astype(np.float64)
+
+
         theData = np.reshape(data, data.size, order='F')
         #        if data_type == data_types.IEEE_floating_point and nbits == -32:
         #            theData = np.array(theData, dtype = np.float32)
@@ -1170,7 +1185,6 @@ class RPN():
 
         #set current info
 
-
         self._current_info = {'ig': [ig1, ig2, ig3, ig4],
                               'ip': [ip1, ip2, ip3],
                               'shape': [ni, nj, nk],
@@ -1184,12 +1198,6 @@ class RPN():
                               "grid_type": grtyp,
                               "dateo_rpn_format": dateo
         }
-
-        #print 'write status: {0}'.format(status)
-
-
-        pass
-
 
     def get_all_time_records_for_name(self, varname="STFL"):
         """
@@ -1233,7 +1241,6 @@ class RPN():
             if data1 is not None:
                 result[self.get_datetime_for_the_last_read_record()] = data1
         return result
-
 
     def get_current_info(self):
         """
