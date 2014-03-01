@@ -32,12 +32,8 @@ def get_previous_ij_list(i0,j0,dirs, lake_fr, glob_lakefr_limit = 0.6):
             if i_next != i0 or j_next != j0:
                 continue
 
-
-
             i_list.append(i)
             j_list.append(j)
-
-
 
             i_upper, j_upper = get_previous_ij_list(i,j,dirs, lake_fr, glob_lakefr_limit=glob_lakefr_limit)
             i_list.extend(i_upper)

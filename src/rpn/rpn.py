@@ -919,6 +919,8 @@ class RPN():
     def get_next_record(self):
         """
         returns None, if there is no next record satisfying the last search parameters
+
+        Note: if there were previous queries to the file then it will look for the next record satisfying the query
         """
         if self._current_info is None:
             key = self.get_key_of_any_record()
