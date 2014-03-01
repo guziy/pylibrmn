@@ -1,5 +1,6 @@
 import data_types
 
+
 __author__ = "huziy"
 __date__ = "$Apr 5, 2011 12:26:05 PM$"
 
@@ -12,6 +13,7 @@ import level_kinds
 
 from datetime import datetime
 from datetime import timedelta
+import copy
 
 
 class RPN():
@@ -38,6 +40,8 @@ class RPN():
         write_2D_field(self, name = '', level = 1, level_kind = level_kinds.ARBITRARY, data = None )
     """
     GRID_TYPE = "grid_type"
+    VARNAME_KEY = 'varname'
+
     log_messages_disabled = False
 
     def __init__(self, path='', mode='r', start_century=19, ip_new_style=True, print_log_messages=False):
@@ -406,7 +410,7 @@ class RPN():
         return res
 
     def get_output_step_in_seconds(self):
-        raise Exception("Not yet implemented")
+        raise NotImplementedError("Not yet implemented")
 
     def get_list_of_varnames(self):
         """
@@ -431,7 +435,7 @@ class RPN():
             #data = self._get_data_by_key(key)
             #lev = self.get_current_level(level_kind=level_kind)
             #res[lev] = data
-            names.append(self._get_record_info(key)["varname"].value.strip())
+            names.append(self._get_record_info(key)[self.VARNAME_KEY].value.strip())
             key = self._dll.fstsui_wrapper(self._file_unit, byref(ni), byref(nj), byref(nk))
 
         return np.unique(names)
@@ -525,7 +529,8 @@ class RPN():
         :type record_key: c_int
         """
         self._get_record_info(record_key)
-        print self._current_info['varname'].value
+
+        #print self._current_info[self.VARNAME_KEY].value
         the_type = self._get_current_data_type()
         ni, nj, nk = self._current_info["shape"]
         data = np.zeros((nk.value * nj.value * ni.value,), dtype=the_type)
@@ -596,8 +601,12 @@ class RPN():
         if self._current_info is None:
             raise Exception("No records has been read yet, or its metadata has not yet been saved.")
 
+        if self._current_info[self.VARNAME_KEY].value.strip() in [">>", "^^"]:
+            raise Exception("Trying to get coordinates for coordinate records, this operation is only "
+                            "possible for data records. Please read in some data field first")
+
         #Make sure the internal info is not modified by the extraction of coordinates
-        _info_backup = self._current_info
+        _info_backup = copy.deepcopy(self._current_info)
 
         ig = self._current_info['ig']
 
@@ -690,6 +699,7 @@ class RPN():
                                lons_2d.ctypes.data_as(POINTER(c_float)))
 
         self._current_info = _info_backup
+
 
         #print "lon params = ", lons_2d.shape, np.min(lons_2d), np.max(lons_2d)
         return np.transpose(lons_2d), np.transpose(lats_2d)
@@ -918,7 +928,8 @@ class RPN():
         [ni, nj, nk] = self._current_info['shape']
         key = self._dll.fstsui_wrapper(self._file_unit, byref(ni), byref(nj), byref(nk))
 
-        if key <= 0: return None
+        if key <= 0:
+            return None
 
         return self._get_data_by_key(key)[:, :, 0]
 
@@ -1041,9 +1052,6 @@ class RPN():
             data1 = self.get_next_record()
 
         return result
-
-        pass
-
 
     def get_2D_field_on_all_levels(self, name='SAND', level_kind=level_kinds.ARBITRARY):
         """
