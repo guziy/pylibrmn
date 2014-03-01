@@ -21,7 +21,7 @@ library_dirs = []
 includes = []
 
 
-if armnlib in os.environ:
+if armnlib in os.environ:    
     print os.environ[armnlib]
     armnlib_path = os.environ[armnlib]
 
@@ -50,7 +50,32 @@ if armnlib in os.environ:
         raise Exception("Failed to build '{0}'".format(native_lib_filename))
 
 else:
-    raise Exception("ARMNLIB variable is not defined")
+    ec_arch = os.environ["EC_ARCH"]
+
+    # get includes
+    path1 = os.path.join(armnlib_path, "include")
+    path1_lib = os.path.join(armnlib_path, "lib")
+
+    # add search directories for headers
+    includes.append(path1)
+    includes.append(os.path.join(path1, ec_arch))
+
+    # add library search directories
+    #library_dirs.append()
+    library_dirs.append(os.path.join(path1_lib, ec_arch))
+
+    ##build native library using the Makefile
+    import subprocess
+    subprocess.call(["make"])
+    if os.path.isfile(native_lib_filename):
+        print "The '{0}' was created. Now you need to add '{1}' to LD_LIBRARY_PATH variable, or put the compiled file" \
+              "into one of the folders from the list in your current LD_LIBRARY_PATH='{2}'" \
+              "".format(native_lib_filename, os.getcwd(), os.environ["LD_LIBRARY_PATH"])
+    else:
+        raise Exception("Failed to build '{0}'".format(native_lib_filename))
+
+
+#raise Exception("ARMNLIB variable is not defined")
 
 module_wrap = Extension(
     "rpn.libpyrmn",

@@ -57,16 +57,16 @@ information):
 
 * To test the library you will need `nose` (install using `pip install nose`):
 
-     cd pylibrmn
-     nosetests
+      cd pylibrmn
+      nosetests
 
   You should see something similar in the case of success:
 
-     ............
-     ----------------------------------------------------------------------
-     Ran 12 tests in 0.881s
+      ............
+      ----------------------------------------------------------------------
+      Ran 12 tests in 0.881s
 
-     OK 
+      OK 
 
  
 
