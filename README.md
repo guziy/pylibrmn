@@ -41,7 +41,7 @@ information):
 
 * Note: in order to install on guillimin, you have to use `Makefile.guill`, and load ssm package for gfortran beforehand (from the cmmand line).
 
-        . s.ssmuse.dot gfortran-4.6
+        . s.ssmuse.dot gfortran-4.6 rmnlib-dev
 
   To see what else can be used through ssm, do:
         
@@ -53,7 +53,22 @@ information):
         mv Makefile.guill Makefile
         python setup.py install
 
+  *Update:* The same Makefile should work on guillimin and skynet or other system with unified environment installed.
 
+* To test the library you will need `nose` (install using `pip install nose`):
+     
+         cd pylibrmn
+         nosetests
+
+  You should see something similar in the case of success:
+
+         ............
+         ----------------------------------------------------------------------
+         Ran 12 tests in 0.881s
+
+         OK 
+
+ 
 
 Acknowledgements
 =======
