@@ -23,10 +23,10 @@ all : $(OBJ)
 	$(FC) -shared $(OBJ) -o libpyrmn.so -Wl,-rpath,$(rmnlib_folder)  -lrmnshared_013 
 	
 
-%.o: $(SOURCES_C)
+%.o: %.c
 	$(CC) -c -g $< -o $@ 
 
-%.o : $(SOURCES_F)
+%.o : %.f
 	$(FC) -c -g $< -o $@
 	#gfortran -fPIC -c -g $< -o $@
 
