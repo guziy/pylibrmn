@@ -1,4 +1,5 @@
 from nose.tools import ok_
+import subprocess
 from rpn.rpn import RPN
 import numpy as np
 
@@ -26,7 +27,7 @@ def test_write_field_2d_clean():
     os.remove(tfile)
 
 
-def test_rite_field_2d_64bits():
+def test_write_field_2d_64bits():
     """
     Test writing a 64 bit precision
     """
@@ -75,6 +76,25 @@ class TestRpn(RPN):
         ok_(nrecords_read == nrecords_total,
             "Number of records read = {0} is not equal to the"
             " total number of records in the file = {1}".format(nrecords_read, nrecords_total))
+
+
+    def test_compare_with_ggstat(self):
+        data = self.get_first_record_for_name(self.default_var_name)
+        proc = subprocess.Popen(["r.diag", "ggstat", self.path], stdout=subprocess.PIPE)
+        (out, err) = proc.communicate()
+        lines = out.split("\n")
+        lines = filter(lambda line: ("I5" in line), lines)
+
+        fields = lines[0].split()
+
+        the_mean = float(fields[12])
+        the_variance = float(fields[13])
+        msg = "The mean does not correspond to ggstat: {0} <> {1}".format(data.mean(), the_mean)
+        ok_(abs(data.mean() - the_mean) < 1e-3, msg=msg)
+
+        msg = "The variance does not correspond to ggstat: {0} <> {1}".format(data.var(), the_variance)
+        ok_(abs(data.var() - the_variance) < 1e-1, msg=msg)
+
 
     def test_dateo(self):
         """

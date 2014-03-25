@@ -93,7 +93,7 @@ setup(
     license='',
     author='huziy',
     author_email='guziy.sasha@gmail.com',
-    description='', requires=['numpy'],
+    description='', requires=['numpy', 'nose'],
     #package_data={'': ['libpyrmn.so']}
     #ext_modules=[module_wrap]
     # well, it is not ready yet for pgi so the extension should be installed separately

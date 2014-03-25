@@ -909,7 +909,7 @@ class RPN():
                 return np.int32
         elif nbits == 64:
             return np.float64
-        elif nbits == 16:
+        elif nbits == 16 or nbits == 24:
             if data_type in [data_types.compressed_floating_point, data_types.floating_point]:
                 return np.dtype("f4")
             return np.float16
