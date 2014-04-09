@@ -26,6 +26,10 @@ virtualenv to create the writable environment. I prefer working with virtualenv 
 information):
 
 * Clone this repository using git (or just download .zip archive exported by github):
+       
+        git  clone  https://github.com/guziy/pylibrmn.git
+ 
+  or if you have a github account you can use ssh link:
 
         git clone git@github.com:guziy/pylibrmn.git
 
