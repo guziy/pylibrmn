@@ -29,9 +29,10 @@ information):
        
         git  clone  https://github.com/guziy/pylibrmn.git
  
-  or if you have a github account you can use ssh link:
+    or if you have a github account you can use ssh link:
 
         git clone git@github.com:guziy/pylibrmn.git
+        
 
 * Install the python wrapper to the site-pacakges directory. `--record` is used so you know which files are copied
    and where (it creates the file files.txt with the list of installed files which you could delete when uninstalling).
