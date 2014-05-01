@@ -613,6 +613,37 @@ class RPN():
         grid_type = self._current_info[self.GRID_TYPE]
         ni, nj, nk = map(lambda x: x.value, self._current_info["shape"])
 
+        #B grid type
+        if grid_type.value.strip().upper() == "B":
+            lon_min = 0.0
+            dlon = 360.0 / float(ni - 1)
+            if ig[0].value == 0:
+                dlat = 180.0 / float(nj - 1)
+            else:
+                dlat = 90.0 / float(nj - 1)
+
+            lons = [lon_min + dlon * i for i in range(ni)]
+            lons[-1] = lon_min
+            if ig[1].value == 0:  # South -> North (pt (1,1) is at the bottom of the grid)
+                if ig[0].value == 1:
+                    lat_min = 0.0
+                else:
+                    lat_min = -90.0
+
+                lats = [lat_min + dlat * i for i in range(nj)]
+                lats2d, lons2d = np.meshgrid(lats, lons)
+
+            else:  # North -> South (pt (1,1) is at the top of the grid)
+                if ig[0].value == 2:
+                    lat_max = 0.0
+                else:
+                    lat_max = 90.0
+
+                lats = [lat_max - i * dlat for i in range(nj)]
+                lats2d, lons2d = np.meshgrid(lats, lons)
+            return lons2d, lats2d
+
+        #L  grid type
         if grid_type.value.strip().upper() == "L":
             ll_lat = c_float(-1)
             ll_lon = c_float(-1)
@@ -1120,7 +1151,6 @@ class RPN():
             data = data.astype(np.float32)
         elif nbits == -64:
             data = data.astype(np.float64)
-
 
         theData = np.reshape(data, data.size, order='F')
         #        if data_type == data_types.IEEE_floating_point and nbits == -32:

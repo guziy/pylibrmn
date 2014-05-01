@@ -7,15 +7,13 @@ GLOBAL_EXTENT = 0
 NH_EXTENT = 1
 SH_EXTENT = 2
 #ig2 values
-START_AT_LOWER_LEFT = 0 # pt(1,1) is at the bottom of the grid
-START_AT_UPPER_LEFT = 1 # pt(1,1) is at the top of the grid
+START_AT_LOWER_LEFT = 0  # pt(1,1) is at the bottom of the grid
+START_AT_UPPER_LEFT = 1  # pt(1,1) is at the top of the grid
 
 #ig3 and ig4 should be 0 for the A-grid
 
 ## B-grid (there is grid point at the pole or equator)
-#TODO
-
-
+B_GRID = "B"
 
 #G-grid
 GAUSSIAN_TYPE = "G"
