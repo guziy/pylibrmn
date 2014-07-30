@@ -535,6 +535,7 @@ class RPN():
         ni, nj, nk = self._current_info["shape"]
         data = np.zeros((nk.value * nj.value * ni.value,), dtype=the_type)
 
+
         #read the record
         self._dll.fstluk_wrapper(data.ctypes.data_as(POINTER(c_float)), record_key, ni, nj, nk)
 
@@ -941,8 +942,8 @@ class RPN():
         elif nbits == 64:
             return np.float64
         elif nbits == 16 or nbits == 24:
-            if data_type in [data_types.compressed_floating_point, data_types.floating_point]:
-                return np.dtype("f4")
+            if data_type in [data_types.compressed_floating_point, data_types.floating_point, data_types.floating_point_16_bit]:
+                return np.float32
             return np.float16
         else:
             raise Exception("nbits is: {0}".format(nbits))
