@@ -1283,6 +1283,33 @@ class RPN():
                 result[self.get_datetime_for_the_last_read_record()] = data1
         return result
 
+
+    def get_time_records_iterator_for_name_and_level(self, varname="STFL", level=-1,
+                                                level_kind=level_kinds.ARBITRARY):
+        """
+        Created for retrieving the fields corresponding to
+        different times,
+        works as self.get_3D_field, but instead of the map
+        {level: 2d record} it returns the map {date: 2d record}
+        Use this methond only in the case if you are sure that
+        the field you are trying to read containsonly one record for each time step
+
+        Warning it is not safe to use this RPN object while iterating over the generator
+
+        :return type: generator object
+        """
+
+        data1 = self.get_first_record_for_name_and_level(varname, level=level, level_kind=level_kind)
+
+        while data1 is not None:
+            yield self.get_datetime_for_the_last_read_record(), data1
+            data1 = self.get_next_record()
+
+
+
+
+
+
     def get_current_info(self):
         """
         return current info of just read record
