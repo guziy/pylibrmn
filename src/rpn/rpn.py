@@ -1149,10 +1149,10 @@ class RPN():
         dateo could be passed as string and as int (in rpn format)
         """
 
-        if nbits == -32 or nbits == 16:
-            data = data.astype(np.float32)
-        elif nbits == -64:
-            data = data.astype(np.float64)
+        #if nbits == -32 or nbits == 16:
+        #    data = data.astype(np.float32)
+        #elif nbits == -64:
+        #    data = data.astype(np.float64)
 
         theData = np.reshape(data, data.size, order='F')
         #        if data_type == data_types.IEEE_floating_point and nbits == -32:
