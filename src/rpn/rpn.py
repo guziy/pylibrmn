@@ -532,7 +532,7 @@ class RPN():
 
         #print self._current_info[self.VARNAME_KEY].value
         the_type = self._get_current_data_type()
-        print the_type
+        #print the_type
         ni, nj, nk = self._current_info["shape"]
         data = np.zeros((nk.value * nj.value * ni.value,), dtype=the_type)
 
