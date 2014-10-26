@@ -41,7 +41,7 @@ def test_write_rpn_compressed():
     wfile = "test.rpn"
     r = RPN(wfile, mode="w")
     nx = ny = 10
-    arr = np.zeros((nx, ny), dtype=np.float32)
+    arr = np.zeros((nx, ny), dtype=np.float16)
     for i in range(nx):
         for j in range(ny):
             arr[i, j] = i ** 2 + j ** 2
