@@ -39,4 +39,5 @@ def test_basemap_integration():
 
 if __name__ == '__main__':
     in_path = "../../../" + in_path
+    print in_path
     test_basemap_integration()

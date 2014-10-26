@@ -532,6 +532,7 @@ class RPN():
 
         #print self._current_info[self.VARNAME_KEY].value
         the_type = self._get_current_data_type()
+        print the_type
         ni, nj, nk = self._current_info["shape"]
         data = np.zeros((nk.value * nj.value * ni.value,), dtype=the_type)
 
@@ -707,8 +708,8 @@ class RPN():
         if key_hor < 0 or key_ver < 0:
             raise Exception("key value is not valid {0}".format(min(key_hor, key_ver)))
 
-        lons = self._get_data_by_key(key_hor)[:, 0, 0]
-        lats = self._get_data_by_key(key_ver)[0, :, 0]
+        lons = self._get_data_by_key(key_hor).squeeze()
+        lats = self._get_data_by_key(key_ver).squeeze()
 
         ig = self._current_info["ig"]
         n_lons = lons.shape[0]
@@ -828,7 +829,7 @@ class RPN():
         corresponding to the first 3rd dimension
         """
         return self.get_record_for_name_and_level(varname=varname, level=level,
-                                                  level_kind=level_kind)[:, :]
+                                                  level_kind=level_kind)
 
     def _get_record_info(self, key, verbose=False, update_current_info=True):
         """
