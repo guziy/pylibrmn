@@ -31,6 +31,7 @@ def test_write_rpn():
     ok_("{:E}".format(arr.max()) in out, "Could not find the max={:E} in {}".format(arr.max(), out))
     ok_("{:E}".format(arr.min()) in out, "Could not find the min={:E} in {}".format(arr.min(), out))
     ok_("{:E}".format(arr.mean()) in out, "Could not find the mean={:E} in {}".format(arr.mean(), out))
+    print "{:E}".format(arr.mean()), "{:E}".format(arr.min()), "{:E}".format(arr.max())
 
     os.remove(wfile)
 
