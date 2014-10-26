@@ -828,7 +828,7 @@ class RPN():
         corresponding to the first 3rd dimension
         """
         return self.get_record_for_name_and_level(varname=varname, level=level,
-                                                  level_kind=level_kind)[:, :, 0]
+                                                  level_kind=level_kind)[:, :]
 
     def _get_record_info(self, key, verbose=False, update_current_info=True):
         """
@@ -1148,7 +1148,7 @@ class RPN():
         dateo could be passed as string and as int (in rpn format)
         """
 
-        if nbits == -32:
+        if nbits == -32 or nbits == 16:
             data = data.astype(np.float32)
         elif nbits == -64:
             data = data.astype(np.float64)

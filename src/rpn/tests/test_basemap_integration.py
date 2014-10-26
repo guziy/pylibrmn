@@ -18,9 +18,11 @@ def test_basemap_integration():
 
     #read a field
     data = r.get_first_record_for_name(vname)
+    print data.shape
 
     #get longitudes and latitudes fields
     lons2d, lats2d = r.get_longitudes_and_latitudes_for_the_last_read_rec()
+    print lons2d.shape
 
     #get projection parameters
     params = r.get_proj_parameters_for_the_last_read_rec()
@@ -35,3 +37,6 @@ def test_basemap_integration():
     img = b.pcolormesh(x, y, data)
     b.colorbar(img)
 
+if __name__ == '__main__':
+    in_path = "../../../" + in_path
+    test_basemap_integration()
