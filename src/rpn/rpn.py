@@ -521,7 +521,7 @@ class RPN():
             raise Exception(
                 "varname = {0}, at level {1} is not found  in {2}.".format(varname, level, self.path))
 
-        return self._get_data_by_key(key)
+        return self._get_data_by_key(key).squeeze()
 
     def _get_data_by_key(self, record_key):
         """
