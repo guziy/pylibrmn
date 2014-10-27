@@ -14,13 +14,19 @@ INC = $(foreach d, $(EC_INCLUDE_PATH), -I$d)
 
 
 #V = /sb/software/areas/armnssm/ssm-domains-base/libs/rmnlib-dev/linux24-x86-64/lib/Linux_x86-64/gfortran
+rmnlib_folder=$(dir $(shell s.locate --lib rmnshared_015))
+rmnlib_name = -lrmnshared_015
 
+#Try a different version of rmnlib 013
+ifeq ($(strip $(rmnlib_folder)), )
 rmnlib_folder = $(dir $(shell s.locate --lib rmnshared_013))
 rmnlib_name = -lrmnshared_013
+endif
 
+#Try a static version of the rmnlib
 ifeq ($(strip $(rmnlib_folder)), )
-rmnlib_folder=$(dir $(shell s.locate --lib rmn_013))
-rmnlib_name = -lrmn_013
+rmnlib_folder=$(dir $(shell s.locate --lib rmn_015))
+rmnlib_name = -lrmn_015
 endif
 
 all : $(OBJ) 
