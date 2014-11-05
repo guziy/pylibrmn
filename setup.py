@@ -40,16 +40,25 @@ else:
 #    library_dirs=library_dirs,
 #    sources=["rmn_wrapper.c"])
 
+
+long_description = """
+Requires ssm environment and shared version of the fortran version of rmnlib. Works only on linux..
+Written for python 2.7.x and not compatible with python3 yet.  
+"""
 setup(
     name='pylibrmn',
     version='0.0.1',
     packages=['rpn', 'rpn.util', 'rpn.domains', 'rpn.tests', 'rpn_use_examples'],
     package_dir={'': 'src'},
     url='',
-    license='',
+    license='GPL',
     author='huziy',
     author_email='guziy.sasha@gmail.com',
-    description='', requires=['numpy', 'nose'],
+    description='Package for reading and writing RPN files', requires=['numpy', 'nose'],
+    long_description=long_description,
+    classifiers=['Programming Language :: Python :: 2.6',
+                 'Programming Language :: Python :: 2.7'],
+    keywords="RPN, standard files"
     #package_data={'': ['libpyrmn.so']}
     #ext_modules=[module_wrap]
     # well, it is not ready yet for pgi so the extension should be installed separately
