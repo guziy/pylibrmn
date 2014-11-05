@@ -36,18 +36,20 @@ I use the following commands to prepare my environment:
 To run the tests in ipython:
 
 ```python
-In [1]: from rpn import tests
+    In [1]: from rpn import tests
 
-In [2]: import nose
+    In [2]: import nose
 
-In [5]: nose.run(tests)
+    In [5]: nose.run(tests)
+```
+<pre>
 ...................
 ----------------------------------------------------------------------
 Ran 19 tests in 17.800s
 
 OK
-
-```     
+</pre>    
+ 
 
 
 An alternative way to install this module (you might need to have sudo rights to do it in your default python installation or use
