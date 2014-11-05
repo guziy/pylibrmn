@@ -35,8 +35,7 @@ I use the following commands to prepare my environment:
 
 To run the tests in ipython:
 
-```
-#!python
+```python
 In [1]: from rpn import tests
 
 In [2]: import nose
