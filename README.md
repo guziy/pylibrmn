@@ -27,7 +27,7 @@ Install
      pip install pylibrmn
 ```
 
-It will work provided, you have the FORTRAN version of rmnlib (shared version) and ssm packages needed for compilation and linking of the bridge between FROTRAN nad Python.
+It will work provided, you have the FORTRAN version of rmnlib (shared version) and ssm packages needed for compilation and linking of the bridge between FROTRAN and Python.
 I use the following commands to prepare my environment:
 
      . <my_python_env>/bin/activate
