@@ -15,20 +15,30 @@ armnlib_path = ""
 
 native_lib_filename = "libpyrmn.so"
 
-##build native library using the Makefile
-import subprocess
-subprocess.call(["make"])
-if os.path.isfile(native_lib_filename):
-    print "The '{0}' was created. Now you need to add '{1}' to LD_LIBRARY_PATH variable, or put the compiled file" \
-          "into one of the folders from the list in your current LD_LIBRARY_PATH" \
-          "".format(native_lib_filename, os.getcwd())
-    print "The list of folders in your current LD_LIBRARY_PATH: "
-    print "--" * 10 + "- Start ----------"
-    for fi in os.environ["LD_LIBRARY_PATH"].split(":"):
-       print fi
-    print "--" * 10 + "- End   ----------"
-else:
-    raise Exception("Failed to build '{0}'".format(native_lib_filename))
+##Change to the build directory
+import os
+build_dir = os.path.dirname(os.path.realpath(__file__))
+
+if not os.path.isfile(os.path.join(build_dir, native_lib_filename)):
+    os.chdir(build_dir) 
+
+    print os.getcwd()
+
+
+    ##build native library using the Makefile
+    import subprocess
+    subprocess.call(["make"])
+    if os.path.isfile(native_lib_filename):
+        print "The '{0}' was created. Now you need to add '{1}' to LD_LIBRARY_PATH variable, or put the compiled file" \
+              "into one of the folders from the list in your current LD_LIBRARY_PATH" \
+              "".format(native_lib_filename, os.getcwd())
+        print "The list of folders in your current LD_LIBRARY_PATH: "
+        print "--" * 10 + "- Start ----------"
+        for fi in os.environ["LD_LIBRARY_PATH"].split(":"):
+            print fi
+        print "--" * 10 + "- End   ----------"
+    else:
+        raise Exception("Failed to build '{0}'".format(native_lib_filename))
 
 
 #raise Exception("ARMNLIB variable is not defined")
@@ -47,10 +57,10 @@ Written for python 2.7.x and not compatible with python3 yet.
 """
 setup(
     name='pylibrmn',
-    version='0.0.1',
+    version='0.0.3',
     packages=['rpn', 'rpn.util', 'rpn.domains', 'rpn.tests', 'rpn_use_examples'],
     package_dir={'': 'src'},
-    url='',
+    package_data={'test_data': ['data/*'], 'make file': ['Makefile']},
     license='GPL',
     author='huziy',
     author_email='guziy.sasha@gmail.com',
@@ -58,7 +68,8 @@ setup(
     long_description=long_description,
     classifiers=['Programming Language :: Python :: 2.6',
                  'Programming Language :: Python :: 2.7'],
-    keywords="RPN, standard files"
+    keywords="RPN, standard files",
+    url="https://github.com/guziy/pylibrmn"
     #package_data={'': ['libpyrmn.so']}
     #ext_modules=[module_wrap]
     # well, it is not ready yet for pgi so the extension should be installed separately
