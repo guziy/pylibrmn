@@ -52,6 +52,9 @@ OK
  
 
 
+Install using `setup.py` and development version of the project from github
+========================================
+
 An alternative way to install this module (you might need to have sudo rights to do it in your default python installation or use
 virtualenv to create the writable environment. I prefer working with virtualenv and advise you to give it a go, see [this] (https://pypi.python.org/pypi/virtualenv) for more
 information):
