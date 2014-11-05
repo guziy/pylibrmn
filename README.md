@@ -23,7 +23,9 @@ Install
 
 * `pip` can be used to install the package:
 
+```
      pip install pylibrmn
+```
 
 It will work provided, you have the FORTRAN version of rmnlib (shared version) and ssm packages needed for compilation and linking of the bridge between FROTRAN nad Python.
 I use the following commands to prepare my environment:
@@ -35,13 +37,14 @@ I use the following commands to prepare my environment:
 
 To run the tests in ipython:
 
-```python
-    In [1]: from rpn import tests
-
-    In [2]: import nose
-
-    In [5]: nose.run(tests)
 ```
+In [1]: from rpn import tests
+
+In [2]: import nose
+
+In [5]: nose.run(tests)
+```
+
 <pre>
 ...................
 ----------------------------------------------------------------------
