@@ -21,6 +21,36 @@ This package is a wrapper around the FORTRAN version of librmn, so it needs this
 Install
 ========================
 
+* `pip` can be used to install the package:
+
+      pip install pylibrmn
+
+It will work provided, you have the FORTRAN version of rmnlib (shared version) and ssm packages needed for compilation and linking of the bridge between FROTRAN nad Python.
+I use the following commands to prepare my environment:
+
+     . <my_python_env>/bin/activate
+     . s.ssmuse.dot fulldev-gcc-46
+     . s.ssmuse.dot devtools 
+     . s.ssmuse.dot diagtools ###Not necessary for using pylibrmn but used for unit testing
+
+To run the tests in ipython:
+
+```
+#!python
+In [1]: from rpn import tests
+
+In [2]: import nose
+
+In [5]: nose.run(tests)
+...................
+----------------------------------------------------------------------
+Ran 19 tests in 17.800s
+
+OK
+
+```     
+
+
 An alternative way to install this module (you might need to have sudo rights to do it in your default python installation or use
 virtualenv to create the writable environment. I prefer working with virtualenv and advise you to give it a go, see [this] (https://pypi.python.org/pypi/virtualenv) for more
 information):
