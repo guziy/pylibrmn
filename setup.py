@@ -41,7 +41,7 @@ else:
 #    sources=["rmn_wrapper.c"])
 
 setup(
-    name='pyrmnlib',
+    name='pylibrmn',
     version='0.0.1',
     packages=['rpn', 'rpn.util', 'rpn.domains', 'rpn.tests', 'rpn_use_examples'],
     package_dir={'': 'src'},
