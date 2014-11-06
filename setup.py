@@ -61,7 +61,7 @@ setup(
     packages=['rpn', 'rpn.util', 'rpn.domains', 'rpn.tests', 'rpn_use_examples'],
     package_dir={'': 'src'},
     package_data={'test_data': ['data/*'], 'make file': ['Makefile']},
-    license='GPL',
+    license='LGPL V2',
     author='huziy',
     author_email='guziy.sasha@gmail.com',
     description='Package for reading and writing RPN files', requires=['numpy', 'nose'],
