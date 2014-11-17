@@ -57,10 +57,10 @@ Written for python 2.7.x and not compatible with python3 yet.
 """
 setup(
     name='pylibrmn',
-    version='0.0.3',
+    version='0.0.4',
     packages=['rpn', 'rpn.util', 'rpn.domains', 'rpn.tests', 'rpn_use_examples'],
     package_dir={'': 'src'},
-    package_data={'test_data': ['data/*'], 'make file': ['Makefile']},
+    package_data={'rpn.tests': ['data/*', ], },
     license='GPL',
     author='huziy',
     author_email='guziy.sasha@gmail.com',
