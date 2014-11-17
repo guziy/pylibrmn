@@ -12,7 +12,7 @@ Requirements
 ==========
 This package is a wrapper around the FORTRAN version of librmn, so it needs this library installed.
 
-* librmn.a (FORTRAN library)
+* librmn.so (FORTRAN library)
 * ctypes (a python package)
 * numpy (python package)
 * nose (if you want to run tests)
