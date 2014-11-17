@@ -4,7 +4,12 @@ from nose.tools import ok_
 __author__ = 'huziy'
 
 
-in_path = "data/test.rpn"
+from rpn.tests.utils import get_input_file_path
+
+the_dir, script_name = os.path.split(__file__)
+in_path = get_input_file_path("test.rpn", the_dir)
+
+
 from rpn.rpn import RPN
 
 

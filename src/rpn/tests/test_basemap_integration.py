@@ -1,7 +1,11 @@
 __author__ = 'huziy'
 
+import os
+from rpn.tests.utils import get_input_file_path
 
-in_path = "data/test.rpn"
+the_dir, script_name = os.path.split(__file__)
+in_path = get_input_file_path("test.rpn", the_dir)
+
 from rpn.rpn import RPN
 
 

@@ -5,6 +5,12 @@ import numpy as np
 
 __author__ = 'huziy'
 
+from rpn.tests.utils import get_input_file_path
+import os
+
+the_dir, script_name = os.path.split(__file__)
+in_path = get_input_file_path("test.rpn", the_dir)
+
 
 def test_write_field_2d_clean():
     """
@@ -52,7 +58,7 @@ class TestRpn(RPN):
         """
         Note a new object TestRpn is created for each test
         """
-        path = "data/test.rpn"
+        path = in_path
         RPN.__init__(self, path=path)
         self.default_var_name = "I5"
 
@@ -187,9 +193,8 @@ class TestRpn(RPN):
 
 
 def test_get_records_for_foreacst_hour():
-    path = "data/test.rpn"
 
-    r_obj = RPN(path)
+    r_obj = RPN(in_path)
     n_records = r_obj.get_number_of_records()
 
     print n_records
@@ -210,14 +215,14 @@ def test_polar_stereographic():
     """
     Testing polar stereographic grid functions
     """
-    path = "data/mappe.rpnw"
+    path = get_input_file_path("mappe.rpnw", the_dir)
     r = RPN(path)
     mk = r.get_first_record_for_name("MK")
 
     #print r.get_proj_parameters_for_the_last_read_rec()
     lons, lats = r.get_longitudes_and_latitudes_for_the_last_read_rec()
     amno_link = "http://www.cccma.ec.gc.ca/data/grids/geom_crcm_amno_182x174.shtml"
-    msg_tpl = "Geenrated longitudes are not the same as {0}".format(amno_link)
+    msg_tpl = "Generated longitudes are not the same as {0}".format(amno_link)
     msg_tpl += "\n Expected: {0}"
     msg_tpl += "\n Got: {1}"
 
