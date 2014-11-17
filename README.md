@@ -37,13 +37,12 @@ I use the following commands to prepare my environment:
 
 To run the tests in ipython:
 
-```
-In [1]: from rpn import tests
 
-In [2]: import nose
+    In [1]: cd <path to site-packages folder>
 
-In [5]: nose.run(tests)
-```
+    In [2]: import nose
+
+    In [5]: nose.run(tests)
 
 <pre>
 ...................
