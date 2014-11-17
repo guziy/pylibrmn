@@ -1,7 +1,9 @@
 from distutils.core import setup
 # TODO: get ARMNLIB variable from the environment and compile the rmn_wrapper
 import shutil
-from setuptools import find_packages
+
+
+
 
 
 armnlib = "ARMNLIB"
@@ -9,18 +11,20 @@ armnlib_path = ""
 
 native_lib_filename = "libpyrmn.so"
 
-##Change to the build directory
+# #Change to the build directory
 import os
+
 build_dir = os.path.dirname(os.path.realpath(__file__))
 
 if not os.path.isfile(os.path.join(build_dir, native_lib_filename)):
-    os.chdir(build_dir) 
+    os.chdir(build_dir)
 
     print os.getcwd()
 
 
-    ##build native library using the Makefile
+    # #build native library using the Makefile
     import subprocess
+
     subprocess.call(["make"])
     if os.path.isfile(native_lib_filename):
         print "The '{0}' was created. Now you need to add '{1}' to LD_LIBRARY_PATH variable, or put the compiled file" \
@@ -34,6 +38,7 @@ if not os.path.isfile(os.path.join(build_dir, native_lib_filename)):
 
         #copy the library to site-packages
         import distutils.sysconfig
+
         spack_dir = distutils.sysconfig.get_python_lib()
         shutil.copyfile(native_lib_filename, os.path.join(
             spack_dir, native_lib_filename
@@ -45,7 +50,7 @@ if not os.path.isfile(os.path.join(build_dir, native_lib_filename)):
         raise Exception("Failed to build '{0}'".format(native_lib_filename))
 
 
-#raise Exception("ARMNLIB variable is not defined")
+# raise Exception("ARMNLIB variable is not defined")
 
 #module_wrap = Extension(
 #    "rpn.libpyrmn",
@@ -62,10 +67,10 @@ Written for python 2.7.x and not compatible with python3 yet.
 setup(
     name='pylibrmn',
     version='0.0.4',
-    #packages=['rpn', 'rpn.util', 'rpn.domains', 'rpn.tests', 'rpn_use_examples'],
-    packages = find_packages(),
+    packages=['rpn', 'rpn.util', 'rpn.domains', 'rpn.tests', 'rpn_use_examples'],
+    #packages=find_packages("."),
     package_dir={'': 'src'},
-    package_data={'rpn.tests': ['src/rpn/data/*', ], },
+    package_data={'rpn.tests': ['data/*', ], },
     license='GPL',
     author='huziy',
     author_email='guziy.sasha@gmail.com',
