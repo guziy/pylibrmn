@@ -65,7 +65,7 @@ setup(
     #packages=['rpn', 'rpn.util', 'rpn.domains', 'rpn.tests', 'rpn_use_examples'],
     packages = find_packages(),
     package_dir={'': 'src'},
-    package_data={'rpn.tests': ['data/*', ], },
+    package_data={'rpn.tests': ['src/rpn/data/*', ], },
     license='GPL',
     author='huziy',
     author_email='guziy.sasha@gmail.com',
