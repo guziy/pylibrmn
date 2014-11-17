@@ -1,6 +1,7 @@
 from distutils.core import setup
 # TODO: get ARMNLIB variable from the environment and compile the rmn_wrapper
-
+import shutil
+from setuptools import find_packages
 
 
 armnlib = "ARMNLIB"
@@ -30,6 +31,16 @@ if not os.path.isfile(os.path.join(build_dir, native_lib_filename)):
         for fi in os.environ["LD_LIBRARY_PATH"].split(":"):
             print fi
         print "--" * 10 + "- End   ----------"
+
+        #copy the library to site-packages
+        import distutils.sysconfig
+        spack_dir = distutils.sysconfig.get_python_lib()
+        shutil.copyfile(native_lib_filename, os.path.join(
+            spack_dir, native_lib_filename
+        ))
+        print "Coppied {} to {}. You will have to remove it manually when uninstalling".format(
+            native_lib_filename, spack_dir)
+
     else:
         raise Exception("Failed to build '{0}'".format(native_lib_filename))
 
@@ -51,7 +62,8 @@ Written for python 2.7.x and not compatible with python3 yet.
 setup(
     name='pylibrmn',
     version='0.0.4',
-    packages=['rpn', 'rpn.util', 'rpn.domains', 'rpn.tests', 'rpn_use_examples'],
+    #packages=['rpn', 'rpn.util', 'rpn.domains', 'rpn.tests', 'rpn_use_examples'],
+    packages = find_packages(),
     package_dir={'': 'src'},
     package_data={'rpn.tests': ['data/*', ], },
     license='GPL',
