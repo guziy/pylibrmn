@@ -1,14 +1,7 @@
 from distutils.core import setup
-from distutils.core import Extension
-
-
-
 # TODO: get ARMNLIB variable from the environment and compile the rmn_wrapper
 
 
-import sys
-
-import os
 
 armnlib = "ARMNLIB"
 armnlib_path = ""
