@@ -4,8 +4,6 @@ import shutil
 
 
 
-
-
 armnlib = "ARMNLIB"
 armnlib_path = ""
 
