@@ -120,17 +120,21 @@ class RotatedLatLon():
         return lat_lon.cartesian_to_lon_lat(rot_pole.A1)
 
 
-
-    def get_basemap_object_for_lons_lats(self, lons2d = None, lats2d = None, resolution = "i"):
+    def get_basemap_object_for_lons_lats(self, lons2d=None, lats2d=None, resolution="i"):
         from mpl_toolkits.basemap import Basemap
 
         lon0, _ = self.get_true_pole_coords_in_rotated_system()
         o_lon_p, o_lat_p = self.get_north_pole_coords()
         return Basemap(projection="rotpole", lon_0=lon0 - 180, o_lon_p=o_lon_p, o_lat_p=o_lat_p,
                        llcrnrlon=lons2d[0, 0], llcrnrlat=lats2d[0, 0],
-                       urcrnrlon=lons2d[-1, -1], urcrnrlat=lats2d[-1, -1], resolution = resolution)
+                       urcrnrlon=lons2d[-1, -1], urcrnrlat=lats2d[-1, -1], resolution=resolution)
 
+    def get_basemap_params(self, llcrnrlon=None, llcrnrlat=None, urcrnrlon=None, urcrnrlat=None):
+        lon0, _ = self.get_true_pole_coords_in_rotated_system()
+        o_lon_p, o_lat_p = self.get_north_pole_coords()
 
+        return dict(projection="rotpole", lon_0=lon0 - 180, o_lon_p=o_lon_p, o_lat_p=o_lat_p,
+                    llcrnrlon=llcrnrlon, llcrnrlat=llcrnrlat, urcrnrlon=urcrnrlon, urcrnrlat=urcrnrlat)
 
 
 def main():
@@ -142,7 +146,7 @@ def main():
     print rll.toGeographicLonLat(prj[0], prj[1])
 
 
-    #TODO: implement
+    # TODO: implement
     pass
 
 
