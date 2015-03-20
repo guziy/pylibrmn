@@ -94,7 +94,7 @@ class RPN():
 
         self.nrecords = self._dll.fstouv_wrapper(self._file_unit, options)
 
-        #set argument and return types of the library functions
+        # set argument and return types of the library functions
         #fstinf
         self._dll.fstinf_wrapper.restype = c_int
         self._dll.fstinf_wrapper.argtypes = [c_int, POINTER(c_int), POINTER(c_int), POINTER(c_int),
@@ -432,7 +432,7 @@ class RPN():
 
         names = []
         while key >= 0:
-            #data = self._get_data_by_key(key)
+            # data = self._get_data_by_key(key)
             #lev = self.get_current_level(level_kind=level_kind)
             #res[lev] = data
             names.append(self._get_record_info(key)[self.VARNAME_KEY].value.strip())
@@ -471,7 +471,7 @@ class RPN():
 
         in_nomvar = create_string_buffer(self.VARNAME_DEFAULT)
 
-        #int fstinf_wrapper(int iun, int *ni, int *nj, int *nk, int datev,char *in_etiket,
+        # int fstinf_wrapper(int iun, int *ni, int *nj, int *nk, int datev,char *in_etiket,
         #             int ip1, int ip2, int ip3, char *in_typvar, char *in_nomvar)
 
         key = self._dll.fstinf_wrapper(self._file_unit, byref(ni), byref(nj), byref(nk), datev, etiket,
@@ -508,7 +508,7 @@ class RPN():
         in_nomvar = in_nomvar[:8]
         in_nomvar = create_string_buffer(in_nomvar)
 
-        #int fstinf_wrapper(int iun, int *ni, int *nj, int *nk, int datev,char *in_etiket,
+        # int fstinf_wrapper(int iun, int *ni, int *nj, int *nk, int datev,char *in_etiket,
         #             int ip1, int ip2, int ip3, char *in_typvar, char *in_nomvar)
 
         key = self._dll.fstinf_wrapper(self._file_unit, byref(ni), byref(nj), byref(nk), datev, etiket,
@@ -530,7 +530,7 @@ class RPN():
         """
         self._get_record_info(record_key)
 
-        #print self._current_info[self.VARNAME_KEY].value
+        # print self._current_info[self.VARNAME_KEY].value
         the_type = self._get_current_data_type()
         #print the_type
         ni, nj, nk = self._current_info["shape"]
@@ -607,7 +607,7 @@ class RPN():
             raise Exception("Trying to get coordinates for coordinate records, this operation is only "
                             "possible for data records. Please read in some data field first")
 
-        #Make sure the internal info is not modified by the extraction of coordinates
+        # Make sure the internal info is not modified by the extraction of coordinates
         _info_backup = copy.deepcopy(self._current_info)
 
         ig = self._current_info['ig']
@@ -615,7 +615,7 @@ class RPN():
         grid_type = self._current_info[self.GRID_TYPE]
         ni, nj, nk = map(lambda x: x.value, self._current_info["shape"])
 
-        #B grid type
+        # B grid type
         if grid_type.value.strip().upper() == "B":
             lon_min = 0.0
             dlon = 360.0 / float(ni - 1)
@@ -625,7 +625,7 @@ class RPN():
                 dlat = 90.0 / float(nj - 1)
 
             lons = [lon_min + dlon * i for i in range(ni)]
-            #lons[-1] = lon_min + 360
+            # lons[-1] = lon_min + 360
             if ig[1].value == 0:  # South -> North (pt (1,1) is at the bottom of the grid)
                 if ig[0].value == 1:
                     lat_min = 0.0
@@ -645,7 +645,7 @@ class RPN():
                 lats2d, lons2d = np.meshgrid(lats, lons)
             return lons2d, lats2d
 
-        #L  grid type
+        # L  grid type
         if grid_type.value.strip().upper() == "L":
             ll_lat = c_float(-1)
             ll_lon = c_float(-1)
@@ -737,7 +737,7 @@ class RPN():
         #print "lon params = ", lons_2d.shape, np.min(lons_2d), np.max(lons_2d)
         return np.transpose(lons_2d), np.transpose(lats_2d)
 
-    #get longitudes for the record
+    # get longitudes for the record
     def get_longitudes_and_latitudes(self):
         """
         get longitudes and latitudes of the fields in the rpn file,
@@ -943,7 +943,8 @@ class RPN():
         elif nbits == 64:
             return np.float64
         elif nbits == 16 or nbits == 24:
-            if data_type in [data_types.compressed_floating_point, data_types.floating_point, data_types.floating_point_16_bit]:
+            if data_type in [data_types.compressed_floating_point, data_types.floating_point,
+                             data_types.floating_point_16_bit]:
                 return np.float32
             return np.float16
         else:
@@ -1286,7 +1287,7 @@ class RPN():
 
 
     def get_time_records_iterator_for_name_and_level(self, varname="STFL", level=-1,
-                                                level_kind=level_kinds.ARBITRARY):
+                                                     level_kind=level_kinds.ARBITRARY):
         """
         Created for retrieving the fields corresponding to
         different times,
@@ -1307,10 +1308,6 @@ class RPN():
             data1 = self.get_next_record()
 
 
-
-
-
-
     def get_current_info(self):
         """
         return current info of just read record
@@ -1328,7 +1325,7 @@ class RPN():
 
 
 def test():
-    #path = 'data/geophys_africa'
+    # path = 'data/geophys_africa'
     path = 'data/pm1989010100_00000003p'
     rpnObj = RPN(path)
     precip = rpnObj.get_first_record_for_name("PR")
@@ -1384,7 +1381,7 @@ def test_select_by_date():
 
 
 if __name__ == "__main__":
-    #test_select_by_date()
+    # test_select_by_date()
     #test_dateo()
     #test()
     # test_get_all_records_for_name()
