@@ -514,8 +514,8 @@ class RPN():
         key = self._dll.fstinf_wrapper(self._file_unit, byref(ni), byref(nj), byref(nk), datev, etiket,
                                        ip1, ip2, ip3, in_typvar, in_nomvar)
 
-        #print in_typvar.value
-        #print "key({0}) = {1}".format(varname, key)
+        # print in_typvar.value
+        # print "key({0}) = {1}".format(varname, key)
 
         if key < 0:
             raise Exception(
@@ -1013,27 +1013,27 @@ class RPN():
         if not self._current_info is None:
             try:
 
-                #extra can contain the validity date
+                # extra can contain the validity date
                 extra1 = self._current_info["extra1"].value
                 if extra1 > 0:
                     date_s = self._dateo_to_string(extra1)
                     return datetime.strptime(date_s, self._dateo_format)
 
-                forecastHour = self.get_current_validity_date()
-                assert forecastHour >= 0
+                forecast_hour = self.get_current_validity_date()
+                assert forecast_hour >= 0
 
                 if not hasattr(self, "dateo_fallback"):
                     self.dateo_fallback = self._current_info["dateo"]
 
-                d = self._current_info["dateo"] + timedelta(hours=forecastHour)
-                print d, forecastHour, self._current_info["dateo"]
+                d = self._current_info["dateo"] + timedelta(hours=forecast_hour)
+                print d, forecast_hour, self._current_info["dateo"]
 
                 if d < self.dateo_fallback:
                     print "sim date appears to be earlier than the start date"
                     print "falling back to the previous date of origin"
                     print self._current_info["dt_seconds"].value / 60.0 / 60.0
                     print self.dateo_fallback, self._current_info["dateo"]
-                    print forecastHour
+                    print forecast_hour
                     raise Exception()
 
                 return d

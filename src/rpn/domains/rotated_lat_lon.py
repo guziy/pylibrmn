@@ -39,8 +39,7 @@ class RotatedLatLon():
         self.rot_matrix = np.matrix([row0, row1, row2])
         assert isinstance(self.rot_matrix, np.matrix)
 
-
-    def write_coords_to_rpn(self, rpnObj, x, y):
+    def write_coords_to_rpn(self, rpn_obj, x, y):
         """
         x, y - 1d coordinates in rotated system
         """
@@ -49,17 +48,16 @@ class RotatedLatLon():
         y = np.array(y)
         y.shape = (1, len(y))
 
-        rpnObj.write_2D_field(name="^^", grid_type="E", data=y, typ_var="X", level=0, ip=range(100, 103),
-                              lon1=self.lon1, lat1=self.lat1, lon2=self.lon2, lat2=self.lat2, label="")
+        rpn_obj.write_2D_field(name="^^", grid_type="E", data=y, typ_var="X", level=0, ip=range(100, 103),
+                               lon1=self.lon1, lat1=self.lat1, lon2=self.lon2, lat2=self.lat2, label="")
 
-        rpnObj.write_2D_field(name=">>", grid_type="E", data=x, typ_var="X", level=0, ip=range(100, 103),
-                              lon1=self.lon1, lat1=self.lat1, lon2=self.lon2, lat2=self.lat2, label="")
+        rpn_obj.write_2D_field(name=">>", grid_type="E", data=x, typ_var="X", level=0, ip=range(100, 103),
+                               lon1=self.lon1, lat1=self.lat1, lon2=self.lon2, lat2=self.lat2, label="")
 
-        info = rpnObj.get_current_info
-        ip_xy = map(lambda x: x.value, info["ip"])
+        info = rpn_obj.get_current_info
+        ip_xy = map(lambda val: val.value, info["ip"])
         ig = ip_xy + [0]
         return ig
-
 
     def toProjectionXY(self, lon, lat):
         """
@@ -69,7 +67,6 @@ class RotatedLatLon():
         p = lat_lon.lon_lat_to_cartesian(lon, lat, R=1)
         p = self.rot_matrix * np.mat(p).T
         return lat_lon.cartesian_to_lon_lat(p.A1)
-
 
     def toGeographicLonLat(self, x, y):
         """
