@@ -41,7 +41,7 @@ if not os.path.isfile(os.path.join(build_dir, native_lib_filename)):
             shutil.copyfile(native_lib_filename, os.path.join(
                 spack_dir, native_lib_filename
             ))
-            print("Coppied {} to {}. You will have to remove it manually when uninstalling".format(
+            print("Copied {} to {}. You will have to remove it manually when uninstalling".format(
                 native_lib_filename, spack_dir))
         except IOError as e:
             print("Could not copy {} to {}, will save it in your home directory,"
