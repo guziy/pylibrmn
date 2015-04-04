@@ -14,7 +14,7 @@ def test_nbits24():
     r = RPN(path=path)
     data = r.get_first_record_for_name_and_level(varname="VF", level=2)
 
-    print data.shape, data.max(), data.min(), data.mean(), data.var()
+    print(data.shape, data.max(), data.min(), data.mean(), data.var())
     ok_(data.max() <= 1)
 
     proc = subprocess.Popen(["r.diag", "ggstat", path], stdout=subprocess.PIPE)

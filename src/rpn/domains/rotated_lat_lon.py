@@ -9,22 +9,26 @@ import numpy as np
 class RotatedLatLon():
     def __init__(self, lon1=180.0, lat1=0.0, lon2=180.0, lat2=0.0, **kwargs):
         """
-        Basis vactors of the rotated coordinate system in the original coord system
+        Basis vectors of the rotated coordinate system in the original coord system
         e1 = -p1/|p1|                   =>   row0
         e2 = -( p2 - (p1, p2) * p1) / |p2 - (p1, p2) * p1| #perpendicular to e1, and lies in
         the plane parallel to the plane (p1^p2)  => row1
         e3 = [p1,p2] / |[p1, p2]| , perpendicular to the plane (p1^p2)          => row2
         """
 
+        print(kwargs)
+
         self.lon1 = lon1
         self.lon2 = lon2
         self.lat1 = lat1
         self.lat2 = lat2
 
+        print(lon1, lat1, lon2, lat2)
+
         self.mean_earth_radius_m_crcm5 = 0.637122e7  # mean earth radius used in the CRCM5 model for area calculation
 
-        p1 = lat_lon.lon_lat_to_cartesian(lon1, lat1, R=1.0)
-        p2 = lat_lon.lon_lat_to_cartesian(lon2, lat2, R=1.0)
+        p1 = lat_lon.lon_lat_to_cartesian(lon1, lat1, r_earth=1.0)
+        p2 = lat_lon.lon_lat_to_cartesian(lon2, lat2, r_earth=1.0)
 
         p1 = np.array(p1)
         p2 = np.array(p2)
@@ -64,7 +68,7 @@ class RotatedLatLon():
         Convert geographic lon/lat coordinates to the rotated lat lon coordinates
         """
 
-        p = lat_lon.lon_lat_to_cartesian(lon, lat, R=1)
+        p = lat_lon.lon_lat_to_cartesian(lon, lat, r_earth=1)
         p = self.rot_matrix * np.mat(p).T
         return lat_lon.cartesian_to_lon_lat(p.A1)
 
@@ -72,10 +76,9 @@ class RotatedLatLon():
         """
         convert geographic lat / lon to rotated coordinates
         """
-        p = lat_lon.lon_lat_to_cartesian(x, y, R=1)
+        p = lat_lon.lon_lat_to_cartesian(x, y, r_earth=1)
         p = self.rot_matrix.T * np.mat(p).T
         return lat_lon.cartesian_to_lon_lat(p.A1)
-
 
     def get_areas_of_gridcells(self, dlon, dlat, nx, ny, latref, jref):
         """
@@ -94,12 +97,10 @@ class RotatedLatLon():
 
         return self.mean_earth_radius_m_crcm5 ** 2 * np.cos(lats2d) * dx * dy
 
-
     def get_south_pol_coords(self):
         rot_pole = self.rot_matrix * np.mat([0, 0, -1]).T
         return lat_lon.cartesian_to_lon_lat(rot_pole.A1)
         pass
-
 
     def get_north_pole_coords(self):
         """
@@ -107,7 +108,6 @@ class RotatedLatLon():
         """
         rot_pole = self.rot_matrix * np.mat([0, 0, 1]).T
         return lat_lon.cartesian_to_lon_lat(rot_pole.A1)
-
 
     def get_true_pole_coords_in_rotated_system(self):
         """
@@ -136,12 +136,11 @@ class RotatedLatLon():
 
 def main():
     rll = RotatedLatLon(lon1=-68, lat1=52, lon2=16.65, lat2=0.0)
-    print rll.rot_matrix
+    print(rll.rot_matrix)
 
     prj = rll.toProjectionXY(0, 0)
-    print prj
-    print rll.toGeographicLonLat(prj[0], prj[1])
-
+    print(prj)
+    print(rll.toGeographicLonLat(prj[0], prj[1]))
 
     # TODO: implement
     pass
@@ -149,5 +148,5 @@ def main():
 
 if __name__ == "__main__":
     main()
-    print "Hello world"
+    print("Hello world")
 

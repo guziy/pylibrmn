@@ -1,5 +1,5 @@
-__author__="huziy"
-__date__ ="$Aug 19, 2011 3:27:17 PM$"
+__author__ = "huziy"
+__date__ = "$Aug 19, 2011 3:27:17 PM$"
 
 binary_transparent = 0
 floating_point = 1
@@ -14,6 +14,5 @@ compressed_short_integer = 130
 compressed_IEEE = 133
 compressed_floating_point = 134
 
-
 if __name__ == "__main__":
-    print "Hello World"
+    print("Hello World")

@@ -7,7 +7,7 @@ SOUTHERN_HEM = 2
 NORTHERN_HEM = 1
 
 
-def get_longitudes_and_latitudes_2d_for_ps_grid(pole_i, pole_j, d60, dgrw, ni, nj, hemisphere = NORTHERN_HEM):
+def get_longitudes_and_latitudes_2d_for_ps_grid(pole_i, pole_j, d60, dgrw, ni, nj, hemisphere=NORTHERN_HEM):
     """
     These grids are defined by the parameters PI, PJ, D60 and DGRW.
     pole_i (starting with 1): Horizontal position of the pole, in grid points, from bottom left corner (1,1).
@@ -21,7 +21,7 @@ def get_longitudes_and_latitudes_2d_for_ps_grid(pole_i, pole_j, d60, dgrw, ni, n
     _pole_i = pole_i - 1  # use 0-based indicies
     _pole_j = pole_j - 1
 
-    #coordinates of the lower left corner of the grid(center of thta gridcell actually)
+    # coordinates of the lower left corner of the grid(center of thta gridcell actually)
     x0 = -_pole_i * d60
     y0 = -_pole_j * d60
 
@@ -72,8 +72,8 @@ def psxy2latlon(x, y, xaxis, xhem=NORTHERN_HEM):
         ##        if lon < 0:
         ##           lon = lon + 360;
         R2 = pow(x, 2) + pow(y, 2)  # /*Latitude*/
-        ADLAT = (RE2 - R2) / (RE2 + R2)     # /*Latitude*/
-        lat = np.degrees(asin(ADLAT))   # /*Latitude*/
+        ADLAT = (RE2 - R2) / (RE2 + R2)  # /*Latitude*/
+        lat = np.degrees(asin(ADLAT))  # /*Latitude*/
 
     if xhem == SOUTHERN_HEM:
         lat = -lat

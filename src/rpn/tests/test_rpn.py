@@ -88,8 +88,8 @@ class TestRpn(RPN):
         data = self.get_first_record_for_name(self.default_var_name)
         proc = subprocess.Popen(["r.diag", "ggstat", self.path], stdout=subprocess.PIPE)
         (out, err) = proc.communicate()
-        lines = out.split("\n")
-        lines = filter(lambda line: ("I5" in line), lines)
+        lines = out.decode().split("\n")
+        lines = list(filter(lambda line: ("I5" in line), lines))
 
         fields = lines[0].split()
 
@@ -135,9 +135,9 @@ class TestRpn(RPN):
         """
         the_names = self.get_list_of_varnames()
         # I know that the current test file should contain the following
-        ok_("I5" in the_names)
-        ok_(">>" in the_names)
-        ok_("^^" in the_names)
+        ok_("I5" in the_names, "Expected to find I5 variable in {}".format(self.path))
+        ok_(">>" in the_names, "Expected to find >> variable in {}".format(self.path))
+        ok_("^^" in the_names, "Expected to find ^^ variable in {}".format(self.path))
 
     def test_get_grid_parameters_for_the_last_read_rec(self):
         """
@@ -171,7 +171,8 @@ class TestRpn(RPN):
         """
         self.get_first_record_for_name(self.default_var_name)
         info = self.get_proj_parameters_for_the_last_read_rec()
-        ok_(info["grid_type"] == "E", msg="Expected {0} but got {1} instead".format("E", info["grid_type"]))
+        ok_(info["grid_type"] == "E",
+            msg="Expected {0} but got {1} instead".format("E".encode(), info["grid_type"]))
 
     def test_get_4d_field(self):
         """
@@ -179,8 +180,8 @@ class TestRpn(RPN):
         """
         data = self.get_4d_field(self.default_var_name)
         ntimes = len(data)
-        print data, len(data), ntimes
-        nlevs = len(data.items()[0][1])
+        print(data, len(data), ntimes)
+        nlevs = len([v for k, v in data.items()][0])
         msg = "The test file should contain {2} on 1 level at 1 timestep, not nlevs={0} and ntimes={1}"
         ok_(ntimes == 1 and nlevs == 1,
             msg=msg.format(nlevs, ntimes, self.default_var_name))
@@ -197,7 +198,7 @@ def test_get_records_for_foreacst_hour():
     r_obj = RPN(in_path)
     n_records = r_obj.get_number_of_records()
 
-    print n_records
+    print(n_records)
 
     res = r_obj.get_records_for_foreacst_hour(var_name="I5", forecast_hour=108072)
     ok_(len(res) == 1, msg="SWE has only one vertical level ..., not {0} ".format(len(res)))
@@ -238,7 +239,7 @@ def test_polar_stereographic():
 
 
 def teardown():
-    print "tearing down the test suite"
+    print("tearing down the test suite")
 
 
 if __name__ == "__main__":

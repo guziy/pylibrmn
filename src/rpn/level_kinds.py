@@ -1,7 +1,7 @@
-__author__="huziy"
-__date__ ="$Apr 7, 2011 3:29:35 PM$"
+__author__ = "huziy"
+__date__ = "$Apr 7, 2011 3:29:35 PM$"
 
-#              KIND =0, p est en hauteur (m) par rapport au niveau de la mer (-20,000 -> 100,000)
+# KIND =0, p est en hauteur (m) par rapport au niveau de la mer (-20,000 -> 100,000)
 #               KIND =1, p est en sigma                                       (0.0 -> 1.0)
 #               KIND =2, p est en pression (mb)                               (0 -> 1100)
 #               KIND =3, p est un code arbitraire                             (-4.8e8 -> 10e10)
@@ -26,7 +26,5 @@ RESERVED = 15
 METERS_AND_PRESSURE = 21
 KIND_17 = 17
 
-
-
 if __name__ == "__main__":
-    print "Hello World"
+    print("Hello World")

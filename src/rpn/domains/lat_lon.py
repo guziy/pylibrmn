@@ -8,12 +8,13 @@ import numpy as np
 
 EARTH_RADIUS_METERS = 0.637122e7  # mean earth radius used in the CRCM5 model for area calculation
 
-#longitude and latitude are in radians
+
+# longitude and latitude are in radians
 def get_nvector(rad_lon, rad_lat):
     return [np.cos(rad_lat) * np.cos(rad_lon), np.cos(rad_lat) * np.sin(rad_lon), np.sin(rad_lat)]
 
 
-#p1 and p2 are geopoint objects
+# p1 and p2 are geopoint objects
 def get_distance_in_meters(*arg):
     """
     arg = point1, point2
@@ -39,7 +40,7 @@ def get_angle_between_vectors(n1, n2):
     return atan2(dy, dx)
 
 
-def lon_lat_to_cartesian(lon, lat, R=EARTH_RADIUS_METERS):
+def lon_lat_to_cartesian(lon, lat, r_earth=EARTH_RADIUS_METERS):
     """
     calculates x,y,z coordinates of a point on a sphere with
     radius R = EARTH_RADIUS_METERS
@@ -47,9 +48,9 @@ def lon_lat_to_cartesian(lon, lat, R=EARTH_RADIUS_METERS):
     lon_r = np.radians(lon)
     lat_r = np.radians(lat)
 
-    x = R * np.cos(lat_r) * np.cos(lon_r)
-    y = R * np.cos(lat_r) * np.sin(lon_r)
-    z = R * np.sin(lat_r)
+    x = r_earth * np.cos(lat_r) * np.cos(lon_r)
+    y = r_earth * np.cos(lat_r) * np.sin(lon_r)
+    z = r_earth * np.sin(lat_r)
     return x, y, z
 
 
@@ -66,11 +67,11 @@ def cartesian_to_lon_lat(x):
     return lon, lat
 
 
-#nvectors.shape = (3, nx, ny)
+# nvectors.shape = (3, nx, ny)
 def get_coefs_between(nvectors1, nvectors2):
     return np.array([1.0 / (get_angle_between_vectors(v1, v2) * EARTH_RADIUS_METERS ) ** 2.0 for v1, v2 in
                      zip(nvectors1, nvectors2)])
 
 
 if __name__ == "__main__":
-    print "Hello World"
+    print("Hello World")

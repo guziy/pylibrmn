@@ -32,7 +32,7 @@ def test_copy_records():
         n_out += 1
         info = r.get_current_info()
         varname = info[RPN.VARNAME_KEY].strip()
-        print varname
+        print(varname)
         if varname not in [">>", "^^"]:
             for i in range(10):
                 r_out.write_2d_field_clean(data, properties=dict(name="X{0}".format(i), ip=info["ip"], ig=info["ig"]))
@@ -47,7 +47,7 @@ def test_copy_records():
 
     r = RPN(temp_file)
     r.get_next_record()
-    print r.get_current_info()
+    print(r.get_current_info())
     r.get_longitudes_and_latitudes_for_the_last_read_rec()
     data = r.get_next_record()
     ok_(data is None)  # Should be None if there is only one coordinate record in the file

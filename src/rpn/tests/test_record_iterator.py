@@ -19,14 +19,14 @@ def test_get_time_records_iterator_for_name_and_level(path=None):
     path = in_path if path is None else path
 
     if not os.path.isfile(path):
-        print "{} does not exist, so not performing tests with it."
+        print("{} does not exist, so not performing tests with it.".format(path))
         return 0
 
     r = RPN(path)
     for d, f in r.get_time_records_iterator_for_name_and_level(varname="PR"):
-        print d, f.mean()
+        print(d, f.mean())
 
-    print r.get_current_info()
+    print(r.get_current_info())
     r.close()
 
 

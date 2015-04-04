@@ -16,7 +16,7 @@ def test_read_ts_file():
 
     r = RPN(in_path)
     pr = r.get_first_record_for_name("PR")
-    print pr.shape, pr.min(), pr.max(), pr.mean(), pr.std()
+    print(pr.shape, pr.min(), pr.max(), pr.mean(), pr.std())
 
     r.close()
 
