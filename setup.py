@@ -3,7 +3,6 @@ from distutils.core import setup
 import shutil
 
 
-
 armnlib = "ARMNLIB"
 armnlib_path = ""
 
@@ -17,38 +16,37 @@ build_dir = os.path.dirname(os.path.realpath(__file__))
 if not os.path.isfile(os.path.join(build_dir, native_lib_filename)):
     os.chdir(build_dir)
 
-    print os.getcwd()
+    print(os.getcwd())
 
-
-    # #build native library using the Makefile
+    # build native library using the Makefile
     import subprocess
 
     subprocess.call(["make"])
     if os.path.isfile(native_lib_filename):
-        print "The '{0}' was created. Now you need to add '{1}' to LD_LIBRARY_PATH variable, or put the compiled file" \
-              "into one of the folders from the list in your current LD_LIBRARY_PATH" \
-              "".format(native_lib_filename, os.getcwd())
-        print "The list of folders in your current LD_LIBRARY_PATH: "
-        print "--" * 10 + "- Start ----------"
+        print("The '{0}' was created. Now you need to add '{1}' to LD_LIBRARY_PATH variable, or put the compiled file "
+              "into one of the folders from the list in your current LD_LIBRARY_PATH "
+              "".format(native_lib_filename, os.getcwd()))
+        print("The list of folders in your current LD_LIBRARY_PATH: ")
+        print("--" * 10 + "- Start ----------")
         for fi in os.environ["LD_LIBRARY_PATH"].split(":"):
-            print fi
-        print "--" * 10 + "- End   ----------"
+            print(fi)
+        print("--" * 10 + "- End   ----------")
 
-        #copy the library to site-packages
+        # copy the library to site-packages
         import distutils.sysconfig
 
         spack_dir = distutils.sysconfig.get_python_lib()
-        
+
         try:
             shutil.copyfile(native_lib_filename, os.path.join(
                 spack_dir, native_lib_filename
             ))
-            print "Coppied {} to {}. You will have to remove it manually when uninstalling".format(
-                native_lib_filename, spack_dir)
-        except IOError, e:
-            print "Could not copy {} to {}, will save it in your home directory," \
+            print("Coppied {} to {}. You will have to remove it manually when uninstalling".format(
+                native_lib_filename, spack_dir))
+        except IOError as e:
+            print("Could not copy {} to {}, will save it in your home directory,"
                   " please, move it to where dynamic libraries are searched".format(
-                  native_lib_filename, spack_dir, os.path.expanduser("~"))
+                native_lib_filename, spack_dir, os.path.expanduser("~")))
             shutil.copyfile(native_lib_filename, os.path.join(os.path.expanduser("~"), native_lib_filename))
     else:
         raise Exception("Failed to build '{0}'".format(native_lib_filename))
@@ -56,8 +54,8 @@ if not os.path.isfile(os.path.join(build_dir, native_lib_filename)):
 
 # raise Exception("ARMNLIB variable is not defined")
 
-#module_wrap = Extension(
-#    "rpn.libpyrmn",
+# module_wrap = Extension(
+# "rpn.libpyrmn",
 #    include_dirs=includes,
 #    libraries=libraries,
 #    library_dirs=library_dirs,
@@ -72,7 +70,7 @@ setup(
     name='pylibrmn',
     version='0.0.6',
     packages=['rpn', 'rpn.util', 'rpn.domains', 'rpn.tests', 'rpn_use_examples'],
-    #packages=find_packages("."),
+    # packages=find_packages("."),
     package_dir={'': 'src'},
     package_data={'rpn.tests': ['data/*', ], },
     license='GPL',
@@ -80,11 +78,11 @@ setup(
     author_email='guziy.sasha@gmail.com',
     description='Package for reading and writing RPN files', requires=['numpy', 'nose'],
     long_description=long_description,
-    classifiers=['Programming Language :: Python :: 2.6',
-                 'Programming Language :: Python :: 2.7'],
+    classifiers=['Programming Language :: Python :: 2.7',
+                 'Programming Language :: Python :: 3.4', ],
     keywords="RPN, standard files",
     url="https://github.com/guziy/pylibrmn"
-    #package_data={'': ['libpyrmn.so']}
-    #ext_modules=[module_wrap]
+    # package_data={'': ['libpyrmn.so']}
+    # ext_modules=[module_wrap]
     # well, it is not ready yet for pgi so the extension should be installed separately
 )
