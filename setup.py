@@ -64,7 +64,7 @@ if not os.path.isfile(os.path.join(build_dir, native_lib_filename)):
 
 long_description = """
 Requires ssm environment and shared version of the fortran version of rmnlib. Works only on linux..
-Written for python 2.7.x and not compatible with python3 yet.  
+Written for python 2.7.x and python 3.4.
 """
 setup(
     name='pylibrmn',
