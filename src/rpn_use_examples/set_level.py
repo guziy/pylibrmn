@@ -65,7 +65,7 @@ def main():
         conv_coef = 1
         # print "record ip: {0}".format(ips[0])
         if the_var_name == varname and ips[0] == oldLevelIp:
-            #since CRCM expects snow depth in cm
+            # since CRCM expects snow depth in cm
             ips[0] = newLevelIp
             print(ips)
             pass
@@ -85,7 +85,7 @@ def main():
             nbits = -nbits
         print(the_var_name, conv_coef)
 
-        if the_var_name == "SD" and ips[0] == ipOfLevel1:  #get snowdepth only for soil
+        if the_var_name == "SD" and ips[0] == ipOfLevel1:  # get snowdepth only for soil
             saved_vars[the_var_name] = data
         elif the_var_name == "DN":
             saved_vars[the_var_name] = data
@@ -98,13 +98,11 @@ def main():
                                ig=[x.value for x in info["ig"]],
                                npas=npas, deet=deet, label="IC, lake infl. exp.", dateo=dateo,
                                grid_type=info["grid_type"].value, typ_var=info["var_type"].value,
-                               nbits=nbits, data_type=data_type
-        )
+                               nbits=nbits, data_type=data_type)
 
         print(info["varname"], "->", nbits)
 
-
-        #calculate and write swe to the file
+        # calculate and write swe to the file
         if saved_vars is not None and len(saved_vars) == 3:
             print("calculating swe")
             ips = saved_info["ip"]

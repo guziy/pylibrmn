@@ -508,7 +508,6 @@ class RPN():
         in_nomvar = self.VARNAME_DEFAULT
         in_nomvar = varname + in_nomvar
         in_nomvar = in_nomvar[:8]
-        print(in_nomvar)
         in_nomvar = create_string_buffer(in_nomvar.encode())
 
         # int fstinf_wrapper(int iun, int *ni, int *nj, int *nk, int datev,char *in_etiket,
@@ -518,7 +517,7 @@ class RPN():
                                        ip1, ip2, ip3, in_typvar, in_nomvar)
 
         # print in_typvar.value
-        print("key({0}) = {1}".format(in_nomvar.value, key))
+        # print("key({0}) = {1}".format(in_nomvar.value, key))
 
         if key < 0:
             raise Exception(
