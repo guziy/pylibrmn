@@ -331,7 +331,6 @@ class RPN(object):
 
         """
         funits = [self.file_unit, ] + [f.file_unit for f in other_rfile_objects]
-        print(funits)
         n_funits = c_int(len(funits))
         funits = np.array(funits, dtype=np.int)
 
