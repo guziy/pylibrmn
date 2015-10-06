@@ -1,24 +1,22 @@
-# The nex line is required so the imports work in py2.7 unchanged as in py3.4
+# The next line is required so the imports work in py2.7 unchanged as in py3.4
 from __future__ import absolute_import
 from rpn import data_types
+from ctypes import *
+import ctypes
+import numpy as np
+import os
+from rpn import level_kinds
+from datetime import datetime
+from datetime import timedelta
+import copy
+import logging
 
 
 __author__ = "huziy"
 __date__ = "$Apr 5, 2011 12:26:05 PM$"
 
-from ctypes import *
-import numpy as np
 
-import os
-
-from rpn import level_kinds
-
-from datetime import datetime
-from datetime import timedelta
-import copy
-
-
-class RPN():
+class RPN(object):
     """
     Class for reading and writing rpn files
     usage:
@@ -78,6 +76,7 @@ class RPN():
 
         self.current_grid_type = self.GRIDTYPE_DEFAULT
         self.current_grid_reference = b'E'
+        self.linked_files = []
 
         rpn_file_path = create_string_buffer(path.encode())
         if mode == 'w':
@@ -123,19 +122,19 @@ class RPN():
         self._dll.fstfrm_wrapper.restype = c_int
         self._dll.fstfrm_wrapper.argtypes = [c_int]
 
-        #fclos
+        # fclos
         self._dll.fclos_wrapper.restype = c_int
         self._dll.fclos_wrapper.argtypes = [c_int]
 
-        #fstsui
+        # fstsui
         self._dll.fstsui_wrapper.restype = c_int
         self._dll.fstsui_wrapper.argtypes = [c_int, POINTER(c_int), POINTER(c_int), POINTER(c_int)]
 
-        #convip
+        # convip
         p_c_int = POINTER(c_int)
         self._dll.convip_wrapper.argtypes = [p_c_int, POINTER(c_float), p_c_int, p_c_int, c_char_p, p_c_int]
 
-        #fstecr
+        # fstecr
         self._dll.fstecr_wrapper.argtypes = [
             POINTER(c_float),
             c_int, c_int, c_int, c_int, c_int, c_int, c_int, c_int, c_int,
@@ -144,14 +143,14 @@ class RPN():
             c_int, c_int, c_int, c_int, c_int, c_int
         ]
 
-        #cxgaig
+        # cxgaig
         self._dll.cig_to_xg_wrapper.argtypes = [
             c_char_p,
             POINTER(c_float), POINTER(c_float), POINTER(c_float), POINTER(c_float),
             POINTER(c_int), POINTER(c_int), POINTER(c_int), POINTER(c_int)
         ]
 
-        #cigaxg
+        # cigaxg
         self._dll.cxg_to_ig_wrapper.argtypes = [
             c_char_p,
             POINTER(c_int), POINTER(c_int), POINTER(c_int), POINTER(c_int),
@@ -173,8 +172,7 @@ class RPN():
 
         self._dll.fstprm_wrapper.restype = c_int
 
-
-        #newdate
+        # newdate
         #        *
         #        *AUTHOR   - E. BEAUCHESNE  -  JUN 96
         #        *
@@ -298,19 +296,55 @@ class RPN():
 
         self._dateo_format = "%Y%m%d%H%M%S"
 
-        #fstopc
+        # fstopc
         self._dll.fstopc_wrapper.argtypes = [
             c_char_p, c_char_p, c_int
         ]
 
         self._dll.fstopc_wrapper.restype = c_int
 
+        # fstlnk
+        self._dll.fstlnk_wrapper.argtypes = [POINTER(c_int), POINTER(c_int)]
+        self._dll.fstlnk_wrapper.restype = c_int
 
-        #Disable log messages
+        # fstunl
+        self._dll.fstunl_wrapper.argtypes = [p_c_int, p_c_int]
+        self._dll.fstunl_wrapper.restype = c_int
+
+        # Disable log messages
         if not self.log_messages_disabled and not print_log_messages:
             self.suppress_log_messages()
             self.log_messages_disabled = True
 
+    @property
+    def file_unit(self):
+        return self._file_unit.value
+
+    @file_unit.setter
+    def file_unit(self, value):
+        raise AttributeError("File unit cannot be set")
+
+    def link(self, other_rfile_objects):
+        """
+        link the file with others for reading
+        :param other_rfile_objects:
+
+        """
+        funits = [self.file_unit, ] + [f.file_unit for f in other_rfile_objects]
+        print(funits)
+        n_funits = c_int(len(funits))
+        funits = np.array(funits, dtype=np.int)
+
+        self._dll.fstlnk_wrapper(funits.ctypes.data_as(POINTER(c_int)), byref(n_funits))
+        self.linked_files.extend(other_rfile_objects)
+
+    def unlink(self):
+        """
+        Unlink the set of linked files
+        """
+        funits = np.array([self.file_unit] + [f.file_unit for f in self.linked_files], dtype=np.int)
+        self._dll.fstunl_wrapper(funits.ctypes.data_as(POINTER(c_int)), byref(c_int(len(funits))))
+        self.linked_files.clear()
 
     def _dateo_to_string(self, dateo_int):
         """
@@ -335,7 +369,6 @@ class RPN():
         dateo_int = c_int()
         self._dll.newdate_wrapper(byref(dateo_int), byref(res_date), byref(res_time), byref(mode))
         return dateo_int.value
-
 
     def get_record_for_date_and_level(self, var_name="", date=None, date_o=None, level=-1,
                                       level_kind=level_kinds.ARBITRARY):
@@ -366,7 +399,7 @@ class RPN():
 
         in_nomvar = create_string_buffer(var_name)
 
-        key = self._dll.fstinf_wrapper(self._file_unit, byref(ni), byref(nj), byref(nk), c_int(-1), etiket,
+        key = self._dll.fstinf_wrapper(self.file_unit, byref(ni), byref(nj), byref(nk), c_int(-1), etiket,
                                        ip1, ip2, ip3, in_typvar, in_nomvar)
 
         if key < 0:
@@ -394,7 +427,7 @@ class RPN():
         in_typvar = create_string_buffer(self.VARTYPE_DEFAULT.encode())
         in_nomvar = create_string_buffer(var_name.encode())
         res = {}
-        key = self._dll.fstinf_wrapper(self._file_unit, byref(ni), byref(nj), byref(nk), c_int(-1), etiket,
+        key = self._dll.fstinf_wrapper(self.file_unit, byref(ni), byref(nj), byref(nk), c_int(-1), etiket,
                                        ip1, ip2, ip3, in_typvar, in_nomvar)
 
         while key >= 0:
@@ -408,7 +441,7 @@ class RPN():
                 break
 
             res[lev] = data
-            key = self._dll.fstsui_wrapper(self._file_unit, byref(ni), byref(nj), byref(nk))
+            key = self._dll.fstsui_wrapper(self.file_unit, byref(ni), byref(nj), byref(nk))
         return res
 
     def get_output_step_in_seconds(self):
@@ -429,7 +462,7 @@ class RPN():
         etiket = create_string_buffer(self.ETIKET_DEFAULT.encode())
         in_typvar = create_string_buffer(self.VARTYPE_DEFAULT.encode())
         in_nomvar = create_string_buffer(self.VARNAME_DEFAULT.encode())
-        key = self._dll.fstinf_wrapper(self._file_unit, byref(ni), byref(nj), byref(nk), c_int(-1), etiket,
+        key = self._dll.fstinf_wrapper(self.file_unit, byref(ni), byref(nj), byref(nk), c_int(-1), etiket,
                                        ip1, ip2, ip3, in_typvar, in_nomvar)
 
         names = []
@@ -438,7 +471,7 @@ class RPN():
             # lev = self.get_current_level(level_kind=level_kind)
             # res[lev] = data
             names.append(self._get_record_info(key)[self.VARNAME_KEY].value.strip().decode())
-            key = self._dll.fstsui_wrapper(self._file_unit, byref(ni), byref(nj), byref(nk))
+            key = self._dll.fstsui_wrapper(self.file_unit, byref(ni), byref(nj), byref(nk))
 
         return np.unique(names)
 
@@ -446,15 +479,23 @@ class RPN():
         self._dll.fstopc_wrapper("MSGLVL".encode(), "SYSTEM".encode(), 0)
 
     def close(self):
-        self._dll.fstfrm_wrapper(self._file_unit)
-        self._dll.fclos_wrapper(self._file_unit)
+        """
+        Close the file connection and cleanup
+        """
+        if len(self.linked_files) > 0:
+            logging.getLogger(__name__).warn("You are closing a file which is linked with others, unlinking ..")
+            self.unlink()
+
+        self._dll.fstfrm_wrapper(self.file_unit)
+        self._dll.fclos_wrapper(self.file_unit)
+        self._file_unit = -99999
         del self._dll
 
     def get_number_of_records(self):
         """
         returns number of records inside the rpn file
         """
-        return self._dll.fstnbr_wrapper(self._file_unit)
+        return self._dll.fstnbr_wrapper(self.file_unit)
 
     def get_key_of_any_record(self):
         """
@@ -476,7 +517,7 @@ class RPN():
         # int fstinf_wrapper(int iun, int *ni, int *nj, int *nk, int datev,char *in_etiket,
         # int ip1, int ip2, int ip3, char *in_typvar, char *in_nomvar)
 
-        key = self._dll.fstinf_wrapper(self._file_unit, byref(ni), byref(nj), byref(nk), datev, etiket,
+        key = self._dll.fstinf_wrapper(self.file_unit, byref(ni), byref(nj), byref(nk), datev, etiket,
                                        ip1, ip2, ip3, in_typvar, in_nomvar)
 
         if key < 0:
@@ -513,7 +554,7 @@ class RPN():
         # int fstinf_wrapper(int iun, int *ni, int *nj, int *nk, int datev,char *in_etiket,
         # int ip1, int ip2, int ip3, char *in_typvar, char *in_nomvar)
 
-        key = self._dll.fstinf_wrapper(self._file_unit, byref(ni), byref(nj), byref(nk), datev, etiket,
+        key = self._dll.fstinf_wrapper(self.file_unit, byref(ni), byref(nj), byref(nk), datev, etiket,
                                        ip1, ip2, ip3, in_typvar, in_nomvar)
 
         # print in_typvar.value
@@ -537,7 +578,6 @@ class RPN():
         # print the_type
         ni, nj, nk = self._current_info["shape"]
         data = np.zeros((nk.value * nj.value * ni.value,), dtype=the_type)
-
 
         # read the record
         self._dll.fstluk_wrapper(data.ctypes.data_as(POINTER(c_float)), record_key, ni, nj, nk)
@@ -574,7 +614,7 @@ class RPN():
         # ips for the coordinate record
         ip1, ip2, ip3 = data_ig[:3]
 
-        key = self._dll.fstinf_wrapper(self._file_unit, byref(ni), byref(nj), byref(nk), datev, etiket,
+        key = self._dll.fstinf_wrapper(self.file_unit, byref(ni), byref(nj), byref(nk), datev, etiket,
                                        ip1, ip2, ip3, in_typvar, in_nomvar)
 
         # _current_info field usually contains the metadata for the last read data record
@@ -706,11 +746,11 @@ class RPN():
 
         in_nomvar = create_string_buffer(">>".encode())
 
-        key_hor = self._dll.fstinf_wrapper(self._file_unit, byref(ni), byref(nj), byref(nk), datev, etiket,
+        key_hor = self._dll.fstinf_wrapper(self.file_unit, byref(ni), byref(nj), byref(nk), datev, etiket,
                                            ip1, ip2, ip3, in_typvar, in_nomvar)
 
         in_nomvar = create_string_buffer("^^".encode())
-        key_ver = self._dll.fstinf_wrapper(self._file_unit, byref(ni), byref(nj), byref(nk), datev, etiket,
+        key_ver = self._dll.fstinf_wrapper(self.file_unit, byref(ni), byref(nj), byref(nk), datev, etiket,
                                            ip1, ip2, ip3, in_typvar, in_nomvar)
 
         if key_hor < 0 or key_ver < 0:
@@ -774,7 +814,7 @@ class RPN():
         etiket = create_string_buffer(' ')
         in_typvar = create_string_buffer(' ')
 
-        hor_key = self._dll.fstinf_wrapper(self._file_unit, byref(ni), byref(nj), byref(nk),
+        hor_key = self._dll.fstinf_wrapper(self.file_unit, byref(ni), byref(nj), byref(nk),
                                            datev, etiket, ip1, ip2, ip3, in_typvar, in_nomvar)
         # print in_nomvar.value
         # print in_typvar.value
@@ -787,7 +827,7 @@ class RPN():
         # read latitudes
         in_nomvar = '^^'
         in_nomvar = create_string_buffer(in_nomvar[:2])
-        ver_key = self._dll.fstinf_wrapper(self._file_unit, byref(ni), byref(nj), byref(nk),
+        ver_key = self._dll.fstinf_wrapper(self.file_unit, byref(ni), byref(nj), byref(nk),
                                            datev, etiket, ip1, ip2, ip3, in_typvar, in_nomvar)
 
         lats = self._get_data_by_key(ver_key)[0, :, 0]
@@ -969,7 +1009,7 @@ class RPN():
             return self._get_data_by_key(key)[:, :, 0]
 
         [ni, nj, nk] = self._current_info['shape']
-        key = self._dll.fstsui_wrapper(self._file_unit, byref(ni), byref(nj), byref(nk))
+        key = self._dll.fstsui_wrapper(self.file_unit, byref(ni), byref(nj), byref(nk))
 
         if key <= 0:
             return None
@@ -1136,7 +1176,7 @@ class RPN():
                        lon2=None, lat2=None, npas=None, deet=None,
                        data_type=data_types.IEEE_floating_point,
                        nbits=-32
-    ):
+                       ):
         """
         Do not care about grid type just write data to the file
         int fstecr_wrapper(float* field, int bits_per_value, int iun,
@@ -1226,7 +1266,7 @@ class RPN():
         rewrite = c_int(1)
 
         status = self._dll.fstecr_wrapper(theData.ctypes.data_as(POINTER(c_float)),
-                                          nbits_c, self._file_unit, date_c, deet, npas,
+                                          nbits_c, self.file_unit, date_c, deet, npas,
                                           ni, nj, nk,
                                           ip1, ip2, ip3, typvar, nomvar,
                                           etiket, grtyp,
@@ -1247,7 +1287,7 @@ class RPN():
                               "nbits": nbits_c,
                               "grid_type": grtyp,
                               "dateo_rpn_format": dateo
-        }
+                              }
 
     def get_all_time_records_for_name(self, varname="STFL"):
         """
@@ -1291,7 +1331,6 @@ class RPN():
             if data1 is not None:
                 result[self.get_datetime_for_the_last_read_record()] = data1
         return result
-
 
     def get_time_records_iterator_for_name_and_level(self, varname="STFL", level=-1,
                                                      level_kind=level_kinds.ARBITRARY):
@@ -1341,7 +1380,6 @@ def test():
 
     import matplotlib.pyplot as plt
 
-
     plt.imshow(precip.transpose())
     plt.colorbar()
     plt.show()
@@ -1350,7 +1388,7 @@ def test():
     os.system("r.diag ggstat {0}".format(path))
 
     print("Min = {0}, Mean = {1}, Max = {2}, Var = {3}".format(np.min(precip), np.mean(precip), np.max(precip),
-                                                         np.var(precip)))
+                                                               np.var(precip)))
 
     datev = rpnObj.get_current_validity_date()
     print('validity date = ', datev)
@@ -1384,6 +1422,7 @@ def test_select_by_date():
     rObj = RPN(path)
     rObj.suppress_log_messages()
     res = rObj.get_records_for_foreacst_hour(var_name="I5", forecast_hour=0)
+
     rObj.close()
 
     print(res.keys())

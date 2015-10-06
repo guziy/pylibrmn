@@ -1,4 +1,5 @@
 from nose.tools import ok_
+from nose import tools
 import subprocess
 from rpn.rpn import RPN
 import numpy as np
@@ -59,8 +60,13 @@ class TestRpn(RPN):
         Note a new object TestRpn is created for each test
         """
         path = in_path
-        RPN.__init__(self, path=path)
+        super().__init__(path=path)
         self.default_var_name = "I5"
+
+
+    def test_set_file_unit_should_fail(self):
+        tools.assert_raises(Exception, self.file_unit, 10)
+
 
     def test_get_longitudes_and_latitudes_of_the_last_read_record(self):
         """

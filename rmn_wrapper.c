@@ -651,3 +651,33 @@ extern int fstopc_wrapper(char *option, char *value, int getmode){
 
 
 
+/*****************************************************************************
+ *                              F S T L N K                                  *
+ *                                                                           *
+ *Object                                                                     *
+ *   Links a list of files together for search purpose.                      *
+ *                                                                           *
+ *Arguments                                                                  *
+ *                                                                           *
+ *  IN  liste   list of unit numbers associated to the files                 *
+ *  IN  n       number of files to link                                      *
+ *                                                                           *
+ *****************************************************************************/
+
+extern int c_xdflnk(word *liste, int *n);
+extern int c_xdfunl(word *liste, int* n);
+
+extern int fstlnk_wrapper(int *liste, int *n){
+    return c_xdflnk(liste, n);
+}
+
+//unlink previously linked files
+extern int fstunl_wrapper(int *liste, int *n){
+    return c_xdfunl(liste, n);
+}
+
+
+
+
+
+
