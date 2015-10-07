@@ -2,7 +2,6 @@
 from __future__ import absolute_import
 from rpn import data_types
 from ctypes import *
-import ctypes
 import numpy as np
 import os
 from rpn import level_kinds
@@ -398,7 +397,7 @@ class RPN(object):
 
         in_nomvar = create_string_buffer(var_name)
 
-        key = self._dll.fstinf_wrapper(self.file_unit, byref(ni), byref(nj), byref(nk), c_int(-1), etiket,
+        key = self._dll.fstinf_wrapper(self._file_unit, byref(ni), byref(nj), byref(nk), c_int(-1), etiket,
                                        ip1, ip2, ip3, in_typvar, in_nomvar)
 
         if key < 0:
@@ -426,7 +425,7 @@ class RPN(object):
         in_typvar = create_string_buffer(self.VARTYPE_DEFAULT.encode())
         in_nomvar = create_string_buffer(var_name.encode())
         res = {}
-        key = self._dll.fstinf_wrapper(self.file_unit, byref(ni), byref(nj), byref(nk), c_int(-1), etiket,
+        key = self._dll.fstinf_wrapper(self._file_unit, byref(ni), byref(nj), byref(nk), c_int(-1), etiket,
                                        ip1, ip2, ip3, in_typvar, in_nomvar)
 
         while key >= 0:
@@ -440,7 +439,7 @@ class RPN(object):
                 break
 
             res[lev] = data
-            key = self._dll.fstsui_wrapper(self.file_unit, byref(ni), byref(nj), byref(nk))
+            key = self._dll.fstsui_wrapper(self._file_unit, byref(ni), byref(nj), byref(nk))
         return res
 
     def get_output_step_in_seconds(self):
@@ -461,7 +460,7 @@ class RPN(object):
         etiket = create_string_buffer(self.ETIKET_DEFAULT.encode())
         in_typvar = create_string_buffer(self.VARTYPE_DEFAULT.encode())
         in_nomvar = create_string_buffer(self.VARNAME_DEFAULT.encode())
-        key = self._dll.fstinf_wrapper(self.file_unit, byref(ni), byref(nj), byref(nk), c_int(-1), etiket,
+        key = self._dll.fstinf_wrapper(self._file_unit, byref(ni), byref(nj), byref(nk), c_int(-1), etiket,
                                        ip1, ip2, ip3, in_typvar, in_nomvar)
 
         names = []
@@ -470,7 +469,7 @@ class RPN(object):
             # lev = self.get_current_level(level_kind=level_kind)
             # res[lev] = data
             names.append(self._get_record_info(key)[self.VARNAME_KEY].value.strip().decode())
-            key = self._dll.fstsui_wrapper(self.file_unit, byref(ni), byref(nj), byref(nk))
+            key = self._dll.fstsui_wrapper(self._file_unit, byref(ni), byref(nj), byref(nk))
 
         return np.unique(names)
 
@@ -485,8 +484,8 @@ class RPN(object):
             logging.getLogger(__name__).warn("You are closing a file which is linked with others, unlinking ..")
             self.unlink()
 
-        self._dll.fstfrm_wrapper(self.file_unit)
-        self._dll.fclos_wrapper(self.file_unit)
+        self._dll.fstfrm_wrapper(self._file_unit)
+        self._dll.fclos_wrapper(self._file_unit)
         self._file_unit = -99999
         del self._dll
 
@@ -494,7 +493,7 @@ class RPN(object):
         """
         returns number of records inside the rpn file
         """
-        return self._dll.fstnbr_wrapper(self.file_unit)
+        return self._dll.fstnbr_wrapper(self._file_unit)
 
     def get_key_of_any_record(self):
         """
@@ -516,7 +515,7 @@ class RPN(object):
         # int fstinf_wrapper(int iun, int *ni, int *nj, int *nk, int datev,char *in_etiket,
         # int ip1, int ip2, int ip3, char *in_typvar, char *in_nomvar)
 
-        key = self._dll.fstinf_wrapper(self.file_unit, byref(ni), byref(nj), byref(nk), datev, etiket,
+        key = self._dll.fstinf_wrapper(self._file_unit, byref(ni), byref(nj), byref(nk), datev, etiket,
                                        ip1, ip2, ip3, in_typvar, in_nomvar)
 
         if key < 0:
@@ -553,7 +552,7 @@ class RPN(object):
         # int fstinf_wrapper(int iun, int *ni, int *nj, int *nk, int datev,char *in_etiket,
         # int ip1, int ip2, int ip3, char *in_typvar, char *in_nomvar)
 
-        key = self._dll.fstinf_wrapper(self.file_unit, byref(ni), byref(nj), byref(nk), datev, etiket,
+        key = self._dll.fstinf_wrapper(self._file_unit, byref(ni), byref(nj), byref(nk), datev, etiket,
                                        ip1, ip2, ip3, in_typvar, in_nomvar)
 
         # print in_typvar.value
@@ -613,7 +612,7 @@ class RPN(object):
         # ips for the coordinate record
         ip1, ip2, ip3 = data_ig[:3]
 
-        key = self._dll.fstinf_wrapper(self.file_unit, byref(ni), byref(nj), byref(nk), datev, etiket,
+        key = self._dll.fstinf_wrapper(self._file_unit, byref(ni), byref(nj), byref(nk), datev, etiket,
                                        ip1, ip2, ip3, in_typvar, in_nomvar)
 
         # _current_info field usually contains the metadata for the last read data record
@@ -745,11 +744,11 @@ class RPN(object):
 
         in_nomvar = create_string_buffer(">>".encode())
 
-        key_hor = self._dll.fstinf_wrapper(self.file_unit, byref(ni), byref(nj), byref(nk), datev, etiket,
+        key_hor = self._dll.fstinf_wrapper(self._file_unit, byref(ni), byref(nj), byref(nk), datev, etiket,
                                            ip1, ip2, ip3, in_typvar, in_nomvar)
 
         in_nomvar = create_string_buffer("^^".encode())
-        key_ver = self._dll.fstinf_wrapper(self.file_unit, byref(ni), byref(nj), byref(nk), datev, etiket,
+        key_ver = self._dll.fstinf_wrapper(self._file_unit, byref(ni), byref(nj), byref(nk), datev, etiket,
                                            ip1, ip2, ip3, in_typvar, in_nomvar)
 
         if key_hor < 0 or key_ver < 0:
@@ -813,7 +812,7 @@ class RPN(object):
         etiket = create_string_buffer(' ')
         in_typvar = create_string_buffer(' ')
 
-        hor_key = self._dll.fstinf_wrapper(self.file_unit, byref(ni), byref(nj), byref(nk),
+        hor_key = self._dll.fstinf_wrapper(self._file_unit, byref(ni), byref(nj), byref(nk),
                                            datev, etiket, ip1, ip2, ip3, in_typvar, in_nomvar)
         # print in_nomvar.value
         # print in_typvar.value
@@ -826,7 +825,7 @@ class RPN(object):
         # read latitudes
         in_nomvar = '^^'
         in_nomvar = create_string_buffer(in_nomvar[:2])
-        ver_key = self._dll.fstinf_wrapper(self.file_unit, byref(ni), byref(nj), byref(nk),
+        ver_key = self._dll.fstinf_wrapper(self._file_unit, byref(ni), byref(nj), byref(nk),
                                            datev, etiket, ip1, ip2, ip3, in_typvar, in_nomvar)
 
         lats = self._get_data_by_key(ver_key)[0, :, 0]
@@ -1008,7 +1007,7 @@ class RPN(object):
             return self._get_data_by_key(key)[:, :, 0]
 
         [ni, nj, nk] = self._current_info['shape']
-        key = self._dll.fstsui_wrapper(self.file_unit, byref(ni), byref(nj), byref(nk))
+        key = self._dll.fstsui_wrapper(self._file_unit, byref(ni), byref(nj), byref(nk))
 
         if key <= 0:
             return None
@@ -1265,7 +1264,7 @@ class RPN(object):
         rewrite = c_int(1)
 
         status = self._dll.fstecr_wrapper(theData.ctypes.data_as(POINTER(c_float)),
-                                          nbits_c, self.file_unit, date_c, deet, npas,
+                                          nbits_c, self._file_unit, date_c, deet, npas,
                                           ni, nj, nk,
                                           ip1, ip2, ip3, typvar, nomvar,
                                           etiket, grtyp,
