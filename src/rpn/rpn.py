@@ -1174,7 +1174,7 @@ class RPN(object):
                        lon1=None, lat1=None,
                        lon2=None, lat2=None, npas=None, deet=None,
                        data_type=data_types.IEEE_floating_point,
-                       nbits=-32
+                       nbits=-32, **kwargs
                        ):
         """
         Do not care about grid type just write data to the file
