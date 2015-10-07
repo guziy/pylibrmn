@@ -11,7 +11,7 @@ FILE_NAMES = ["test_{}.rpn".format(i) for i in range(5)]
 
 
 def create_files():
-    for f in FILE_NAMES:
+    for nf, f in enumerate(FILE_NAMES):
         r = RPN(f, mode="w")
         nx = ny = 10
         arr = np.zeros((nx, ny), dtype="f4")
@@ -20,7 +20,7 @@ def create_files():
                 arr[i, j] = i ** 2 + j ** 2
 
         r.write_2D_field(
-            name="TEST", data=arr, data_type=data_types.compressed_floating_point, nbits=-16
+            name="T{}".format(nf), data=arr, data_type=data_types.compressed_floating_point, nbits=-16
         )
         r.close()
 
@@ -30,12 +30,39 @@ def delete_files():
         if os.path.isfile(f):
             os.remove(f)
 
+# Tests
+
 
 def test_get_number_of_records():
-    create_files()
-    r = MultiRPN("test_?.rpn")
+    r = None
+    try:
 
-    tools.ok_(r.get_number_of_records(), len(FILE_NAMES))
+        create_files()
+        r = MultiRPN("test_?.rpn")
+        msg = "Number of records should be equal to the total number in all files"
+        tools.assert_equals(r.get_number_of_records(), len(FILE_NAMES), msg)
 
-    r.close()
+    finally:
+        if r is not None:
+            r.close()
 
+        delete_files()
+
+
+def test_should_find_all_records():
+    r = None
+    try:
+
+        create_files()
+        r = MultiRPN("test_?.rpn")
+
+        for fn in range(len(FILE_NAMES)):
+            rec = r.get_first_record_for_name("T{}".format(fn))
+            print("file {} - OK".format(fn))
+            print(rec.mean(), rec.shape)
+
+    finally:
+        if r is not None:
+            r.close()
+
+        delete_files()
