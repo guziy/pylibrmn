@@ -75,7 +75,6 @@ class RPN(object):
 
         self.current_grid_type = self.GRIDTYPE_DEFAULT
         self.current_grid_reference = b'E'
-        self.linked_files = []
 
         rpn_file_path = create_string_buffer(path.encode())
         if mode == 'w':
@@ -323,26 +322,6 @@ class RPN(object):
     def file_unit(self, value):
         raise AttributeError("File unit cannot be set")
 
-    def link(self, other_rfile_objects):
-        """
-        link the file with others for reading
-        :param other_rfile_objects:
-
-        """
-        funits = [self.file_unit, ] + [f.file_unit for f in other_rfile_objects]
-        n_funits = c_int(len(funits))
-        funits = np.array(funits, dtype=np.int)
-
-        self._dll.fstlnk_wrapper(funits.ctypes.data_as(POINTER(c_int)), byref(n_funits))
-        self.linked_files.extend(other_rfile_objects)
-
-    def unlink(self):
-        """
-        Unlink the set of linked files
-        """
-        funits = np.array([self.file_unit] + [f.file_unit for f in self.linked_files], dtype=np.int)
-        self._dll.fstunl_wrapper(funits.ctypes.data_as(POINTER(c_int)), byref(c_int(len(funits))))
-        self.linked_files.clear()
 
     def _dateo_to_string(self, dateo_int):
         """
@@ -480,13 +459,10 @@ class RPN(object):
         """
         Close the file connection and cleanup
         """
-        if len(self.linked_files) > 0:
-            logging.getLogger(__name__).warn("You are closing a file which is linked with others, unlinking ..")
-            self.unlink()
 
         self._dll.fstfrm_wrapper(self._file_unit)
         self._dll.fclos_wrapper(self._file_unit)
-        self._file_unit = -99999
+        self._file_unit = c_int(-99999)
         del self._dll
 
     def get_number_of_records(self):

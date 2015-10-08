@@ -116,7 +116,6 @@ class RotatedLatLon():
         rot_pole = self.rot_matrix.T * np.mat([0, 0, 1]).T
         return lat_lon.cartesian_to_lon_lat(rot_pole.A1)
 
-
     def get_basemap_object_for_lons_lats(self, lons2d=None, lats2d=None, **kwargs):
         from mpl_toolkits.basemap import Basemap
 

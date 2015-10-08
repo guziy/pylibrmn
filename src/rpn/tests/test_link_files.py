@@ -65,4 +65,4 @@ def test_should_find_all_records():
         if r is not None:
             r.close()
 
-        delete_files()
+        # delete_files()
