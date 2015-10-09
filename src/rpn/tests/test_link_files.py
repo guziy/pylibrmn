@@ -25,7 +25,7 @@ def create_files():
         r.close()
 
 
-def create_files_with_same_var_for_different_times():
+def create_files_with_same_var_for_different_times(vname="T"):
     for nf, f in enumerate(FILE_NAMES):
         r = RPN(f, mode="w")
         nx = ny = 10
@@ -35,8 +35,8 @@ def create_files_with_same_var_for_different_times():
                 arr[i, j] = i ** 2 + j ** 2
 
         r.write_2D_field(
-            name="T".format(nf), data=arr, data_type=data_types.compressed_floating_point, nbits=-16,
-            ip=[0, 10 * nf, 0]
+            name=vname, data=arr, data_type=data_types.compressed_floating_point, nbits=-16,
+            ip=[0, 10 * nf, 0], npas=nf + 1, deet=600
         )
         r.close()
 
@@ -73,7 +73,7 @@ def test_should_find_all_records():
         r = MultiRPN("test_?.rpn")
 
         for fn in range(len(FILE_NAMES)):
-            rec = r.get_first_record_for_name("T{}")
+            rec = r.get_first_record_for_name("T{}".format(fn))
             print("file {} - OK".format(fn))
             print(rec.mean(), rec.shape)
 
@@ -86,15 +86,23 @@ def test_should_find_all_records():
 
 def test_get_4d_field():
     r = None
+    vname = "T"
+
     try:
 
-        create_files_with_same_var_for_different_times()
+        create_files_with_same_var_for_different_times(vname=vname)
         r = MultiRPN("test_?.rpn")
 
-        # TODO: write the test
+        recs = r.get_4d_field(vname)
+        msg = "Not all records for {} were found".format(vname)
+        print(recs.keys())
+        tools.assert_equals(len(FILE_NAMES), len(recs), msg)
+
+
 
     finally:
+
         if r is not None:
             r.close()
 
-        # delete_files()
+        delete_files()
