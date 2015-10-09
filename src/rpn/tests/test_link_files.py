@@ -25,6 +25,22 @@ def create_files():
         r.close()
 
 
+def create_files_with_same_var_for_different_times():
+    for nf, f in enumerate(FILE_NAMES):
+        r = RPN(f, mode="w")
+        nx = ny = 10
+        arr = np.zeros((nx, ny), dtype="f4")
+        for i in range(nx):
+            for j in range(ny):
+                arr[i, j] = i ** 2 + j ** 2
+
+        r.write_2D_field(
+            name="T".format(nf), data=arr, data_type=data_types.compressed_floating_point, nbits=-16,
+            ip=[0, 10 * nf, 0]
+        )
+        r.close()
+
+
 def delete_files():
     for f in FILE_NAMES:
         if os.path.isfile(f):
@@ -57,7 +73,7 @@ def test_should_find_all_records():
         r = MultiRPN("test_?.rpn")
 
         for fn in range(len(FILE_NAMES)):
-            rec = r.get_first_record_for_name("T{}".format(fn))
+            rec = r.get_first_record_for_name("T{}")
             print("file {} - OK".format(fn))
             print(rec.mean(), rec.shape)
 
@@ -66,3 +82,22 @@ def test_should_find_all_records():
             r.close()
 
         delete_files()
+
+
+def test_get_4d_field():
+    r = None
+    try:
+
+        create_files_with_same_var_for_different_times()
+        r = MultiRPN("test_?.rpn")
+
+        for fn in range(len(FILE_NAMES)):
+            rec = r.get_4d_field(varname="T")
+            print("file {} - OK".format(fn))
+            print(rec.mean(), rec.shape)
+
+    finally:
+        if r is not None:
+            r.close()
+
+        # delete_files()

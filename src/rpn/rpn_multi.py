@@ -1,5 +1,7 @@
 import glob
 import os
+
+from rpn import level_kinds
 from rpn.rpn import RPN
 
 
@@ -64,6 +66,22 @@ class MultiRPN(object):
         for f in self.linked_robj_list:
             f.close()
 
+    def get_4d_field(self, varname, level_kind=level_kinds.ARBITRARY):
+        """
+        Get the variable as a dict {date: {level: fie}}
+        :param varname:
+        :param level_kind:
+        :return:
+        """
+        result = {}
+
+        for f in self.linked_robj_list:
+            try:
+                result.update(f.get_4d_field(name=varname, level_kind=level_kind))
+            except Exception:
+                pass
+
+        return result
 
 if __name__ == '__main__':
     mf = MultiRPN(path=os.path.expanduser("/home/${USER}/*.py"))
