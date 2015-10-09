@@ -91,10 +91,7 @@ def test_get_4d_field():
         create_files_with_same_var_for_different_times()
         r = MultiRPN("test_?.rpn")
 
-        for fn in range(len(FILE_NAMES)):
-            rec = r.get_4d_field(varname="T")
-            print("file {} - OK".format(fn))
-            print(rec.mean(), rec.shape)
+        # TODO: write the test
 
     finally:
         if r is not None:
