@@ -32,6 +32,8 @@ class MultiRPN(object):
             except Exception:
                 raise Exception("Was not able to recognize: {}".format(path))
 
+        self._last_read_file = None
+
         # open linked rpn files
         self.linked_robj_list = [RPN(fpath) for fpath in self.path_list]
 
@@ -52,7 +54,7 @@ class MultiRPN(object):
         for r in self.linked_robj_list:
             try:
                 field = r.get_first_record_for_name(varname=varname)
-
+                self._last_read_file = r
                 if field is not None:
                     return field
             except Exception:
@@ -78,10 +80,20 @@ class MultiRPN(object):
         for f in self.linked_robj_list:
             try:
                 result.update(f.get_4d_field(name=varname, level_kind=level_kind))
+                self._last_read_file = f
             except Exception:
                 pass
 
         return result
+
+    def get_longitudes_and_latitudes_of_the_last_read_rec(self):
+        """
+        :return: (lons2d, lats2d) corresponding to the last record read from the files
+        """
+        if self._last_read_file is None:
+            raise Exception("You have not read any data fields yet")
+
+        return self._last_read_file.get_longitudes_and_latitudes_of_the_last_read_rec()
 
 if __name__ == '__main__':
     mf = MultiRPN(path=os.path.expanduser("/home/${USER}/*.py"))
