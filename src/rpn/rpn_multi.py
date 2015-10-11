@@ -93,7 +93,12 @@ class MultiRPN(object):
         if self._last_read_file is None:
             raise Exception("You have not read any data fields yet")
 
-        return self._last_read_file.get_longitudes_and_latitudes_of_the_last_read_rec()
+        return self._last_read_file.get_longitudes_and_latitudes_for_the_last_read_rec()
+
+    def get_list_of_varnames(self):
+        # TODO: implement
+        raise NotImplementedError()
+
 
 if __name__ == '__main__':
     mf = MultiRPN(path=os.path.expanduser("/home/${USER}/*.py"))

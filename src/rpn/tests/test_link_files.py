@@ -1,7 +1,7 @@
 import os
-
 import numpy as np
 from nose import tools
+from rpn.tests.utils import get_input_file_path
 
 from rpn import data_types
 from rpn.rpn import RPN
@@ -45,6 +45,11 @@ def delete_files():
     for f in FILE_NAMES:
         if os.path.isfile(f):
             os.remove(f)
+
+
+the_dir, script_name = os.path.split(__file__)
+in_path = get_input_file_path("test.rpn", the_dir)
+
 
 # Tests
 
@@ -97,12 +102,27 @@ def test_get_4d_field():
         msg = "Not all records for {} were found".format(vname)
         print(recs.keys())
         tools.assert_equals(len(FILE_NAMES), len(recs), msg)
-
-
-
     finally:
 
         if r is not None:
             r.close()
 
         delete_files()
+
+
+def test_getting_coordinates_for_the_last_read_record_should_not_fail():
+    r = None
+    try:
+
+        create_files()
+        r = MultiRPN(in_path)
+        rec = r.get_first_record_for_name("I5")
+        lons, lats = r.get_longitudes_and_latitudes_of_the_last_read_rec()
+        tools.assert_equals(lons.shape, lats.shape, "Shapes of lon and lat arrays should be the same.")
+
+    finally:
+        if r is not None:
+            r.close()
+
+        delete_files()
+
