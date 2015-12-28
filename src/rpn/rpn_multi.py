@@ -99,6 +99,18 @@ class MultiRPN(object):
         # TODO: implement
         raise NotImplementedError()
 
+    def get_all_time_records_for_name_and_level(self, varname="STFL", level=-1,
+                                                level_kind=level_kinds.ARBITRARY):
+        """
+        Get all records for the specified variable name and level
+        :returns dict with datetime objects as keys and data fields as values
+        """
+        result = {}
+        for f in self.linked_robj_list:
+            result.update(dict(f.get_time_records_iterator_for_name_and_level(varname=varname, level=level,
+                                                                              level_kind=level_kind)))
+
+        return result
 
 if __name__ == '__main__':
     mf = MultiRPN(path=os.path.expanduser("/home/${USER}/*.py"))
