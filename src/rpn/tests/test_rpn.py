@@ -61,7 +61,7 @@ class TestRpn(RPN):
         Note a new object TestRpn is created for each test
         """
         path = in_path
-        super().__init__(path=path)
+        super(self.__class__, self).__init__(path=path)
         self.default_var_name = "I5"
 
 
