@@ -95,6 +95,10 @@ class TestRpn(RPN):
         data = self.get_first_record_for_name(self.default_var_name)
         proc = subprocess.Popen(["r.diag", "ggstat", self.path], stdout=subprocess.PIPE)
         (out, err) = proc.communicate()
+        if err != 0:
+            print("Warning: Could not find r.diag, this is not critical, but some tests will not be run.")
+            return
+
         lines = out.decode().split("\n")
         lines = list(filter(lambda line: ("I5" in line), lines))
 

@@ -20,6 +20,10 @@ def test_nbits24():
 
     proc = subprocess.Popen(["r.diag", "ggstat", path], stdout=subprocess.PIPE)
     (out, err) = proc.communicate()
+    if err != 0:
+        print("Warning: Could not find r.diag, this is not critical, but some tests will not be run.")
+        return
+
     lines = out.split("\n")
     lines = filter(lambda line: ("VF" in line) and ("2 ar" in line), lines)
 
