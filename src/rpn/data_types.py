@@ -1,3 +1,4 @@
+from __future__ import absolute_import
 __author__ = "huziy"
 __date__ = "$Aug 19, 2011 3:27:17 PM$"
 

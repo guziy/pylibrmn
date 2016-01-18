@@ -1,3 +1,4 @@
+from __future__ import absolute_import
 from nose.tools import ok_
 from nose import tools
 import subprocess

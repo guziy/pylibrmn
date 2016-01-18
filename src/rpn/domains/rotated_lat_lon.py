@@ -1,4 +1,4 @@
-#
+from __future__ import absolute_import
 from rpn.domains import lat_lon
 
 __author__ = 'huziy'

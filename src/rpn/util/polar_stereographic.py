@@ -1,4 +1,5 @@
 # coding=utf-8
+from __future__ import absolute_import
 __author__ = 'huziy'
 import numpy as np
 from math import *

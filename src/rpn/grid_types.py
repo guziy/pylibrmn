@@ -1,3 +1,4 @@
+from __future__ import absolute_import
 __author__ = 'huziy'
 
 # A - grid (no grid point at the pole or equator)

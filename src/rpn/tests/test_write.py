@@ -1,3 +1,4 @@
+from __future__ import absolute_import
 import subprocess
 from rpn import data_types
 
