@@ -1,6 +1,7 @@
 from __future__ import absolute_import
 import subprocess
 from rpn import data_types
+from rpn.util.bash_utils import is_rdiag_available
 
 __author__ = 'huziy'
 
@@ -51,17 +52,18 @@ def test_write_rpn_compressed():
     )
     r.close()
 
-    proc = subprocess.Popen(["r.diag", "ggstat", wfile], stdout=subprocess.PIPE)
-    (out, err) = proc.communicate()
+    if is_rdiag_available():
+        proc = subprocess.Popen(["r.diag", "ggstat", wfile], stdout=subprocess.PIPE)
+        (out, err) = proc.communicate()
 
-    out = out.decode()
-    print(out)
-    print(type(out), type("some str"))
-    ok_("{:E}".format(arr.max()) in out, "Could not find the max={:E} in {}".format(arr.max(), out))
-    ok_("{:E}".format(arr.min()) in out, "Could not find the min={:E} in {}".format(arr.min(), out))
-    ok_("{:E}".format(arr.mean()) in out, "Could not find the mean={:E} in {}".format(arr.mean(), out))
-    ok_("{}".format(16) in out, "Could not find 16 in the ggstat output")
-    print("{:E}".format(arr.mean()), "{:E}".format(arr.min()), "{:E}".format(arr.max()))
+        out = out.decode()
+        print(out)
+        print(type(out), type("some str"))
+        ok_("{:E}".format(arr.max()) in out, "Could not find the max={:E} in {}".format(arr.max(), out))
+        ok_("{:E}".format(arr.min()) in out, "Could not find the min={:E} in {}".format(arr.min(), out))
+        ok_("{:E}".format(arr.mean()) in out, "Could not find the mean={:E} in {}".format(arr.mean(), out))
+        ok_("{}".format(16) in out, "Could not find 16 in the ggstat output")
+        print("{:E}".format(arr.mean()), "{:E}".format(arr.min()), "{:E}".format(arr.max()))
 
     os.remove(wfile)
 

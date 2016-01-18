@@ -5,6 +5,8 @@ import subprocess
 from rpn.rpn import RPN
 import numpy as np
 
+from rpn.util.bash_utils import is_rdiag_available
+
 __author__ = 'huziy'
 
 from rpn.tests.utils import get_input_file_path
@@ -90,14 +92,13 @@ class TestRpn(RPN):
             "Number of records read = {0} is not equal to the"
             " total number of records in the file = {1}".format(nrecords_read, nrecords_total))
 
-
     def test_compare_with_ggstat(self):
+        if not is_rdiag_available():
+            print("Warning: disabling comparison tests with r.diag, since r.diag is not installed")
+            return
         data = self.get_first_record_for_name(self.default_var_name)
         proc = subprocess.Popen(["r.diag", "ggstat", self.path], stdout=subprocess.PIPE)
         (out, err) = proc.communicate()
-        if err != 0:
-            print("Warning: Could not find r.diag, this is not critical, but some tests will not be run.")
-            return
 
         lines = out.decode().split("\n")
         lines = list(filter(lambda line: ("I5" in line), lines))
