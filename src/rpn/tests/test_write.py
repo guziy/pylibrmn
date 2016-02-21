@@ -75,5 +75,38 @@ def test_write_rpn_compressed():
         os.remove(wfile)
 
 
+def test_write_specified_projection():
+    """
+    Should determine the projection params (ig1,2,3,4) for rpn file save them and not fail
+    """
+    lon1 = 180
+    lat1 = 0.0
+    lon2 = -84
+    lat2 = 1.0
+
+    wfile = "test.rpn"
+    try:
+        r = RPN(wfile, mode="w")
+        nx = ny = 10
+        arr = np.zeros((nx, ny), dtype="f4")
+        for i in range(nx):
+            for j in range(ny):
+                arr[i, j] = i ** 2 + j ** 2
+
+        print("Z".encode())
+
+        r.write_2D_field(
+            name="TEST", data=arr, data_type=data_types.compressed_floating_point, nbits=-16,
+            lon1=lon1, lon2=lon2, lat1=lat1, lat2=lat2, grid_type=b"E"
+        )
+        r.close()
+
+    except Exception as e:
+        raise e
+    finally:
+        os.remove(wfile)
+
+
 if __name__ == '__main__':
-    test_write_rpn_32()
+    # test_write_rpn_32()
+    test_write_specified_projection()

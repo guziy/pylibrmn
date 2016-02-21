@@ -1165,6 +1165,8 @@ class RPN(object):
         lon1, lat1, lon2, lat2 -are the parameters of the rotated lat lon (used only if grid_type = Z)
         Note: currently the datatypes of the input field is limited to the array of float32
         dateo could be passed as string and as int (in rpn format)
+        :param level:
+        :param name: name of the variable
         """
 
         if isinstance(name, bytes):
@@ -1178,13 +1180,13 @@ class RPN(object):
         elif nbits == -64:
             data = data.astype(np.float64)
 
-        theData = np.reshape(data, data.size, order='F')
+        the_data = np.reshape(data, data.size, order='F')
         # if data_type == data_types.IEEE_floating_point and nbits == -32:
-        # theData = np.array(theData, dtype = np.float32)
+        # the_data = np.array(the_data, dtype = np.float32)
         # elif nbits == -16 and data_type == data_types.compressed_floating_point:
-        # theData = np.array(theData, dtype = np.dtype("f2"))
+        # the_data = np.array(the_data, dtype = np.dtype("f2"))
         # elif nbits == -16:
-        # theData = np.array(theData, dtype = np.float16 )
+        # the_data = np.array(the_data, dtype = np.float16 )
 
         nbits_c = c_int(nbits)
 
@@ -1221,9 +1223,13 @@ class RPN(object):
 
         # figure out the ig values
         if None not in [lon1, lat1, lon2, lat2]:
+
+            grid_type_for_coords = "E" if grid_type == "Z" else grid_type
+
             c_lon1, c_lat1, c_lon2, c_lat2 = map(c_float, [lon1, lat1, lon2, lat2])
             ig1, ig2, ig3, ig4 = map(c_int, [0, 0, 0, 0])
-            self._dll.cxg_to_ig_wrapper(c_char_p(grid_type),
+
+            self._dll.cxg_to_ig_wrapper(c_char_p(grid_type_for_coords.encode()),
                                         byref(ig1), byref(ig2), byref(ig3), byref(ig4),
                                         byref(c_lat1), byref(c_lon1), byref(c_lat2), byref(c_lon2))
             print(ig1, ig2, ig3, ig4)
@@ -1239,7 +1245,7 @@ class RPN(object):
         datyp = c_int(data_type)
         rewrite = c_int(1)
 
-        status = self._dll.fstecr_wrapper(theData.ctypes.data_as(POINTER(c_float)),
+        status = self._dll.fstecr_wrapper(the_data.ctypes.data_as(POINTER(c_float)),
                                           nbits_c, self._file_unit, date_c, deet, npas,
                                           ni, nj, nk,
                                           ip1, ip2, ip3, typvar, nomvar,
