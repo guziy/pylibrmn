@@ -91,6 +91,12 @@ class MultiRPN(object):
         """
         :return: (lons2d, lats2d) corresponding to the last record read from the files
         """
+
+        # try to use the last file in  the list of linked objects
+        if self._last_read_file is None and len(self.linked_robj_list) > 0:
+            self._last_read_file = self.linked_robj_list[-1]
+
+
         if self._last_read_file is None:
             raise Exception("You have not read any data fields yet")
 
