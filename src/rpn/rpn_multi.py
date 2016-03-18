@@ -111,7 +111,10 @@ class MultiRPN(object):
             result.update(dict(f.get_time_records_iterator_for_name_and_level(varname=varname, level=level,
                                                                               level_kind=level_kind)))
 
+        self._last_read_file = self.linked_robj_list[-1]
         return result
+
+
 
 if __name__ == '__main__':
     mf = MultiRPN(path=os.path.expanduser("/home/${USER}/*.py"))
