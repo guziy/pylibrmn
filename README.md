@@ -6,7 +6,7 @@ The wrapping is done using ctypes python package
 Example
 =======
 
-The examples moved to the [wiki](https://github.com/guziy/pylibrmn/wiki/Usage-examples) of the project.
+The examples moved to the [wiki](https://github.com/guziy/pylibrmn/wiki) of the project.
 
 Requirements
 ==========
