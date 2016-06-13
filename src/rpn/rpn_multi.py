@@ -39,6 +39,9 @@ class MultiRPN(object):
         # open linked rpn files
         self.linked_robj_list = [RPN(fpath) for fpath in self.path_list]
 
+        if len(self.linked_robj_list) == 0:
+            raise IOError("Could not find files matching: {}".format(path))
+
     def get_number_of_records(self):
         """
 
