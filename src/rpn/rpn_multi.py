@@ -1,4 +1,5 @@
 from __future__ import absolute_import
+from __future__ import
 import glob
 import os
 
@@ -22,11 +23,11 @@ class MultiRPN(object):
             self.path_list = glob.glob(p2)
 
             if len(self.path_list) == 0:
-                raise FileNotFoundError("No files found for {}".format(p2))
+                raise IOError("No files found for {}".format(p2))
 
             for p in self.path_list:
                 if not os.path.isfile(p):
-                    raise FileNotFoundError("File {} not found".format(p))
+                    raise IOError("File {} not found".format(p))
         else:
             try:
                 self.path_list = list(path)
