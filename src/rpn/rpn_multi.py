@@ -29,7 +29,7 @@ class MultiRPN(object):
                     raise IOError("File {} not found".format(p))
         else:
             try:
-                self.path_list = list(path)
+                self.path_list = list(sorted(path))
             except Exception:
                 raise Exception("Was not able to recognize: {}".format(path))
 
