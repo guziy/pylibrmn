@@ -61,6 +61,7 @@ class RPN(object):
     """
     GRID_TYPE = "grid_type"
     VARNAME_KEY = 'varname'
+    handle = None
 
     log_messages_disabled = False
 
@@ -74,10 +75,10 @@ class RPN(object):
 
         self.path = path
         try:
-            self._dll = CDLL('libpyrmn.so')
+            self._dll = CDLL('libpyrmn.so', handle=self.handle)
         except OSError as err:
             print(err)
-            self._dll = CDLL('lib/libpyrmn.so')
+            self._dll = CDLL('lib/libpyrmn.so', handle=self.handle)
 
         self.VARNAME_DEFAULT = 8 * ' '
         self.VARTYPE_DEFAULT = 4 * ' '
@@ -490,7 +491,7 @@ class RPN(object):
         """
         returns number of records inside the rpn file
         """
-        return self._dll.fstnbr_wrapper(self._file_unit)
+        return self.nrecords
 
     def get_key_of_any_record(self):
         """
