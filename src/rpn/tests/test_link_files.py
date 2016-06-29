@@ -65,6 +65,7 @@ def test_can_link_many_files(nfiles=200):
 
         tools.assert_greater(r.get_number_of_records(), 0, msg="There should be more than 0 records")
 
+        r.close()
     finally:
         delete_files(fnames=many_fnames)
 
