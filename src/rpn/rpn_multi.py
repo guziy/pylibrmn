@@ -24,9 +24,6 @@ class MultiRPN(object):
             if len(self.path_list) == 0:
                 raise IOError("No files found for {}".format(p2))
 
-            for p in self.path_list:
-                if not os.path.isfile(p):
-                    raise IOError("File {} not found".format(p))
         else:
             try:
                 self.path_list = list(sorted(path))
