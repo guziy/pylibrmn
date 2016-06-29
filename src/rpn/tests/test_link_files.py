@@ -55,8 +55,8 @@ in_path = get_input_file_path("test.rpn", the_dir)
 # Tests
 
 
-def test_can_link_many_files():
-    many_fnames = ["test_{}.rpn".format(i) for i in range(200)]
+def test_can_link_many_files(nfiles=200):
+    many_fnames = ["test_{}.rpn".format(i) for i in range(nfiles)]
 
     try:
         create_files(fnames=many_fnames)
@@ -67,6 +67,10 @@ def test_can_link_many_files():
 
     finally:
         delete_files(fnames=many_fnames)
+
+
+def test_can_link_1000_files():
+    test_can_link_many_files(1000)
 
 
 def test_get_number_of_records():
