@@ -11,8 +11,8 @@ from rpn.rpn_multi import MultiRPN
 FILE_NAMES = ["test_{}.rpn".format(i) for i in range(5)]
 
 
-def create_files():
-    for nf, f in enumerate(FILE_NAMES):
+def create_files(fnames=FILE_NAMES):
+    for nf, f in enumerate(fnames):
         r = RPN(f, mode="w")
         nx = ny = 10
         arr = np.zeros((nx, ny), dtype="f4")
@@ -26,8 +26,8 @@ def create_files():
         r.close()
 
 
-def create_files_with_same_var_for_different_times(vname="T"):
-    for nf, f in enumerate(FILE_NAMES):
+def create_files_with_same_var_for_different_times(vname="T", fnames=FILE_NAMES):
+    for nf, f in enumerate(fnames):
         r = RPN(f, mode="w")
         nx = ny = 10
         arr = np.zeros((nx, ny), dtype="f4")
@@ -42,8 +42,8 @@ def create_files_with_same_var_for_different_times(vname="T"):
         r.close()
 
 
-def delete_files():
-    for f in FILE_NAMES:
+def delete_files(fnames=FILE_NAMES):
+    for f in fnames:
         if os.path.isfile(f):
             os.remove(f)
 
@@ -53,6 +53,20 @@ in_path = get_input_file_path("test.rpn", the_dir)
 
 
 # Tests
+
+
+def test_can_link_many_files():
+    many_fnames = ["test_{}.rpn".format(i) for i in range(200)]
+
+    try:
+        create_files(fnames=many_fnames)
+
+        r = MultiRPN("test_*.rpn")
+
+        tools.assert_greater(r.get_number_of_records(), 0, msg="There should be more than 0 records")
+
+    finally:
+        delete_files(fnames=many_fnames)
 
 
 def test_get_number_of_records():
