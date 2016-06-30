@@ -58,6 +58,7 @@ in_path = get_input_file_path("test.rpn", the_dir)
 def test_can_link_many_files(nfiles=200):
     many_fnames = ["test_{}.rpn".format(i) for i in range(nfiles)]
 
+    r = None
     try:
         create_files(fnames=many_fnames)
 
