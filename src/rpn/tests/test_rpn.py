@@ -218,22 +218,23 @@ class TestRpn(RPN):
 
 
 def test_get_records_for_foreacst_hour():
+    try:
+        r_obj = RPN(in_path)
+        n_records = r_obj.get_number_of_records()
 
-    r_obj = RPN(in_path)
-    n_records = r_obj.get_number_of_records()
+        print(n_records)
 
-    print(n_records)
+        res = r_obj.get_records_for_foreacst_hour(var_name="I5", forecast_hour=108072)
+        ok_(len(res) == 1, msg="SWE has only one vertical level ..., not {0} ".format(len(res)))
 
-    res = r_obj.get_records_for_foreacst_hour(var_name="I5", forecast_hour=108072)
-    ok_(len(res) == 1, msg="SWE has only one vertical level ..., not {0} ".format(len(res)))
+        res = r_obj.get_records_for_foreacst_hour(var_name="I5", forecast_hour=10)
+        ok_(len(res) == 0)
+        ok_(n_records == 3, msg="The number of records is not what I've expected ")
 
-    res = r_obj.get_records_for_foreacst_hour(var_name="I5", forecast_hour=10)
-    ok_(len(res) == 0)
-    ok_(n_records == 3, msg="The number of records is not what I've expected ")
-
-    #assert_(len(res) == 1, msg="Only one record in the file for the forecast_hour = 0")
-
-    r_obj.close()
+        #assert_(len(res) == 1, msg="Only one record in the file for the forecast_hour = 0")
+    
+    finally:
+        r_obj.close()
 
 
 def test_polar_stereographic():
@@ -241,26 +242,29 @@ def test_polar_stereographic():
     Testing polar stereographic grid functions
     """
     path = get_input_file_path("mappe.rpnw", the_dir)
-    r = RPN(path)
-    mk = r.get_first_record_for_name("MK")
+    try:
+        r = RPN(path)
+        mk = r.get_first_record_for_name("MK")
 
-    #print r.get_proj_parameters_for_the_last_read_rec()
-    lons, lats = r.get_longitudes_and_latitudes_for_the_last_read_rec()
-    amno_link = "http://www.cccma.ec.gc.ca/data/grids/geom_crcm_amno_182x174.shtml"
-    msg_tpl = "Generated longitudes are not the same as {0}".format(amno_link)
-    msg_tpl += "\n Expected: {0}"
-    msg_tpl += "\n Got: {1}"
+        #print r.get_proj_parameters_for_the_last_read_rec()
+        lons, lats = r.get_longitudes_and_latitudes_for_the_last_read_rec()
+        amno_link = "http://www.cccma.ec.gc.ca/data/grids/geom_crcm_amno_182x174.shtml"
+        msg_tpl = "Generated longitudes are not the same as {0}".format(amno_link)
+        msg_tpl += "\n Expected: {0}"
+        msg_tpl += "\n Got: {1}"
 
-    #test with expected values from the EC website
-    expect = 226.50 - 360.0
-    msg = msg_tpl.format(expect, lons[10, 10])
-    ok_(np.abs(lons[10, 10] - expect) < 1.0e-2, msg=msg)
+        #test with expected values from the EC website
+        expect = 226.50 - 360.0
+        msg = msg_tpl.format(expect, lons[10, 10])
+        ok_(np.abs(lons[10, 10] - expect) < 1.0e-2, msg=msg)
 
-    #latitudes
-    expect = 41.25
-    msg = msg_tpl.format(expect, lats[-11, -11])
-    ok_(np.abs(lats[-11, -11] - expect) < 1.0e-2, msg=msg)
+        #latitudes
+        expect = 41.25
+        msg = msg_tpl.format(expect, lats[-11, -11])
+        ok_(np.abs(lats[-11, -11] - expect) < 1.0e-2, msg=msg)
 
+    finally:
+        r.close()
 
 def teardown():
     print("tearing down the test suite")
