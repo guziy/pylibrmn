@@ -45,6 +45,7 @@ def test_basemap_integration():
     b.drawcoastlines()
     img = b.pcolormesh(x, y, data)
     b.colorbar(img)
+    r.close()
 
 
 if __name__ == '__main__':
