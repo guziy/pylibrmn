@@ -491,7 +491,7 @@ class RPN(object):
         self._dll.fstfrm_wrapper(self._file_unit)
         self._dll.fclos_wrapper(self._file_unit)
         self._file_unit = c_int(-99999)
-        del self._dll
+        RPN.n_open_files -= 1
 
     def get_number_of_records(self):
         """
