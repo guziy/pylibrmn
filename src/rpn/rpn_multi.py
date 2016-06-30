@@ -33,7 +33,15 @@ class MultiRPN(object):
         self._last_read_file = None
 
         # open linked rpn files
-        self.linked_robj_list = [RPN(fpath) for fpath in self.path_list]
+        self.linked_robj_list = []
+        try:
+            for fpath in self.path_list:
+                self.linked_robj_list.append(RPN(fpath))
+        except Exception, e:
+            # Close opened files and forward the exception
+            for r in self.linked_robj_list:
+                r.close()
+            raise e
 
         if len(self.linked_robj_list) == 0:
             raise IOError("Could not find files matching: {}".format(path))
