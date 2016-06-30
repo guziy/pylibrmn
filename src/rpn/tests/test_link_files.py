@@ -73,7 +73,7 @@ def test_can_link_many_files(nfiles=200):
 
 
 def test_can_link_1000_files():
-    test_can_link_many_files(1000)
+    test_can_link_many_files(900)
 
 
 def test_get_number_of_records():
