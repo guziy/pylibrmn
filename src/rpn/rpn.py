@@ -115,7 +115,7 @@ class RPN(object):
         ierr = self._dll.fnom_wrapper(byref(self._file_unit), rpn_file_path, options, dummy)
 
         if ierr != 0:
-            raise IOError("Could not associate {} with rpn in-memory object.\n {} files is currently open.".format(rpn_file_path, n_open_files))
+            raise IOError("Could not associate {} with rpn in-memory object.\n {} files is currently open.".format(rpn_file_path, self.n_open_files))
 
         self.nrecords = self._dll.fstouv_wrapper(self._file_unit, options)
 
@@ -340,7 +340,7 @@ class RPN(object):
             self.suppress_log_messages()
             self.log_messages_disabled = True
 
-        n_open_files += 1  # track number of open files
+        self.n_open_files += 1  # track number of open files
 
     @property
     def file_unit(self):
