@@ -24,46 +24,47 @@ class RPN(object):
 
     methods:
         get_4d_field(self, name="", level_kind=level_kinds.ARBITRARY)
-        
+
         get_list_of_varnames(self)
-        
+
         get_longitudes_and_latitudes_for_the_last_read_rec(self)
-        
+
         get_first_record_for_name_and_level(self, varname = '', level = -1,
                                                   level_kind = level_kinds.ARBITRARY)
-        
+
         get_3D_field(self, name = 'SAND', level_kind = level_kinds.ARBITRARY)
-        
+
         get_current_level(self, level_kind = level_kinds.ARBITRARY)
-        
+
         get_current_validity_date(self)
-        
+
         get_first_record_for_name(self, varname)
-        
+
         get_next_record(self)
-        
+
         get_longitudes_and_latitudes(self)
-        
+
         get_key_of_any_record(self)
-        
+
         get_number_of_records(self)
-        
+
         suppress_log_messages(self)
-        
+
         close(self)
-        
+
         get_ip1_from_level(self, level, level_kind = level_kinds.ARBITRARY)
-        
+
         write_2D_field(self, name = '', level = 1, level_kind = level_kinds.ARBITRARY, data = None )
-        
+
         ...
-        
+
     """
     GRID_TYPE = "grid_type"
     VARNAME_KEY = 'varname'
     handle = None
 
     log_messages_disabled = False
+    n_open_files = 0
 
     def __init__(self, path='', mode='r', start_century=19, ip_new_style=True, print_log_messages=False):
         """
@@ -111,7 +112,10 @@ class RPN(object):
         self._dll.fnom_wrapper.restype = c_int
         self._file_unit = c_int()
 
-        self._dll.fnom_wrapper(byref(self._file_unit), rpn_file_path, options, dummy)
+        ierr = self._dll.fnom_wrapper(byref(self._file_unit), rpn_file_path, options, dummy)
+
+        if ierr != 0:
+            raise IOError("Could not associate {} with rpn in-memory object.\n {} files is currently open.".format(rpn_file_path, n_open_files))
 
         self.nrecords = self._dll.fstouv_wrapper(self._file_unit, options)
 
@@ -335,6 +339,8 @@ class RPN(object):
         if not self.log_messages_disabled and not print_log_messages:
             self.suppress_log_messages()
             self.log_messages_disabled = True
+
+        n_open_files += 1  # track number of open files
 
     @property
     def file_unit(self):
