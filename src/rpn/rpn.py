@@ -115,7 +115,7 @@ class RPN(object):
         ierr = self._dll.fnom_wrapper(byref(self._file_unit), rpn_file_path, options, dummy)
 
         if ierr != 0:
-            raise IOError("Could not associate {} with rpn in-memory object.\n {} files is currently open. ier = {}".format(rpn_file_path.value(), self.n_open_files), ierr)
+            raise IOError("Could not associate {} with rpn in-memory object.\n {} files is currently open. ier = {}".format(rpn_file_path.value, self.n_open_files), ierr)
 
         self.nrecords = self._dll.fstouv_wrapper(self._file_unit, options)
 
