@@ -37,7 +37,7 @@ class MultiRPN(object):
         try:
             for fpath in self.path_list:
                 self.linked_robj_list.append(RPN(fpath))
-        except Exception, e:
+        except Exception as e:
             # Close opened files and forward the exception
             for r in self.linked_robj_list:
                 r.close()
