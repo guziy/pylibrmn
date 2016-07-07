@@ -4,6 +4,8 @@ import os
 
 from rpn import level_kinds
 from rpn.rpn import RPN
+import itertools
+import numpy as np
 
 
 class MultiRPN(object):
@@ -95,6 +97,9 @@ class MultiRPN(object):
 
         return result
 
+    def get_longitudes_and_latitudes_for_the_last_read_rec(self):
+        return self.get_longitudes_and_latitudes_of_the_last_read_rec()
+
     def get_longitudes_and_latitudes_of_the_last_read_rec(self):
         """
         :return: (lons2d, lats2d) corresponding to the last record read from the files
@@ -104,15 +109,14 @@ class MultiRPN(object):
         if self._last_read_file is None and len(self.linked_robj_list) > 0:
             self._last_read_file = self.linked_robj_list[-1]
 
-
         if self._last_read_file is None:
             raise Exception("You have not read any data fields yet")
 
         return self._last_read_file.get_longitudes_and_latitudes_for_the_last_read_rec()
 
     def get_list_of_varnames(self):
-        # TODO: implement
-        raise NotImplementedError()
+        names = itertools.chain(*[r.get_list_of_varnames() for r in self.linked_robj_list])
+        return np.unique(names)
 
     def get_all_time_records_for_name_and_level(self, varname="STFL", level=-1,
                                                 level_kind=level_kinds.ARBITRARY):
