@@ -55,6 +55,11 @@ OK
  
 
 
+Contributing
+========================================
+Any contributions either through bug reports, feature requests or documentation enhancements (e.g. by sending your usage examples) are very welcome. 
+
+
 Install using `setup.py` and development version of the project from github
 ========================================
 
