@@ -116,7 +116,7 @@ class MultiRPN(object):
 
     def get_list_of_varnames(self):
         names = itertools.chain(*[r.get_list_of_varnames() for r in self.linked_robj_list])
-        return np.unique(names)
+        return np.unique(list(names))
 
     def get_all_time_records_for_name_and_level(self, varname="STFL", level=-1,
                                                 level_kind=level_kinds.ARBITRARY):
