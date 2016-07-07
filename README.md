@@ -4,12 +4,12 @@ This is a python wrapper around the C/FORTRAN library librmn, which is used for 
 The wrapping is done using ctypes python package. The library works with Python 2.7 or later.
 
 Example
-=======
+------------
 
 The examples moved to the [wiki](https://github.com/guziy/pylibrmn/wiki) of the project.
 
 Requirements
-==========
+------------
 This package is a wrapper around the FORTRAN version of librmn, so it needs this library installed.
 
 * librmn.so (FORTRAN library)
@@ -19,7 +19,7 @@ This package is a wrapper around the FORTRAN version of librmn, so it needs this
 
 
 Install
-========================
+------------
 
 * `pip` can be used to install the package:
 
@@ -56,12 +56,12 @@ OK
 
 
 Contributing
-========================================
+------------
 Any contributions either through bug reports, feature requests or documentation enhancements (e.g. by sending your usage examples) are very welcome. 
 
 
 Install using `setup.py` and development version of the project from github
-========================================
+------------------------------------------------------------
 
 An alternative way to install this module (you might need to have sudo rights to do it in your default python installation or use
 virtualenv to create the writable environment. I prefer working with virtualenv and advise you to give it a go, see [this] (https://pypi.python.org/pypi/virtualenv) for more
@@ -118,7 +118,7 @@ information):
  
 
 Acknowledgements
-=======
+------------------------------------
 Thanks are to the following contributors:
 * M. Valin (for help porting to guillimin)
 * K. Winger and B. Dugas (for explainations and discussins on the internals of the Fortran version of librmn)
