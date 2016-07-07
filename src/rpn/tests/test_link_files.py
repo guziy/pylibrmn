@@ -133,11 +133,34 @@ def test_get_4d_field():
         delete_files()
 
 
+
+def test_get_list_of_varnames():
+    r = None
+    vname = "T"
+
+    try:
+
+        create_files_with_same_var_for_different_times(vname=vname)
+        r = MultiRPN("test_?.rpn")
+
+        msg = "the list of varnames should contain {}".format(vname)
+        vnames = r.get_list_of_varnames()
+
+        tools.assert_in(vname, vnames, msg)
+        tools.assert_equal(len(vnames), 1, "There is only one unique field name in the files")
+
+    finally:
+        if r is not None:
+            r.close()
+
+        delete_files()
+
+
+
 def test_getting_coordinates_for_the_last_read_record_should_not_fail():
     r = None
     try:
 
-        create_files()
         r = MultiRPN(in_path)
         rec = r.get_first_record_for_name("I5")
         lons, lats = r.get_longitudes_and_latitudes_of_the_last_read_rec()
