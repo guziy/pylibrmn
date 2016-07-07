@@ -117,7 +117,7 @@ Acknowledgements
 Thanks are to the following contributors:
 * M. Valin (for help porting to guillimin)
 * K. Winger and B. Dugas (for explainations and discussins on the internals of the Fortran version of librmn)
-* K. Chikhar (for help in creating the documentation)
+* K. Chikhar (for help with the documentation)
 
 
     
