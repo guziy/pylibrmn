@@ -1,7 +1,7 @@
 About
 =========
 This is a python wrapper around the C/FORTRAN library librmn, which is used for reading RPN files.
-The wrapping is done using ctypes python package
+The wrapping is done using ctypes python package. The library works with Python 2.7 or later.
 
 Example
 =======
