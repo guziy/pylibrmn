@@ -133,6 +133,8 @@ class MultiRPN(object):
         return result
 
 
+    def get_proj_parameters_for_the_last_read_rec(self):
+        return self._last_read_file.get_proj_parameters_for_the_last_read_rec()
 
 if __name__ == '__main__':
     mf = MultiRPN(path=os.path.expanduser("/home/${USER}/*.py"))
