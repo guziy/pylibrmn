@@ -68,7 +68,7 @@ Written for python 2.7.x and python 3.4.
 """
 setup(
     name='pylibrmn',
-    version='0.0.19',
+    version='0.0.20',
     packages=['rpn', 'rpn.util', 'rpn.domains', 'rpn.tests', 'rpn_use_examples'],
     # packages=find_packages("."),
     package_dir={'': 'src'},
