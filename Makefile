@@ -29,6 +29,14 @@ rmnlib_folder=$(dir $(shell s.locate --lib rmn_015))
 rmnlib_name = -lrmn_015
 endif
 
+
+#Try a different version of rmnlib 014
+ifeq ($(strip $(rmnlib_folder)), )
+rmnlib_folder = $(dir $(shell s.locate --lib rmn_014))
+rmnlib_name = -lrmn_014
+endif
+
+
 all : $(OBJ) 
 	@echo $(OBJ)
 	@echo $(rmnlib_folder)
