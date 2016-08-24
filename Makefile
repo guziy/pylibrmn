@@ -17,6 +17,7 @@ INC = $(foreach d, $(EC_INCLUDE_PATH), -I$d)
 ifdef LIBRMN_PATH_FOR_PY
 rmnlib_folder=$(dir $(LIBRMN_PATH_FOR_PY))
 rmnlib_name=$(patsubst lib%.so, -l%, $(shell basename $(LIBRMN_PATH_FOR_PY)))
+$(info rmnlib_name=$(rmnlib_name))
 endif
 
 
