@@ -25,6 +25,17 @@ Install
 
 ```
      pip install pylibrmn
+     
+```
+* If you are not working in a virtual environment, you can install the package in your home
+
+```
+    pip install pylibrmn --user -U
+```
+
+* If you have a specific version of the C/FORTRAN base rmnlib library, you can force pyrmnlib to use it by setting this environment variable during install:
+```
+    export LIBRMN_PATH_FOR_PY=/unique/armnssm/ECssm/ssm-domains-base/libs/rmnlib-dev/multi/lib/Linux_x86-64/gfortran-4.9/librmnshared_015.so
 ```
 
 It will work provided, you have the FORTRAN version of rmnlib (shared version) and ssm packages needed for compilation and linking of the bridge between FROTRAN and Python.
