@@ -9,6 +9,7 @@ from datetime import datetime
 from datetime import timedelta
 import copy
 import logging
+import sys
 
 
 __author__ = "huziy"
@@ -794,8 +795,9 @@ class RPN(object):
         An rpn file can contain several
         """
 
-        print("Warning this function is deprecated, it works only for Z grid types \n"
-              "Please use RPN.get_longitudes_and_latitudes_for_the_last_read_rec()")
+
+        sys.stderr.write("Warning this function is deprecated, it works only for Z grid types \n"
+              "Please use RPN.get_longitudes_and_latitudes_for_the_last_read_rec()\n")
 
         key = self.get_key_of_any_record()
         info = self._get_record_info(key, verbose=True)  # sets grid type
@@ -948,11 +950,11 @@ class RPN(object):
             try:
                 dateo_s = self._dateo_to_string(extra1.value)
                 the_dateo = datetime.strptime(dateo_s, self._dateo_format)
-            except Exception as  e1:
-                print(e1)
-                print(dateo.value)
+            except Exception as e1:
+                # print(e1)
+                # print(dateo.value)
                 dateo_s = "{0}010101000000".format(self.start_century)
-                print("dateo is corrupted using default:{0}".format(dateo_s))
+                sys.stderr.write("dateo is not set, using default:{0}\n".format(dateo_s))
                 the_dateo = datetime.strptime(dateo_s, self._dateo_format)
 
         # if the_dateo.year // 100 != self.start_century:
