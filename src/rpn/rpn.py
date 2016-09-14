@@ -529,7 +529,7 @@ class RPN(object):
         return key
 
     def get_record_for_name_and_level(self, varname='', level=-1,
-                                      level_kind=level_kinds.ARBITRARY):
+                                      level_kind=level_kinds.ARBITRARY, label=None):
         """
         Search and return 2d field for a given `vaname` and `level`
         If there are many such records in the rpn file (i.e. for different time steps), then the first one is returned
@@ -539,7 +539,11 @@ class RPN(object):
         nj = c_int(0)
         nk = c_int(0)
         datev = c_int(-1)
-        etiket = create_string_buffer(self.ETIKET_DEFAULT.encode())
+
+        if label is None:
+            etiket = create_string_buffer(self.ETIKET_DEFAULT.encode())
+        else:
+            etiket = create_string_buffer(label.encode())
 
         if level == -1:
             ip1 = c_int(-1)
@@ -866,21 +870,21 @@ class RPN(object):
     def reset_current_info(self):
         self._current_info = None
 
-    def get_first_record_for_name(self, varname):
+    def get_first_record_for_name(self, varname, label=None):
         """
         returns first met record for the field varname
         """
-        return self.get_first_record_for_name_and_level(varname, -1)
+        return self.get_first_record_for_name_and_level(varname, -1, label=label)
 
     def get_first_record_for_name_and_level(self, varname='', level=-1,
-                                            level_kind=level_kinds.ARBITRARY):
+                                            level_kind=level_kinds.ARBITRARY, label=None):
         """
         returns data of the first encountered record that satisfies the
         query, and returns the 2d field, if the rcord is 3d then it takes the 2d subset
         corresponding to the first 3rd dimension
         """
         return self.get_record_for_name_and_level(varname=varname, level=level,
-                                                  level_kind=level_kind)
+                                                  level_kind=level_kind, label=label)
 
     def _get_record_info(self, key, verbose=False, update_current_info=True):
         """
@@ -973,7 +977,8 @@ class RPN(object):
                   "nbits": nbits,
                   "grid_type": grid_type,
                   "dateo_rpn_format": dateo,
-                  "extra1": extra1}
+                  "extra1": extra1,
+                  "label": etiket.value}
 
         if update_current_info:
             self._current_info = result  # update info from the last read record
