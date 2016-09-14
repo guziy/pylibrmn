@@ -1273,10 +1273,10 @@ class RPN(object):
         else:
             ig1, ig2, ig3, ig4 = map(c_int, [0, 0, 0, 0])
 
-        typvar = create_string_buffer(typ_var.encode())
-        nomvar = create_string_buffer(name.encode())
-        etiket = create_string_buffer(label.encode())
-        grtyp = create_string_buffer(grid_type.encode())
+        typvar = create_string_buffer(str(typ_var).encode())
+        nomvar = create_string_buffer(str(name).encode())
+        etiket = create_string_buffer(str(label).encode())
+        grtyp = create_string_buffer(str(grid_type).encode())
         datyp = c_int(data_type)
         rewrite = c_int(1)
 
