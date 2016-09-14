@@ -543,7 +543,7 @@ class RPN(object):
         if label is None:
             etiket = create_string_buffer(self.ETIKET_DEFAULT.encode())
         else:
-            etiket = create_string_buffer(label.encode())
+            etiket = create_string_buffer(str(label).encode())
 
         if level == -1:
             ip1 = c_int(-1)
