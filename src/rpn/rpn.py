@@ -105,6 +105,8 @@ class RPN(object):
             if os.path.isfile(path):
                 os.remove(path)
             options = c_char_p('RND'.encode())
+        elif mode == "a":
+            options = c_char_p('RND'.encode())
         else:
             options = c_char_p('RND+R/O'.encode())
         dummy = c_int(0)
