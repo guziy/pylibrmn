@@ -115,7 +115,8 @@ class RPN(object):
         self._dll.fnom_wrapper.restype = c_int
         self._file_unit = c_int()
 
-        ierr = self._dll.fnom_wrapper(byref(self._file_unit), rpn_file_path, options, dummy)
+        fstouv_options = c_char_p("RND".encode()) if mode == "a" else options
+        ierr = self._dll.fnom_wrapper(byref(self._file_unit), rpn_file_path, fstouv_options, dummy)
 
         if ierr != 0:
             raise IOError("Could not associate {} with rpn in-memory object.\n {} files is currently open. ier = {}".format(rpn_file_path.value, RPN.n_open_files, ierr))
