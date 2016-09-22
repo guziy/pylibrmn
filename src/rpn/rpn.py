@@ -106,7 +106,7 @@ class RPN(object):
                 os.remove(path)
             options = c_char_p('RND'.encode())
         elif mode == "a":
-            options = c_char_p('RND'.encode())
+            options = c_char_p('STD+RND'.encode())
         else:
             options = c_char_p('RND+R/O'.encode())
         dummy = c_int(0)
