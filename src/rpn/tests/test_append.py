@@ -12,9 +12,9 @@ from rpn.rpn import RPN
 from nose.tools import ok_
 import numpy as np
 
+import shutil
 
 def test_append_existing_rpn_file():
-    from rpn.domains.rotated_lat_lon import RotatedLatLon
 
     vname = "I5"
 
@@ -24,7 +24,12 @@ def test_append_existing_rpn_file():
 
     tmp_to_append = in_path + "_to_append"
 
+
+
     try:
+        # copy the initial file
+        shutil.copy(in_path, tmp_to_append)
+
         new_vname = "I5AP"
         r = RPN(tmp_to_append, mode="a")
         r.write_2D_field(name=new_vname, data=data)
@@ -33,16 +38,14 @@ def test_append_existing_rpn_file():
         r1 = RPN(tmp_to_append)
         vlist = r1.get_list_of_varnames()
 
-        ok_("I5" in vlist, "The appended file does not contain {}, whereas the initial contained it ...".format(vname))
-        ok_("I5AP" in vlist, "Newly appended variable is not in the resulting file".format(vname))
+        ok_(vname in vlist, "The appended file does not contain {}, whereas the initial contained it ...".format(vname))
+        ok_(new_vname in vlist, "Newly appended variable is not in the resulting file".format(vname))
 
         data1 = r1.get_first_record_for_name(new_vname)
 
         ok_(np.array_equal(data, data1), "Appended array is not the same as the initial one. max(|delta|) = {}".format(np.abs(data - data1).max()))
 
         r1.close()
-
-
 
     finally:
         os.remove(tmp_to_append)
