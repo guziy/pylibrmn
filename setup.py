@@ -19,10 +19,10 @@ build_native_lib = True
 BUILD_NATIVE_ENV_VNAME = "BUILD_NATIVE"
 
 if BUILD_NATIVE_ENV_VNAME in os.environ:
-    build_native_lib = bool(os.environ[BUILD_NATIVE_ENV_VNAME])
+    build_native_lib = os.environ[BUILD_NATIVE_ENV_VNAME].lower().strip() in ["true", "1"]
     print("{} = {}".format(BUILD_NATIVE_ENV_VNAME, build_native_lib))
 
-if not os.path.isfile(os.path.join(build_dir, native_lib_filename)):
+if not os.path.isfile(os.path.join(build_dir, native_lib_filename)) and build_native_lib:
     os.chdir(build_dir)
 
     print(os.getcwd())
