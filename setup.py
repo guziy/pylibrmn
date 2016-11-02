@@ -21,9 +21,10 @@ if BUILD_NATIVE_ENV_VNAME in os.environ:
     build_native_lib = os.environ[BUILD_NATIVE_ENV_VNAME].lower().strip() in ["true", "1"]
     print("{} = {}".format(BUILD_NATIVE_ENV_VNAME, build_native_lib))
 
+
+# Build native part of the library
 if not os.path.isfile(os.path.join(build_dir, native_lib_filename)) and build_native_lib:
     os.chdir(build_dir)
-
     print(os.getcwd())
 
     # build native library using the Makefile
