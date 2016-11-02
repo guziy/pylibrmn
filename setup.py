@@ -13,11 +13,10 @@ import os
 
 build_dir = os.path.dirname(os.path.realpath(__file__))
 
-
+# Add an option to be able to easily disable building of the native part of the library on systems where it is not
+# possible ...
 build_native_lib = True
-
 BUILD_NATIVE_ENV_VNAME = "BUILD_NATIVE"
-
 if BUILD_NATIVE_ENV_VNAME in os.environ:
     build_native_lib = os.environ[BUILD_NATIVE_ENV_VNAME].lower().strip() in ["true", "1"]
     print("{} = {}".format(BUILD_NATIVE_ENV_VNAME, build_native_lib))
