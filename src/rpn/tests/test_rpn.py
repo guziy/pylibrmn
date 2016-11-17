@@ -23,6 +23,7 @@ def test_write_field_2d_clean():
     """
     import os
     tfile = "temp.rpn"
+    r = None
     try:
         r = RPN(tfile, mode="w")
         data = np.random.randn(10, 10)
@@ -33,7 +34,6 @@ def test_write_field_2d_clean():
         r = RPN(tfile)
         data1 = r.get_first_record_for_name("RAND")
         v0, v1 = data.mean(), data1.mean()
-
 
         ok_(abs(v1 - v0) <= 1e-6, "Saved ({0}) and retrieved ({1}) means are not the same.".format(v0, v1))
 
@@ -50,7 +50,7 @@ def test_write_field_2d_64bits():
     """
     import os
     tfile = "temp.rpn"
-
+    r = None
     try:
         r = RPN(tfile, mode="w")
         data = np.random.randn(10, 10)
@@ -163,6 +163,15 @@ class TestRpn(RPN):
         ok_(">>" in the_names, "Expected to find >> variable in {}".format(self.path))
         ok_("^^" in the_names, "Expected to find ^^ variable in {}".format(self.path))
 
+
+    def test_get_tictacs_not_fails(self):
+        i5 = self.get_first_record_for_name("I5")
+        rlon, rlat = self.get_tictacs_for_the_last_read_record()
+        lons, lats = self.get_longitudes_and_latitudes_for_the_last_read_rec()
+
+        ok_(lons.shape == (rlon.shape[0], rlat.shape[0]), "Expected len(rlon)={} and len(rlat)={}, but got len(rlon)={} and len(rlat)={}".format(lons.shape[0], lons.shape[1], len(rlon), len(rlat)))
+
+
     def test_get_grid_parameters_for_the_last_read_rec(self):
         """
         Test if the coordinates of the two equator points are identified correctly from the file
@@ -218,6 +227,7 @@ class TestRpn(RPN):
 
 
 def test_get_records_for_foreacst_hour():
+    r_obj = None
     try:
         r_obj = RPN(in_path)
         n_records = r_obj.get_number_of_records()
@@ -234,7 +244,8 @@ def test_get_records_for_foreacst_hour():
         #assert_(len(res) == 1, msg="Only one record in the file for the forecast_hour = 0")
     
     finally:
-        r_obj.close()
+        if r_obj is not None:
+            r_obj.close()
 
 
 def test_polar_stereographic():
@@ -242,6 +253,7 @@ def test_polar_stereographic():
     Testing polar stereographic grid functions
     """
     path = get_input_file_path("mappe.rpnw", the_dir)
+    r = None
     try:
         r = RPN(path)
         mk = r.get_first_record_for_name("MK")
@@ -264,7 +276,9 @@ def test_polar_stereographic():
         ok_(np.abs(lats[-11, -11] - expect) < 1.0e-2, msg=msg)
 
     finally:
-        r.close()
+        if r is not None:
+            r.close()
+
 
 def teardown():
     print("tearing down the test suite")

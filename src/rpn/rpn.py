@@ -652,6 +652,56 @@ class RPN(object):
 
         return result
 
+
+
+    def get_tictacs_for_the_last_read_record(self):
+        """ Returns 1D arrays in rotated lat/lon coordinates"""
+
+        if self._current_info is None:
+            raise Exception("No records has been read yet, or its metadata has not yet been saved.")
+
+        if self._current_info[self.VARNAME_KEY].value.decode().strip() in [">>", "^^"]:
+            raise Exception("Trying to get coordinates for coordinate records, this operation is only "
+                            "possible for data records. Please read in some data field first")
+
+        # Make sure the internal info is not modified by the extraction of coordinates
+        _info_backup = copy.deepcopy(self._current_info)
+
+        ig = self._current_info['ig']
+
+        ni = c_int(0)
+        nj = c_int(0)
+        nk = c_int(0)
+        datev = c_int(-1)
+        etiket = create_string_buffer(self.ETIKET_DEFAULT.encode())
+
+        # print ig
+        ip1, ip2, ip3 = ig[:3]
+        in_typvar = create_string_buffer(self.VARTYPE_DEFAULT.encode())
+
+        in_nomvar = create_string_buffer(">>".encode())
+
+        key_hor = self._dll.fstinf_wrapper(self._file_unit, byref(ni), byref(nj), byref(nk), datev, etiket,
+                                           ip1, ip2, ip3, in_typvar, in_nomvar)
+
+        in_nomvar = create_string_buffer("^^".encode())
+        key_ver = self._dll.fstinf_wrapper(self._file_unit, byref(ni), byref(nj), byref(nk), datev, etiket,
+                                           ip1, ip2, ip3, in_typvar, in_nomvar)
+
+        if key_hor < 0 or key_ver < 0:
+            raise Exception("key value is not valid {0}".format(min(key_hor, key_ver)))
+
+        rlons = self._get_data_by_key(key_hor).squeeze()
+        rlats = self._get_data_by_key(key_ver).squeeze()
+
+        self._current_info = _info_backup
+
+        return rlons, rlats
+
+
+
+
+
     def get_longitudes_and_latitudes_for_the_last_read_rec(self):
         """
         finds georeference
