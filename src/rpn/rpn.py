@@ -1044,7 +1044,7 @@ class RPN(object):
         data_type = self._current_info["data_type"].value
         nbits = self._current_info["nbits"].value
         if nbits == 32:
-            if data_type in [data_types.IEEE_floating_point, data_types.compressed_IEEE, data_types.floating_point]:
+            if data_type in [data_types.IEEE_floating_point, data_types.compressed_IEEE, data_types.floating_point, data_types.masked_floating_point]:
                 return np.float32
             elif data_type == data_types.signed_integer:
                 # print "data_type = ", data_type
