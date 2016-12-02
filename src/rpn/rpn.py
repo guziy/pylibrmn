@@ -1049,6 +1049,10 @@ class RPN(object):
             elif data_type == data_types.signed_integer:
                 # print "data_type = ", data_type
                 return np.int32
+            else:
+                sys.stderr.write("The datatype for {} is not recognized, using float32".format(self._current_info["varname"]))
+                return np.float32
+
         elif nbits == 64:
             return np.float64
         elif nbits == 16 or nbits == 24:
