@@ -86,23 +86,24 @@ class TestRpn(RPN):
     def test_get_longitudes_and_latitudes_of_the_last_read_record(self):
         """
         Test get_longitudes_and_latitudes_for_the_last_read_rec
-        and get_next_record
         """
         data = []
         nrecords_read = 0
-        nrecords_total = self.get_number_of_records()
         while data is not None:
             data = self.get_next_record()
             if data is None:
                 break
             nrecords_read += 1
+            print(self.get_current_info())
 
-            if self.get_current_info()["varname"] == self.default_var_name:
-                _, _ = self.get_longitudes_and_latitudes_for_the_last_read_rec()
 
-        ok_(nrecords_read == nrecords_total,
-            "Number of records read = {0} is not equal to the"
-            " total number of records in the file = {1}".format(nrecords_read, nrecords_total))
+        ok_(nrecords_read >= 1, msg="At least one record should have been read")
+        ok_(nrecords_read == self.get_number_of_records(), "Should have read all {} records, but got only {}".format(self.get_number_of_records(), nrecords_read))
+
+        # there is only I5 and >>, ^^ in the file, which won't mess the current_info dictionary
+        if self.get_current_info()["varname"] == self.default_var_name:
+            _, _ = self.get_longitudes_and_latitudes_for_the_last_read_rec()
+
 
     def test_compare_with_ggstat(self):
         if not is_rdiag_available():

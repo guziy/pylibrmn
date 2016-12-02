@@ -479,7 +479,7 @@ class RPN(object):
             # data = self._get_data_by_key(key)
             # lev = self.get_current_level(level_kind=level_kind)
             # res[lev] = data
-            names.append(self._get_record_info(key)[self.VARNAME_KEY].value.strip().decode())
+            names.append(self._get_record_info(key)[self.VARNAME_KEY])
             key = self._dll.fstsui_wrapper(self._file_unit, byref(ni), byref(nj), byref(nk))
 
         return np.unique(names)
@@ -505,7 +505,7 @@ class RPN(object):
 
     def get_key_of_any_record(self):
         """
-        Returns the key of the first data record, i.e. not >>, ^^ or hy
+        Returns the key of the first data record
         """
         ni = c_int(0)
         nj = c_int(0)
@@ -660,7 +660,7 @@ class RPN(object):
         if self._current_info is None:
             raise Exception("No records has been read yet, or its metadata has not yet been saved.")
 
-        if self._current_info[self.VARNAME_KEY].value.decode().strip() in [">>", "^^"]:
+        if self._current_info[self.VARNAME_KEY] in [">>", "^^"]:
             raise Exception("Trying to get coordinates for coordinate records, this operation is only "
                             "possible for data records. Please read in some data field first")
 
@@ -700,16 +700,15 @@ class RPN(object):
 
 
 
-
-
     def get_longitudes_and_latitudes_for_the_last_read_rec(self):
         """
+        Note: should not be called within a loop using get_next_record, because it'll mess up the search query for the records
         finds georeference
         """
         if self._current_info is None:
             raise Exception("No records has been read yet, or its metadata has not yet been saved.")
 
-        if self._current_info[self.VARNAME_KEY].value.decode().strip() in [">>", "^^"]:
+        if self._current_info[self.VARNAME_KEY] in [">>", "^^"]:
             raise Exception("Trying to get coordinates for coordinate records, this operation is only "
                             "possible for data records. Please read in some data field first")
 
@@ -840,6 +839,8 @@ class RPN(object):
                                lons_2d.ctypes.data_as(POINTER(c_float)))
 
         self._current_info = _info_backup
+
+
 
         # print "lon params = ", lons_2d.shape, np.min(lons_2d), np.max(lons_2d)
         return np.transpose(lons_2d).copy(), np.transpose(lats_2d).copy()
@@ -1024,7 +1025,7 @@ class RPN(object):
                   'dateo': the_dateo,
                   'dt_seconds': dt_seconds,
                   'npas': npas,
-                  'varname': nomvar,
+                  'varname': nomvar.value.decode().strip(),
                   "var_type": typvar,
                   "data_type": datyp,
                   "nbits": nbits,
@@ -1050,7 +1051,7 @@ class RPN(object):
                 # print "data_type = ", data_type
                 return np.int32
             else:
-                sys.stderr.write("The datatype for {} is not recognized, using float32".format(self._current_info["varname"]))
+                sys.stderr.write("The datatype for >>{}<< is not recognized, using float32\n".format(self._current_info["varname"]))
                 return np.float32
 
         elif nbits == 64:
@@ -1412,7 +1413,7 @@ class RPN(object):
         works as self.get_3D_field, but instead of the map
         {level: 2d record} it returns the map {date: 2d record}
         Use this methond only in the case if you are sure that
-        the field you are trying to read containsonly one record for each time step
+        the field you are trying to read contains only one record for each time step
 
         Warning it is not safe to use this RPN object while iterating over the generator
 
@@ -1427,7 +1428,7 @@ class RPN(object):
 
     def get_current_info(self):
         """
-        return current info of just read record
+        return current info of just read record, returns values are not ctype objects
         """
         info_copy = {}
         for k, v in self._current_info.items():
