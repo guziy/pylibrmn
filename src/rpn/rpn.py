@@ -1061,6 +1061,12 @@ class RPN(object):
                              data_types.floating_point_16_bit, data_types.IEEE_floating_point, data_types.compressed_IEEE]:
                 return np.float32
             return np.float16
+        elif nbits == 8:
+            if data_type in [data_types.unsigned_integer]:
+                return np.uint32
+            else:
+                sys.stderr.write(
+                    "The datatype is >>{}<< and >>{}<< bits \n".format(data_type, nbits))
         else:
             raise Exception("nbits is: {0}".format(nbits))
 
@@ -1443,6 +1449,14 @@ class RPN(object):
             info_copy[k] = v
 
         return info_copy
+
+    # implement with interface
+    def __enter__(self):
+        return self
+
+    # implement with interface
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self.close()
 
 
 def test():
