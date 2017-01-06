@@ -1240,6 +1240,12 @@ class RPN(object):
         @param properties: a dict, contains variable attributes (no ctypes)
                 attributes: name, level, level_kind ...
         """
+
+        # Make the function work with the current_info dictionary
+        if "varname" in properties:
+            properties["name"] = properties["varname"]
+
+
         self.write_2D_field(data=data, **properties)
 
     def write_2D_field(self, name='', level=1, level_kind=level_kinds.ARBITRARY,
@@ -1273,6 +1279,11 @@ class RPN(object):
 
         if isinstance(grid_type, bytes):
             grid_type = grid_type.decode()
+
+
+        # Change nbits sign
+        if nbits > 0:
+            nbits *= -1
 
         if nbits == -32 or nbits == -16:
             data = data.astype(np.float32)
