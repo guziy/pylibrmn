@@ -758,7 +758,7 @@ class RPN(object):
             ll_lon = c_float(-1)
             dlon = c_float(-1)
             dlat = c_float(-1)
-            self._dll.cig_to_xg_wrapper(grid_type,
+            self._dll.cig_to_xg_wrapper(create_string_buffer(grid_type.encode()),
                                         byref(ll_lat), byref(ll_lon), byref(dlat), byref(dlon),
                                         ig[0], ig[1], ig[2], ig[3])
 
