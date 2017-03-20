@@ -770,7 +770,8 @@ class RPN(object):
             lons1d = dlonv * np.arange(ni) + ll_lonv
             lats1d = dlatv * np.arange(nj) + ll_latv
 
-            return np.meshgrid(lats1d, lons1d)
+            lats2d, lons2d = np.meshgrid(lats1d, lons1d)
+            return lons2d, lats2d
 
         if grid_type.strip().upper() in ["N", "S"]:
             from rpn.util import polar_stereographic as ps
