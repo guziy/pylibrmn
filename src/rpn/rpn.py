@@ -773,6 +773,37 @@ class RPN(object):
             lats2d, lons2d = np.meshgrid(lats1d, lons1d)
             return lons2d, lats2d
 
+        if grid_type.strip().upper() == "G":
+            lon_min = 0.0
+            dlon = 360.0 / float(ni)
+            if ig[0].value == 0:
+                dlat = 180.0 / float(nj - 1)
+            else:
+                dlat = 90.0 / float(nj - 1)
+
+            lons = [lon_min + dlon * i for i in range(ni)]
+            # lons[-1] = lon_min + 360
+            if ig[1].value == 0:  # South -> North (pt (1,1) is at the bottom of the grid)
+                if ig[0].value == 1:
+                    lat_min = 0.0 + dlat / 2.0
+                else:
+                    lat_min = -90.0 + dlat / 2.0
+
+                lats = [lat_min + dlat * i for i in range(nj)]
+                lats2d, lons2d = np.meshgrid(lats, lons)
+
+            else:  # North -> South (pt (1,1) is at the top of the grid)
+                if ig[0].value == 2:
+                    lat_max = 0.0 - dlat / 2.0
+                else:
+                    lat_max = 90.0 - dlat / 2.0
+
+                lats = [lat_max - i * dlat for i in range(nj)]
+                lats2d, lons2d = np.meshgrid(lats, lons)
+            return lons2d, lats2d
+
+
+
         if grid_type.strip().upper() in ["N", "S"]:
             from rpn.util import polar_stereographic as ps
 
