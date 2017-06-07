@@ -785,7 +785,7 @@ class RPN(object):
             # lons[-1] = lon_min + 360
             if ig[1].value == 0:  # South -> North (pt (1,1) is at the bottom of the grid)
                 if ig[0].value == 1:
-                    lat_min = 0.0 + dlat / 2.0
+                    lat_min = 0.0 + dlat
                 else:
                     lat_min = -90.0 + dlat / 2.0
 

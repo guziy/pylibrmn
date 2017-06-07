@@ -12,12 +12,18 @@ the_dir, script_name = os.path.split(__file__)
 in_path = get_input_file_path("test.rpn", the_dir)
 
 in_path_g_grid = get_input_file_path("test_G_grid.rpn", the_dir)
+verif_lonlats_g_grid = get_input_file_path("G_grid_LOLA.rpn", the_dir)
 
 
 from rpn.rpn import RPN
 
 
 def test_G_grid():
+
+    with RPN(verif_lonlats_g_grid) as r:
+        lons_verif = r.get_first_record_for_name("LO")
+        lats_verif = r.get_first_record_for_name("LA")
+
 
     with RPN(in_path_g_grid) as r:
         var_names = r.get_list_of_varnames()
@@ -37,6 +43,11 @@ def test_G_grid():
 
 
 
-        ok_(np.min(np.abs(lats)) > epsilon, "The grid should not contain points on the equator")
-        ok_(np.min(np.abs(lats) - 90) > epsilon, "The grid should not contain points on the pole")
-        pass
+        # ok_(np.min(np.abs(lats)) > epsilon, "The grid should not contain points on the equator")
+        # ok_(np.min(np.abs(lats) - 90) > epsilon, "The grid should not contain points on the pole")
+
+
+
+        ok_(np.abs(lons.mean() - lons_verif.mean()) < epsilon, "lons field mean={}, but expect {}".format(lons.mean(), lons_verif.mean()))
+        ok_(np.abs(lats.mean() - lats_verif.mean()) < epsilon, "lats field mean={}, but expect {}".format(lats.mean(), lats_verif.mean()))
+
