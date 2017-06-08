@@ -712,6 +712,9 @@ class RPN(object):
             raise Exception("Trying to get coordinates for coordinate records, this operation is only "
                             "possible for data records. Please read in some data field first")
 
+
+
+
         # Make sure the internal info is not modified by the extraction of coordinates
         _info_backup = copy.deepcopy(self._current_info)
 
@@ -721,6 +724,9 @@ class RPN(object):
 
         grid_type = current_info["grid_type"]
         ni, nj, nk = current_info["shape"]
+
+        if grid_type.strip().upper() not in ["Z", "B", "L", "G", "N", "S"]:
+            raise NotImplementedError("unknown grid type {}".format(grid_type.strip().upper()))
 
         # B grid type
         if grid_type.strip().upper() == "B":
@@ -776,30 +782,26 @@ class RPN(object):
         if grid_type.strip().upper() == "G":
             lon_min = 0.0
             dlon = 360.0 / float(ni)
-            if ig[0].value == 0:
-                dlat = 180.0 / float(nj - 1)
-            else:
-                dlat = 90.0 / float(nj - 1)
 
             lons = [lon_min + dlon * i for i in range(ni)]
-            # lons[-1] = lon_min + 360
+
+            from rpn.domains import gauss_grid
+            lats = gauss_grid.gaussian_latitudes(nj)[0]
+            if ig[0].value == 1:    # Northen hemisphere
+                lats = lats[nj:]
+            elif ig[0].value == 2:  # Southern hemisphere
+                lats = lats[:nj]
+            else:                   # global
+                lats = gauss_grid.gaussian_latitudes(nj // 2)[0]
+
+
             if ig[1].value == 0:  # South -> North (pt (1,1) is at the bottom of the grid)
-                if ig[0].value == 1:
-                    lat_min = 0.0 + dlat
-                else:
-                    lat_min = -90.0 + dlat / 2.0
+                pass
+            else:                 # North -> South (pt (1,1) is at the top of the grid)
+                lats = reversed(lats)
 
-                lats = [lat_min + dlat * i for i in range(nj)]
-                lats2d, lons2d = np.meshgrid(lats, lons)
 
-            else:  # North -> South (pt (1,1) is at the top of the grid)
-                if ig[0].value == 2:
-                    lat_max = 0.0 - dlat / 2.0
-                else:
-                    lat_max = 90.0 - dlat / 2.0
-
-                lats = [lat_max - i * dlat for i in range(nj)]
-                lats2d, lons2d = np.meshgrid(lats, lons)
+            lats2d, lons2d = np.meshgrid(lats, lons)
             return lons2d, lats2d
 
 

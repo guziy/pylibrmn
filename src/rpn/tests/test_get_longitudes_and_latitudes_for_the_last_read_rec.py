@@ -34,6 +34,7 @@ def test_G_grid():
 
 
         epsilon = 1e-10
+        epsilon_relax = 1e-5
 
         ok_(np.abs(lons[0, :].min()) <= epsilon, "The first longitude is not 0, but {}".format(lons[0, :].min()))
         ok_(np.abs(lons[0, :].max()) <= epsilon, "The first longitude is not 0, but {}".format(lons[0, :].max()))
@@ -48,6 +49,9 @@ def test_G_grid():
 
 
 
-        ok_(np.abs(lons.mean() - lons_verif.mean()) < epsilon, "lons field mean={}, but expect {}".format(lons.mean(), lons_verif.mean()))
-        ok_(np.abs(lats.mean() - lats_verif.mean()) < epsilon, "lats field mean={}, but expect {}".format(lats.mean(), lats_verif.mean()))
+        max_error = np.abs(lons - lons_verif).max()
+        ok_(max_error < epsilon, "max error in lons is more than eps (eps={}): {}".format(epsilon, max_error))
+
+        max_error = np.abs(lats - lats_verif).max()
+        ok_(max_error < epsilon_relax, "max error in lats is more than eps (eps={}): {}".format(epsilon, max_error))
 
