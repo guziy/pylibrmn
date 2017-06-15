@@ -1046,7 +1046,7 @@ class RPN(object):
                 # print(e1)
                 # print(dateo.value)
                 dateo_s = "{0}010101000000".format(self.start_century)
-                sys.stderr.write("dateo is not set, using default:{0}\n".format(dateo_s))
+                sys.stderr.write("dateo is not set for {}, using default:{}\n".format(nomvar.value.decode().strip(), dateo_s))
                 the_dateo = datetime.strptime(dateo_s, self._dateo_format)
 
         # if the_dateo.year // 100 != self.start_century:
