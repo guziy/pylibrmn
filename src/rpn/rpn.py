@@ -346,6 +346,10 @@ class RPN(object):
 
         RPN.n_open_files += 1  # track number of open files
 
+        # possible values: standard, 365_day, 360_day
+        self.calendar = "standard"
+
+
     @property
     def file_unit(self):
         return self._file_unit.value
@@ -1158,7 +1162,64 @@ class RPN(object):
         else:
             raise Exception("No current info has been stored: please make sure you read some records first.")
 
+
+
+
+    def get_cdf_datetime_for_the_last_read_record(self):
+        """
+        use netcdftime, which supports different calendar types
+        :return:
+        """
+        if self._current_info is not None:
+            try:
+
+                # extra can contain the validity date
+                extra1 = self._current_info["extra1"].value
+                if extra1 > 0:
+                    date_s = self._dateo_to_string(extra1)
+                    return datetime.strptime(date_s, self._dateo_format)
+
+                forecast_hour = self.get_current_validity_date()
+                assert forecast_hour >= 0
+
+                if not hasattr(self, "dateo_fallback"):
+                    self.dateo_fallback = self._current_info["dateo"]
+
+                from netcdftime import utime
+
+                cdf_time = utime("hours since {:%Y-%m-%d %H:%M:%S}".format(self._current_info["dateo"]), calendar=self.calendar)
+
+                d = cdf_time.num2date(forecast_hour)
+                print(d, forecast_hour, self._current_info["dateo"])
+
+                if d < self.dateo_fallback:
+                    print("sim date appears to be earlier than the start date")
+                    print("falling back to the previous date of origin")
+                    print(self._current_info["dt_seconds"].value / 60.0 / 60.0)
+                    print(self.dateo_fallback, self._current_info["dateo"])
+                    print(forecast_hour)
+                    raise Exception()
+
+
+                return d
+            except Exception as exc:
+                print(exc)
+                raise Exception("problem when reading file {0}".format(self.path))
+        else:
+            raise Exception("No current info has been stored: please make sure you read some records first.")
+
+
+
+
+
+
     def get_datetime_for_the_last_read_record(self):
+        return self.get_cdf_datetime_for_the_last_read_record()
+
+
+
+
+    def __get_datetime_for_the_last_read_record(self):
         """
         returns datetime object corresponding to the last read record
         """
