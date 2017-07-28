@@ -67,7 +67,8 @@ class RPN(object):
     log_messages_disabled = False
     n_open_files = 0
 
-    def __init__(self, path='', mode='r', start_century=19, ip_new_style=True, print_log_messages=False):
+    def __init__(self, path='', mode='r', start_century=19, ip_new_style=True, print_log_messages=False,
+                 calendar="standard"):
         """
               start_century - is used for the calculation of the origin date, because
               of its ambiguous format MMDDYYR
@@ -347,7 +348,7 @@ class RPN(object):
         RPN.n_open_files += 1  # track number of open files
 
         # possible values: standard, 365_day, 360_day
-        self.calendar = "standard"
+        self.calendar = calendar
 
 
     @property
@@ -394,7 +395,7 @@ class RPN(object):
 
         dt = date - date_o
 
-        forecast_hour = int(dt.seconds / 3600.0 + dt.days * 24)
+        forecast_hour = int(dt.total_seconds())
 
         ip1 = c_int(-1)
         ip2 = c_int(forecast_hour)
@@ -1210,10 +1211,10 @@ class RPN(object):
 
 
 
-
-
-
     def get_datetime_for_the_last_read_record(self):
+        """
+         returns datetime object corresponding to the last read record
+         """
         return self.get_cdf_datetime_for_the_last_read_record()
 
 
