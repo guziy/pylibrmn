@@ -391,7 +391,7 @@ class RPN(object):
         """
 
         if date_o is None:
-            raise Exception("You have to specify origin date")
+            raise Exception("You have to specify origin date, usually it is a start date of your simulation")
 
         dt = date - date_o
 
@@ -536,13 +536,18 @@ class RPN(object):
 
         return key
 
-    def get_record_for_name_and_level(self, varname='', level=-1,
+
+
+    def get_record_key_for_name_and_level(self, varname='', level=-1,
                                       level_kind=level_kinds.ARBITRARY, label=None):
+
         """
-        Search and return 2d field for a given `vaname` and `level`
+        Search and return a key for a 2d field inside of the RPN file for a given <param>vaname</param> and <param>level</param>
         If there are many such records in the rpn file (i.e. for different time steps), then the first one is returned
         Possible `level_kind` values are listed in rpn.level_kinds module
         """
+
+
         ni = c_int(0)
         nj = c_int(0)
         nk = c_int(0)
@@ -579,7 +584,19 @@ class RPN(object):
             raise Exception(
                 "varname = {0}, at level {1} is not found  in {2}.".format(varname, level, self.path))
 
+        return key
+
+
+    def get_record_for_name_and_level(self, varname='', level=-1,
+                                      level_kind=level_kinds.ARBITRARY, label=None):
+        """
+        Search and return 2d field for a given <param>vaname</param> and <param>level</param>
+        If there are many such records in the rpn file (i.e. for different time steps), then the first one is returned
+        Possible `level_kind` values are listed in rpn.level_kinds module
+        """
+        key = self.get_record_key_for_name_and_level(varname=varname, level=level, level_kind=level_kind, label=label)
         return self._get_data_by_key(key).squeeze()
+
 
     def _get_data_by_key(self, record_key):
         """
