@@ -52,8 +52,6 @@ class RPNVariable(object):
 
             self._shape = (nt, nz, nx, ny)
 
-
-
         return self._shape
 
 
@@ -82,12 +80,37 @@ class RPNVariable(object):
         times = self.sorted_dates[slice_t]
         levels = self.sorted_levels[slice_z]
 
+
+        squeeze_time_axis = False
+        squeeze_z_axis = False
+
+        try:
+            _ = (t for t in times)
+        except TypeError:
+            times = [times]
+            squeeze_time_axis = True
+
+        try:
+            _ = (l for l in levels)
+        except TypeError:
+            levels = [levels]
+            squeeze_z_axis = True
+
+
         for ti, t in enumerate(times):
             data.append([])
             for levi, lev in enumerate(levels):
                 data[ti].append(self.rpn_obj._get_data_by_key(self.data_hints[t][lev])[slice_x, slice_y, :].squeeze(axis=2))
 
-        return np.array(data)
+        data = np.array(data)
+
+        if squeeze_time_axis:
+            data = data.squeeze(axis=0)
+
+        if squeeze_z_axis:
+            data = data.squeeze(axis=1 if data.shape == 4 else 0)
+
+        return data
 
 
 

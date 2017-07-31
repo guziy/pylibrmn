@@ -360,6 +360,8 @@ class RPN(object):
 
         self._variables = None
 
+
+
     @property
     def variables(self):
         if self._variables is None:
