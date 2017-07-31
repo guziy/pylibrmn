@@ -49,7 +49,7 @@ Out[1]: OrderedDict([('AB', <rpn.variable.RPNVariable at 0x2ace2f9f7400>),
 Out[2]: (8, 1, 412, 220)
 ```
 
-**Note**: that the code below should not use the variable outside the with block, because the file is closed upon exit from the block.
+**Note**: that the code above should not use the variable outside the with block, because the file is closed upon exit from the block.
 If you want to defer the reading of the data and keep variables, you can use the library as follows:
 
 ```python
