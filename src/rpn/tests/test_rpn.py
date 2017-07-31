@@ -221,15 +221,21 @@ class TestRpn(RPN):
             msg=msg.format(nlevs, ntimes, self.default_var_name))
 
     def test_ip1_level_kind(self):
+        """
+        Test conversion from ip1 to the real value of a vertical level
+        :return:
+        """
 
-        expect_lev = 36081.8
-        ip1 = 72712562
-        calc_lev = self.ip1_to_real_val(ip1=ip1)
-        msg = "Expect {} for ip1={}, but got {}".format(expect_lev, ip1, calc_lev)
-        ok_(np.abs(calc_lev - expect_lev) < 0.1, msg=msg)
-        pass
+        def __test_ip1_to_level(ip1=72712562, expect_lev=36081.8, tolerance=0.1):
+            calc_lev = self.ip1_to_real_val(ip1=ip1)
+            msg = "Expect {} for ip1={}, but got {}".format(expect_lev, ip1, calc_lev)
+            ok_(np.abs(calc_lev - expect_lev) < tolerance, msg=msg)
 
-
+        __test_ip1_to_level()
+        __test_ip1_to_level(ip1=93423264, expect_lev=1)  # hydrid
+        __test_ip1_to_level(ip1=0, expect_lev=0)  # surface
+        __test_ip1_to_level(ip1=975, expect_lev=975, tolerance=1.0e-6)  # pressure
+        __test_ip1_to_level(ip1=60068832, expect_lev=3, tolerance=1.0e-6)  # arbitrary
 
     def teardown(self):
         """
