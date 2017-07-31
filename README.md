@@ -54,7 +54,10 @@ If you want to defer the reading of the data and keep variables, you can use the
 
 ```python
 from rpn.rpn import RPN
-
+r =  RPN("pm1979010100_03506400p")
+pr_var = r.variables["PR"]
+agg = do_stuff(pr_var)
+r.close()
 ```
 
 
