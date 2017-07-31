@@ -6,7 +6,7 @@ The wrapping is done using ctypes python package. The library works with Python 
 
 News
 ------------
-Recently, in the attempt to simplify the interface of the library and make it usable with dask, the library API was updated. The interface similar to the nteCDF4 is added. 
+Recently, in the attempt to simplify the interface of the library and make it usable with dask, the library API was updated. The interface similar to the nteCDF4 was added. 
 So now it is possible to extract data from a file in 3 lines of code. 
 
 
