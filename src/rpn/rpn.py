@@ -1,7 +1,7 @@
 # The next line is required so the imports work in py2.7 unchanged as in py3.4
 from __future__ import absolute_import
 
-from collections import defaultdict
+from collections import defaultdict, OrderedDict
 
 from rpn import data_types
 from ctypes import *
@@ -13,6 +13,8 @@ from datetime import timedelta
 import copy
 import logging
 import sys
+
+from rpn.variable import RPNVariable
 
 __author__ = "huziy"
 __date__ = "$Apr 5, 2011 12:26:05 PM$"
@@ -356,6 +358,23 @@ class RPN(object):
         # possible values: standard, 365_day, 360_day
         self.calendar = calendar
 
+        self._variables = None
+
+    @property
+    def variables(self):
+        if self._variables is None:
+            # initialize the dict of RPNVariable objects
+
+            self._variables = OrderedDict()
+
+            for vname in self.get_list_of_varnames():
+                if vname in [">>", "^^", "HY", "!!"]:
+                    continue
+
+                self._variables[vname] = RPNVariable(self, vname)
+
+        return self._variables
+
     @property
     def file_unit(self):
         return self._file_unit.value
@@ -587,6 +606,18 @@ class RPN(object):
 
         return key
 
+
+    def get_field_shape(self, varname=""):
+        """
+        get the shape of a field inside of the rpn file without reading the field into memory
+        (ni, nj) corresponding to the (longitude, latitude) dimensions, respectively
+        :param key:
+        """
+        key = self.get_record_key_for_name_and_level(varname=varname)
+        return tuple([s.value for s in self._get_record_info(key=key, update_current_info=False)["shape"][:2]])
+
+
+
     def get_date_level_key_mapping_for_name(self, varname=""):
         """
         Get the mapping of date: {level: key} for the varname, that should be used for lazy loading of the data
@@ -627,7 +658,7 @@ class RPN(object):
             # get the level
             ip1 = info["ip"][0].value
 
-            level = self.ip1_to_real_val(ip1, level_kind=None)
+            level = self.ip1_to_real_val(ip1)
 
             result[d][level] = key
 
@@ -1192,9 +1223,8 @@ class RPN(object):
 
     def ip1_to_real_val(self, ip1=0):
         """
-
+        Note: level_kind is determined from ip1
         :param ip1:
-        :param level_kind: if none, then level_kind will be derived from the ip1 value, by default the level kind is ARBITRARY
         :return:
         """
 
@@ -1203,7 +1233,7 @@ class RPN(object):
         level_value = c_float(-1)
 
         kind = c_int(-1)
-        mode = c_int(-1)  # to get the level_kind
+        mode = c_int(-1)
         flag = c_int(0)
 
         # print 'before convip'
