@@ -220,6 +220,17 @@ class TestRpn(RPN):
         ok_(ntimes == 1 and nlevs == 1,
             msg=msg.format(nlevs, ntimes, self.default_var_name))
 
+    def test_ip1_level_kind(self):
+
+        expect_lev = 36081.8
+        ip1 = 72712562
+        calc_lev = self.ip1_to_real_val(ip1=ip1)
+        msg = "Expect {} for ip1={}, but got {}".format(expect_lev, ip1, calc_lev)
+        ok_(np.abs(calc_lev - expect_lev) < 0.1, msg=msg)
+        pass
+
+
+
     def teardown(self):
         """
             Called after each test
@@ -283,6 +294,8 @@ def test_polar_stereographic():
 
 def teardown():
     print("tearing down the test suite")
+
+
 
 
 if __name__ == "__main__":
