@@ -75,7 +75,7 @@ r.close()
 
 
 
-Example
+Examples
 ------------
 
 The examples moved to the [wiki](https://github.com/guziy/pylibrmn/wiki) of the project.
