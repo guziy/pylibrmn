@@ -28,14 +28,23 @@ memory, which makes it a perfect for use with dask.
 from rpn.rpn import RPN
 with RPN("pm1979010100_03506400p") as r:
     pr_var = r.variables["PR"]
+
     # you can also get the list of fields in the file as below
-    print(r.variables) 
+    print(r.variables)
 
+    # get the shape of the data (still no field values are read)
     print(pr_var.shape)
+    
+    # get the dates correponding to the time dimension
+    print([str(d) for d in pr_var.sorted_dates])
+    
+    # get the level values corresponing to the vertical dimension
+    print([lev for lev in pr_var.sorted_levels])
 ```
 
 
 ```
+
 Out[1]: OrderedDict([('AB', <rpn.variable.RPNVariable at 0x2ace2f9f7400>),
              ('AD', <rpn.variable.RPNVariable at 0x2ace2fb3fc88>),
              ('AH', <rpn.variable.RPNVariable at 0x2ace2fb3fd68>),
@@ -47,6 +56,10 @@ Out[1]: OrderedDict([('AB', <rpn.variable.RPNVariable at 0x2ace2f9f7400>),
              ('AV', <rpn.variable.RPNVariable at 0x2ace2fa17c18>),....
 
 Out[2]: (8, 1, 412, 220)
+
+Out[3]: ['2012-05-01 03:00:00', '2012-05-01 06:00:00', '2012-05-01 09:00:00', '2012-05-01 12:00:00', '2012-05-01 15:00:00', '2012-05-01 18:00:00', '2012-05-01 21:00:00', '2012-05-02 00:00:00']
+
+Out[4]: array([ 0.])
 ```
 
 **Note**: that the code above should not use the variable outside the with block, because the file is closed upon exit from the block.
