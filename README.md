@@ -19,8 +19,8 @@ with RPN("pm1979010100_03506400p") as r:
     
 ```
 
-Moreover it is possible to get some information about the variables even without reading the data into 
-memory, which makes it a perfect for use with dask.  
+Moreover, it is possible to get some information about the variables even without reading the data into 
+memory, which makes it a perfect candidate for use with dask.  
 
 ```python
 # This example reads precipitation variable metadata without actually reading of the precipitation data
