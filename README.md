@@ -90,7 +90,7 @@ This package is a wrapper around the FORTRAN version of librmn, so it needs this
 * nose (if you want to run tests)
 
 
-Install
+Installation
 ------------
 
 * `pip` can be used to install the package:
