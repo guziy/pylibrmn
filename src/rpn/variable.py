@@ -81,6 +81,15 @@ class RPNVariable(object):
         levels = self.sorted_levels[slice_z]
 
 
+        try:
+            _ = (t for t in times)
+        except TypeError:
+            times = [times]
+
+        try:
+            _ = (l for l in levels)
+        except TypeError:
+            levels = [levels]
 
 
         for ti, t in enumerate(times):

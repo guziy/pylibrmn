@@ -20,6 +20,25 @@ def test_getting_whole_field():
 
     assert len(data.shape) == 4, "data.shape={}".format(data.shape)
 
+def test_getting_a_point():
+    """
+    Extract 1point
+    """
+    with RPN(in_path) as r:
+        var = r.variables["I5"]
+        shape = var.shape
+        nx, ny = shape[-2:]
+
+
+        data1 = var[0, 0, nx // 2, ny // 2]
+
+
+        data = var[:]
+
+        expect = data.squeeze()[nx // 2, ny // 2]
+        assert expect == data1, "got {}, but expect {}, ".format(data1, expect)
+
+
 
 def test_getting_var_info_without_reading_in_memory():
     with RPN(in_path) as r:
