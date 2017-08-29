@@ -100,7 +100,12 @@ class RPNVariable(object):
         for ti, t in enumerate(times):
             data.append([])
             for levi, lev in enumerate(levels):
-                data[ti].append(self.rpn_obj._get_data_by_key(self.data_hints[t][lev])[slice_x, slice_y, :].squeeze(axis=2))
+
+                data_chunk = self.rpn_obj._get_data_by_key(self.data_hints[t][lev])[slice_x, slice_y, :]
+                if data_chunk.ndim == 3 and data_chunk.shape[-1] == 1:
+                    data_chunk = data_chunk.squeeze(axis=2)
+
+                data[ti].append(data_chunk)
 
         data = np.array(data)
 
