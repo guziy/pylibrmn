@@ -81,20 +81,6 @@ class RPNVariable(object):
         levels = self.sorted_levels[slice_z]
 
 
-        squeeze_time_axis = False
-        squeeze_z_axis = False
-
-        try:
-            _ = (t for t in times)
-        except TypeError:
-            times = [times]
-            squeeze_time_axis = True
-
-        try:
-            _ = (l for l in levels)
-        except TypeError:
-            levels = [levels]
-            squeeze_z_axis = True
 
 
         for ti, t in enumerate(times):
@@ -108,12 +94,6 @@ class RPNVariable(object):
                 data[ti].append(data_chunk)
 
         data = np.array(data)
-
-        if squeeze_time_axis:
-            data = data.squeeze(axis=0)
-
-        if squeeze_z_axis:
-            data = data.squeeze(axis=1 if data.shape == 4 else 0)
 
         return data
 
