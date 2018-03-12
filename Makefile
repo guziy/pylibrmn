@@ -45,6 +45,13 @@ rmnlib_folder = $(dir $(shell s.locate --lib rmn_014))
 rmnlib_name = -lrmn_014
 endif
 
+#Try any available (shared) version of rmnlib
+ifeq ($(strip $(rmnlib_folder)), )
+rmnlib_folder = $(dir $(shell s.locate --lib rmnshared_*))
+rmnlib_name = -lrmnshared_$(shell echo $(basename $(s.locate --lib rmnshared_*)) | cut -d '_' -f 2) 
+rmnlib_name = $(rmnlib_name:.so=)
+endif
+
 
 
 all : $(OBJ) 
