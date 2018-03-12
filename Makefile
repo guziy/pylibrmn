@@ -47,10 +47,18 @@ endif
 
 #Try any available (shared) version of rmnlib
 ifeq ($(strip $(rmnlib_folder)), )
-rmnlib_folder = $(dir $(shell s.locate --lib rmnshared_*))
-rmnlib_name = -lrmnshared_$(shell echo $(basename $(s.locate --lib rmnshared_*)) | cut -d '_' -f 2) 
-rmnlib_name = $(rmnlib_name:.so=)
+rmnlib_path = $(shell s.locate --lib rmnshared_* --lib=shared)
+rmnlib_folder = $(dir $(rmnlib_path))
+rmnlib_name = $(patsubst lib%.so, -l%, $(shell basename $(rmnlib_path)))
 endif
+
+#Try any available (static) version of rmnlib
+ifeq ($(strip $(rmnlib_folder)), )
+rmnlib_path = $(shell s.locate --lib rmn_* --lib=static)
+rmnlib_folder = $(dir $(rmnlib_path))
+rmnlib_name = $(patsubst lib%.a, -l%, $(shell basename $(rmnlib_path)))
+endif
+
 
 
 
