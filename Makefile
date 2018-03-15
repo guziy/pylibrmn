@@ -45,6 +45,21 @@ rmnlib_folder = $(dir $(shell s.locate --lib rmn_014))
 rmnlib_name = -lrmn_014
 endif
 
+#Try any available (shared) version of rmnlib
+ifeq ($(strip $(rmnlib_folder)), )
+rmnlib_path = $(shell s.locate --lib rmnshared_* --lib=shared)
+rmnlib_folder = $(dir $(rmnlib_path))
+rmnlib_name = $(patsubst lib%.so, -l%, $(shell basename $(rmnlib_path)))
+endif
+
+#Try any available (static) version of rmnlib
+ifeq ($(strip $(rmnlib_folder)), )
+rmnlib_path = $(shell s.locate --lib rmn_* --lib=static)
+rmnlib_folder = $(dir $(rmnlib_path))
+rmnlib_name = $(patsubst lib%.a, -l%, $(shell basename $(rmnlib_path)))
+endif
+
+
 
 
 all : $(OBJ) 

@@ -13,9 +13,18 @@ import os
 
 build_dir = os.path.dirname(os.path.realpath(__file__))
 
-if not os.path.isfile(os.path.join(build_dir, native_lib_filename)):
-    os.chdir(build_dir)
+# Add an option to be able to easily disable building of the native part of the library on systems where it is not
+# possible ...
+build_native_lib = True
+BUILD_NATIVE_ENV_VNAME = "BUILD_NATIVE"
+if BUILD_NATIVE_ENV_VNAME in os.environ:
+    build_native_lib = os.environ[BUILD_NATIVE_ENV_VNAME].lower().strip() in ["true", "1"]
+    print("{} = {}".format(BUILD_NATIVE_ENV_VNAME, build_native_lib))
 
+
+# Build native part of the library
+if not os.path.isfile(os.path.join(build_dir, native_lib_filename)) and build_native_lib:
+    os.chdir(build_dir)
     print(os.getcwd())
 
     # build native library using the Makefile
@@ -64,11 +73,11 @@ if not os.path.isfile(os.path.join(build_dir, native_lib_filename)):
 
 long_description = """
 Requires ssm environment and shared version of the fortran version of rmnlib. Works only on linux..
-Written for python 2.7.x and python 3.4.
+Written for python 2.7.x and python 3.x.
 """
 setup(
     name='pylibrmn',
-    version='0.0.22',
+    version='0.0.37',
     packages=['rpn', 'rpn.util', 'rpn.domains', 'rpn.tests', 'rpn_use_examples'],
     # packages=find_packages("."),
     package_dir={'': 'src'},

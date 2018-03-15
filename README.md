@@ -3,7 +3,79 @@ About
 This is a python wrapper around the C/FORTRAN library librmn, which is used for reading RPN files.
 The wrapping is done using ctypes python package. The library works with Python 2.7 or later.
 
-Example
+
+News
+------------
+Recently, in the attempt to simplify the interface of the library and make it usable with dask, the library API was updated. The interface similar to the nteCDF4 was added. 
+So now it is possible to extract data from a file in 3 lines of code. 
+
+
+```python
+# This example reads precipitation data from a file into a 
+# 4D numpy array with the dimensions (time, level, lon, lat)
+from rpn.rpn import RPN
+with RPN("pm1979010100_03506400p") as r:
+    pr_data = r.variables["PR"][:]
+    
+```
+
+Moreover, it is possible to get some information about the variables even without reading the data into 
+memory, which makes it a perfect candidate for use with dask.  
+
+```python
+# This example reads precipitation variable metadata without actually reading of the precipitation data
+# into memory. In order to get data in memory you have to slice the variable. 
+from rpn.rpn import RPN
+with RPN("pm1979010100_03506400p") as r:
+    pr_var = r.variables["PR"]
+
+    # you can also get the list of fields in the file as below
+    print(r.variables)
+
+    # get the shape of the data (still no field values are read)
+    print(pr_var.shape)
+    
+    # get the dates correponding to the time dimension
+    print([str(d) for d in pr_var.sorted_dates])
+    
+    # get the level values corresponing to the vertical dimension
+    print([lev for lev in pr_var.sorted_levels])
+```
+
+
+```
+
+Out[1]: OrderedDict([('AB', <rpn.variable.RPNVariable at 0x2ace2f9f7400>),
+             ('AD', <rpn.variable.RPNVariable at 0x2ace2fb3fc88>),
+             ('AH', <rpn.variable.RPNVariable at 0x2ace2fb3fd68>),
+             ('AI', <rpn.variable.RPNVariable at 0x2ace2fb3f208>),
+             ('AL', <rpn.variable.RPNVariable at 0x2ace2fa17160>),
+             ('AR', <rpn.variable.RPNVariable at 0x2ace2fa17f98>),
+             ('AS', <rpn.variable.RPNVariable at 0x2ace2fa17048>),
+             ('AU', <rpn.variable.RPNVariable at 0x2ace2fa17208>),
+             ('AV', <rpn.variable.RPNVariable at 0x2ace2fa17c18>),....
+
+Out[2]: (8, 1, 412, 220)
+
+Out[3]: ['2012-05-01 03:00:00', '2012-05-01 06:00:00', '2012-05-01 09:00:00', '2012-05-01 12:00:00', '2012-05-01 15:00:00', '2012-05-01 18:00:00', '2012-05-01 21:00:00', '2012-05-02 00:00:00']
+
+Out[4]: array([ 0.])
+```
+
+**Note**: that the code above should not use the variable outside the with block, because the file is closed upon exit from the block.
+If you want to defer the reading of the data and keep variables, you can use the library as follows:
+
+```python
+from rpn.rpn import RPN
+r =  RPN("pm1979010100_03506400p")
+pr_var = r.variables["PR"]
+agg = do_stuff(pr_var)
+r.close()
+```
+
+
+
+Examples
 ------------
 
 The examples moved to the [wiki](https://github.com/guziy/pylibrmn/wiki) of the project.
@@ -18,7 +90,7 @@ This package is a wrapper around the FORTRAN version of librmn, so it needs this
 * nose (if you want to run tests)
 
 
-Install
+Installation
 ------------
 
 * `pip` can be used to install the package:

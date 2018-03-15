@@ -1,5 +1,8 @@
 # The next line is required so the imports work in py2.7 unchanged as in py3.4
 from __future__ import absolute_import
+
+from collections import defaultdict, OrderedDict
+
 from rpn import data_types
 from ctypes import *
 import numpy as np
@@ -11,9 +14,12 @@ import copy
 import logging
 import sys
 
+from rpn.variable import RPNVariable
 
 __author__ = "huziy"
 __date__ = "$Apr 5, 2011 12:26:05 PM$"
+
+SUPPORTED_GRID_TYPES = ["Z", "B", "L", "G", "N", "S"]
 
 
 class RPN(object):
@@ -67,7 +73,8 @@ class RPN(object):
     log_messages_disabled = False
     n_open_files = 0
 
-    def __init__(self, path='', mode='r', start_century=19, ip_new_style=True, print_log_messages=False):
+    def __init__(self, path='', mode='r', start_century=19, ip_new_style=True, print_log_messages=False,
+                 calendar="standard"):
         """
               start_century - is used for the calculation of the origin date, because
               of its ambiguous format MMDDYYR
@@ -105,6 +112,8 @@ class RPN(object):
             if os.path.isfile(path):
                 os.remove(path)
             options = c_char_p('RND'.encode())
+        elif mode == "a":
+            options = c_char_p('STD+RND'.encode())
         else:
             options = c_char_p('RND+R/O'.encode())
         dummy = c_int(0)
@@ -113,10 +122,13 @@ class RPN(object):
         self._dll.fnom_wrapper.restype = c_int
         self._file_unit = c_int()
 
-        ierr = self._dll.fnom_wrapper(byref(self._file_unit), rpn_file_path, options, dummy)
+        fstouv_options = c_char_p("RND".encode()) if mode == "a" else options
+        ierr = self._dll.fnom_wrapper(byref(self._file_unit), rpn_file_path, fstouv_options, dummy)
 
         if ierr != 0:
-            raise IOError("Could not associate {} with rpn in-memory object.\n {} files is currently open. ier = {}".format(rpn_file_path.value, RPN.n_open_files, ierr))
+            raise IOError(
+                "Could not associate {} with rpn in-memory object.\n {} files is currently open. ier = {}".format(
+                    rpn_file_path.value, RPN.n_open_files, ierr))
 
         self.nrecords = self._dll.fstouv_wrapper(self._file_unit, options)
 
@@ -343,6 +355,28 @@ class RPN(object):
 
         RPN.n_open_files += 1  # track number of open files
 
+        # possible values: standard, 365_day, 360_day
+        self.calendar = calendar
+
+        self._variables = None
+
+
+
+    @property
+    def variables(self):
+        if self._variables is None:
+            # initialize the dict of RPNVariable objects
+
+            self._variables = OrderedDict()
+
+            for vname in self.get_list_of_varnames():
+                if vname in [">>", "^^", "HY", "!!"]:
+                    continue
+
+                self._variables[vname] = RPNVariable(self, vname)
+
+        return self._variables
+
     @property
     def file_unit(self):
         return self._file_unit.value
@@ -350,7 +384,6 @@ class RPN(object):
     @file_unit.setter
     def file_unit(self, value):
         raise AttributeError("File unit cannot be set")
-
 
     def _dateo_to_string(self, dateo_int):
         """
@@ -383,11 +416,11 @@ class RPN(object):
         """
 
         if date_o is None:
-            raise Exception("You have to specify origin date")
+            raise Exception("You have to specify origin date, usually it is a start date of your simulation")
 
         dt = date - date_o
 
-        forecast_hour = int(dt.seconds / 3600.0 + dt.days * 24)
+        forecast_hour = int(dt.total_seconds())
 
         ip1 = c_int(-1)
         ip2 = c_int(forecast_hour)
@@ -438,7 +471,7 @@ class RPN(object):
 
         while key >= 0:
             data = self._get_data_by_key(key)
-            lev = self.get_current_level(level_kind=level_kind)
+            lev = self.get_current_level()
 
             if lev in res.keys():
                 msg = "WARNING: this file contains more than one field {0} for the level {1}, " \
@@ -476,7 +509,7 @@ class RPN(object):
             # data = self._get_data_by_key(key)
             # lev = self.get_current_level(level_kind=level_kind)
             # res[lev] = data
-            names.append(self._get_record_info(key)[self.VARNAME_KEY].value.strip().decode())
+            names.append(self._get_record_info(key)[self.VARNAME_KEY])
             key = self._dll.fstsui_wrapper(self._file_unit, byref(ni), byref(nj), byref(nk))
 
         return np.unique(names)
@@ -502,7 +535,7 @@ class RPN(object):
 
     def get_key_of_any_record(self):
         """
-        Returns the key of the first data record, i.e. not >>, ^^ or hy
+        Returns the key of the first data record
         """
         ni = c_int(0)
         nj = c_int(0)
@@ -528,18 +561,24 @@ class RPN(object):
 
         return key
 
-    def get_record_for_name_and_level(self, varname='', level=-1,
-                                      level_kind=level_kinds.ARBITRARY):
+    def get_record_key_for_name_and_level(self, varname='', level=-1,
+                                          level_kind=level_kinds.ARBITRARY, label=None):
+
         """
-        Search and return 2d field for a given `vaname` and `level`
+        Search and return a key for a 2d field inside of the RPN file for a given <param>vaname</param> and <param>level</param>
         If there are many such records in the rpn file (i.e. for different time steps), then the first one is returned
         Possible `level_kind` values are listed in rpn.level_kinds module
         """
+
         ni = c_int(0)
         nj = c_int(0)
         nk = c_int(0)
         datev = c_int(-1)
-        etiket = create_string_buffer(self.ETIKET_DEFAULT.encode())
+
+        if label is None:
+            etiket = create_string_buffer(self.ETIKET_DEFAULT.encode())
+        else:
+            etiket = create_string_buffer(label.encode() if hasattr(label, "encode") else label)
 
         if level == -1:
             ip1 = c_int(-1)
@@ -567,6 +606,77 @@ class RPN(object):
             raise Exception(
                 "varname = {0}, at level {1} is not found  in {2}.".format(varname, level, self.path))
 
+        return key
+
+
+    def get_field_shape(self, varname=""):
+        """
+        get the shape of a field inside of the rpn file without reading the field into memory
+        (ni, nj) corresponding to the (longitude, latitude) dimensions, respectively
+        :param key:
+        """
+        key = self.get_record_key_for_name_and_level(varname=varname)
+        return tuple([s.value for s in self._get_record_info(key=key, update_current_info=False)["shape"][:2]])
+
+
+
+    def get_date_level_key_mapping_for_name(self, varname=""):
+        """
+        Get the mapping of date: {level: key} for the varname, that should be used for lazy loading of the data
+        :param varname:
+        """
+        ip1 = c_int(-1)
+        ip2 = c_int(-1)
+        ip3 = c_int(-1)
+
+        ni = c_int(-1)
+        nj = c_int(-1)
+        nk = c_int(-1)
+
+        etiket = create_string_buffer(self.ETIKET_DEFAULT.encode())
+        in_typvar = create_string_buffer(self.VARTYPE_DEFAULT.encode())
+        in_nomvar = create_string_buffer(varname.encode())
+        key = self._dll.fstinf_wrapper(self._file_unit, byref(ni), byref(nj), byref(nk), c_int(-1), etiket,
+                                       ip1, ip2, ip3, in_typvar, in_nomvar)
+
+        result = defaultdict(dict)
+        while key >= 0:
+            # data = self._get_data_by_key(key)
+            # lev = self.get_current_level(level_kind=level_kind)
+            # res[lev] = data
+
+
+            # read info corresponding to the key from the standard file
+            info = self._get_record_info(key)
+
+            # get the date for the key
+            forecast_hour = info["ip"][1].value
+            from netcdftime import utime
+
+            cdf_time = utime("hours since {:%Y-%m-%d %H:%M:%S}".format(self._current_info["dateo"]),
+                             calendar=self.calendar)
+            d = cdf_time.num2date(forecast_hour)
+
+            # get the level
+            ip1 = info["ip"][0].value
+
+            level = self.ip1_to_real_val(ip1)
+
+            result[d][level] = key
+
+            # get the next key for the variable
+            key = self._dll.fstsui_wrapper(self._file_unit, byref(ni), byref(nj), byref(nk))
+
+        return result
+
+    def get_record_for_name_and_level(self, varname='', level=-1,
+                                      level_kind=level_kinds.ARBITRARY, label=None):
+        """
+        Search and return 2d field for a given <param>vaname</param> and <param>level</param>
+        If there are many such records in the rpn file (i.e. for different time steps), then the first one is returned
+        Possible `level_kind` values are listed in rpn.level_kinds module
+        """
+        key = self.get_record_key_for_name_and_level(varname=varname, level=level, level_kind=level_kind, label=label)
         return self._get_data_by_key(key).squeeze()
 
     def _get_data_by_key(self, record_key):
@@ -645,14 +755,59 @@ class RPN(object):
 
         return result
 
+    def get_tictacs_for_the_last_read_record(self):
+        """ Returns 1D arrays in rotated lat/lon coordinates"""
+
+        if self._current_info is None:
+            raise Exception("No records has been read yet, or its metadata has not yet been saved.")
+
+        if self._current_info[self.VARNAME_KEY] in [">>", "^^"]:
+            raise Exception("Trying to get coordinates for coordinate records, this operation is only "
+                            "possible for data records. Please read in some data field first")
+
+        # Make sure the internal info is not modified by the extraction of coordinates
+        _info_backup = copy.deepcopy(self._current_info)
+
+        ig = self._current_info['ig']
+
+        ni = c_int(0)
+        nj = c_int(0)
+        nk = c_int(0)
+        datev = c_int(-1)
+        etiket = create_string_buffer(self.ETIKET_DEFAULT.encode())
+
+        # print ig
+        ip1, ip2, ip3 = ig[:3]
+        in_typvar = create_string_buffer(self.VARTYPE_DEFAULT.encode())
+
+        in_nomvar = create_string_buffer(">>".encode())
+
+        key_hor = self._dll.fstinf_wrapper(self._file_unit, byref(ni), byref(nj), byref(nk), datev, etiket,
+                                           ip1, ip2, ip3, in_typvar, in_nomvar)
+
+        in_nomvar = create_string_buffer("^^".encode())
+        key_ver = self._dll.fstinf_wrapper(self._file_unit, byref(ni), byref(nj), byref(nk), datev, etiket,
+                                           ip1, ip2, ip3, in_typvar, in_nomvar)
+
+        if key_hor < 0 or key_ver < 0:
+            raise Exception("key value is not valid {0}".format(min(key_hor, key_ver)))
+
+        rlons = self._get_data_by_key(key_hor).squeeze()
+        rlats = self._get_data_by_key(key_ver).squeeze()
+
+        self._current_info = _info_backup
+
+        return rlons, rlats
+
     def get_longitudes_and_latitudes_for_the_last_read_rec(self):
         """
+        Note: should not be called within a loop using get_next_record, because it'll mess up the search query for the records
         finds georeference
         """
         if self._current_info is None:
             raise Exception("No records has been read yet, or its metadata has not yet been saved.")
 
-        if self._current_info[self.VARNAME_KEY].value.decode().strip() in [">>", "^^"]:
+        if self._current_info[self.VARNAME_KEY] in [">>", "^^"]:
             raise Exception("Trying to get coordinates for coordinate records, this operation is only "
                             "possible for data records. Please read in some data field first")
 
@@ -665,6 +820,9 @@ class RPN(object):
 
         grid_type = current_info["grid_type"]
         ni, nj, nk = current_info["shape"]
+
+        if grid_type.strip().upper() not in SUPPORTED_GRID_TYPES:
+            raise NotImplementedError("unknown grid type {}".format(grid_type.strip().upper()))
 
         # B grid type
         if grid_type.strip().upper() == "B":
@@ -702,7 +860,7 @@ class RPN(object):
             ll_lon = c_float(-1)
             dlon = c_float(-1)
             dlat = c_float(-1)
-            self._dll.cig_to_xg_wrapper(grid_type,
+            self._dll.cig_to_xg_wrapper(create_string_buffer(grid_type.encode()),
                                         byref(ll_lat), byref(ll_lon), byref(dlat), byref(dlon),
                                         ig[0], ig[1], ig[2], ig[3])
 
@@ -714,7 +872,31 @@ class RPN(object):
             lons1d = dlonv * np.arange(ni) + ll_lonv
             lats1d = dlatv * np.arange(nj) + ll_latv
 
-            return np.meshgrid(lats1d, lons1d)
+            lats2d, lons2d = np.meshgrid(lats1d, lons1d)
+            return lons2d, lats2d
+
+        if grid_type.strip().upper() == "G":
+            lon_min = 0.0
+            dlon = 360.0 / float(ni)
+
+            lons = [lon_min + dlon * i for i in range(ni)]
+
+            from rpn.domains import gauss_grid
+            lats = gauss_grid.gaussian_latitudes(nj)[0]
+            if ig[0].value == 1:  # Northen hemisphere
+                lats = lats[nj:]
+            elif ig[0].value == 2:  # Southern hemisphere
+                lats = lats[:nj]
+            else:  # global
+                lats = gauss_grid.gaussian_latitudes(nj // 2)[0]
+
+            if ig[1].value == 0:  # South -> North (pt (1,1) is at the bottom of the grid)
+                pass
+            else:  # North -> South (pt (1,1) is at the top of the grid)
+                lats = reversed(lats)
+
+            lats2d, lons2d = np.meshgrid(lats, lons)
+            return lons2d, lats2d
 
         if grid_type.strip().upper() in ["N", "S"]:
             from rpn.util import polar_stereographic as ps
@@ -795,9 +977,8 @@ class RPN(object):
         An rpn file can contain several
         """
 
-
         sys.stderr.write("Warning this function is deprecated, it works only for Z grid types \n"
-              "Please use RPN.get_longitudes_and_latitudes_for_the_last_read_rec()\n")
+                         "Please use RPN.get_longitudes_and_latitudes_for_the_last_read_rec()\n")
 
         key = self.get_key_of_any_record()
         info = self._get_record_info(key, verbose=True)  # sets grid type
@@ -866,21 +1047,21 @@ class RPN(object):
     def reset_current_info(self):
         self._current_info = None
 
-    def get_first_record_for_name(self, varname):
+    def get_first_record_for_name(self, varname, label=None):
         """
         returns first met record for the field varname
         """
-        return self.get_first_record_for_name_and_level(varname, -1)
+        return self.get_first_record_for_name_and_level(varname, -1, label=label)
 
     def get_first_record_for_name_and_level(self, varname='', level=-1,
-                                            level_kind=level_kinds.ARBITRARY):
+                                            level_kind=level_kinds.ARBITRARY, label=None):
         """
         returns data of the first encountered record that satisfies the
         query, and returns the 2d field, if the rcord is 3d then it takes the 2d subset
         corresponding to the first 3rd dimension
         """
         return self.get_record_for_name_and_level(varname=varname, level=level,
-                                                  level_kind=level_kind)
+                                                  level_kind=level_kind, label=label)
 
     def _get_record_info(self, key, verbose=False, update_current_info=True):
         """
@@ -954,7 +1135,8 @@ class RPN(object):
                 # print(e1)
                 # print(dateo.value)
                 dateo_s = "{0}010101000000".format(self.start_century)
-                sys.stderr.write("dateo is not set, using default:{0}\n".format(dateo_s))
+                sys.stderr.write(
+                    "dateo is not set for {}, using default:{}\n".format(nomvar.value.decode().strip(), dateo_s))
                 the_dateo = datetime.strptime(dateo_s, self._dateo_format)
 
         # if the_dateo.year // 100 != self.start_century:
@@ -967,13 +1149,14 @@ class RPN(object):
                   'dateo': the_dateo,
                   'dt_seconds': dt_seconds,
                   'npas': npas,
-                  'varname': nomvar,
+                  'varname': nomvar.value.decode().strip(),
                   "var_type": typvar,
                   "data_type": datyp,
                   "nbits": nbits,
                   "grid_type": grid_type,
                   "dateo_rpn_format": dateo,
-                  "extra1": extra1}
+                  "extra1": extra1,
+                  "label": etiket.value}
 
         if update_current_info:
             self._current_info = result  # update info from the last read record
@@ -986,18 +1169,31 @@ class RPN(object):
         data_type = self._current_info["data_type"].value
         nbits = self._current_info["nbits"].value
         if nbits == 32:
-            if data_type in [data_types.IEEE_floating_point, data_types.compressed_IEEE, data_types.floating_point]:
+            if data_type in [data_types.IEEE_floating_point, data_types.compressed_IEEE, data_types.floating_point,
+                             data_types.masked_floating_point]:
                 return np.float32
             elif data_type == data_types.signed_integer:
                 # print "data_type = ", data_type
                 return np.int32
+            else:
+                sys.stderr.write(
+                    "The datatype for >>{}<< is not recognized, using float32\n".format(self._current_info["varname"]))
+                return np.float32
+
         elif nbits == 64:
             return np.float64
         elif nbits == 16 or nbits == 24:
             if data_type in [data_types.compressed_floating_point, data_types.floating_point,
-                             data_types.floating_point_16_bit, data_types.IEEE_floating_point, data_types.compressed_IEEE]:
+                             data_types.floating_point_16_bit, data_types.IEEE_floating_point,
+                             data_types.compressed_IEEE]:
                 return np.float32
             return np.float16
+        elif nbits == 8:
+            if data_type in [data_types.unsigned_integer]:
+                return np.uint32
+            else:
+                sys.stderr.write(
+                    "The datatype is >>{}<< and >>{}<< bits \n".format(data_type, nbits))
         else:
             raise Exception("nbits is: {0}".format(nbits))
 
@@ -1020,21 +1216,32 @@ class RPN(object):
 
         return self._get_data_by_key(key)[:, :, 0]
 
-    def get_current_level(self, level_kind=level_kinds.ARBITRARY):
+    def get_current_level(self):
         """
         returns level value for the last read record
         """
         ip1 = self._current_info['ip'][0]
-        # print 'ip1 = ', ip1
-        level_value = c_float(-1)
-        mode = c_int(-1)  # from ip to real value
-        kind = c_int(level_kind)
-        flag = c_int(0)
+        return self.ip1_to_real_val(ip1.value)
+
+    def ip1_to_real_val(self, ip1=0):
+        """
+        Note: level_kind is determined from ip1
+        :param ip1:
+        :return:
+        """
+
+        ip1_ = c_int(ip1)
         string = create_string_buffer(' '.encode(), 128)
+        level_value = c_float(-1)
+
+        kind = c_int(-1)
+        mode = c_int(-1)
+        flag = c_int(0)
+
         # print 'before convip'
-        self._dll.convip_wrapper(byref(ip1), byref(level_value), byref(kind), byref(mode), string, byref(flag))
+        self._dll.convip_wrapper(byref(ip1_), byref(level_value), byref(kind), byref(mode), string, byref(flag))
+
         return level_value.value
-        pass
 
     def get_current_validity_date(self):
         """
@@ -1055,7 +1262,56 @@ class RPN(object):
         else:
             raise Exception("No current info has been stored: please make sure you read some records first.")
 
+    def get_cdf_datetime_for_the_last_read_record(self):
+        """
+        use netcdftime, which supports different calendar types
+        :return:
+        """
+        if self._current_info is not None:
+            try:
+
+                # extra can contain the validity date
+                extra1 = self._current_info["extra1"].value
+                if extra1 > 0:
+                    date_s = self._dateo_to_string(extra1)
+                    return datetime.strptime(date_s, self._dateo_format)
+
+                forecast_hour = self.get_current_validity_date()
+                assert forecast_hour >= 0
+
+                if not hasattr(self, "dateo_fallback"):
+                    self.dateo_fallback = self._current_info["dateo"]
+
+                from netcdftime import utime
+
+                cdf_time = utime("hours since {:%Y-%m-%d %H:%M:%S}".format(self._current_info["dateo"]),
+                                 calendar=self.calendar)
+
+                d = cdf_time.num2date(forecast_hour)
+                print(d, forecast_hour, self._current_info["dateo"])
+
+                if d < self.dateo_fallback:
+                    print("sim date appears to be earlier than the start date")
+                    print("falling back to the previous date of origin")
+                    print(self._current_info["dt_seconds"].value / 60.0 / 60.0)
+                    print(self.dateo_fallback, self._current_info["dateo"])
+                    print(forecast_hour)
+                    raise Exception()
+
+                return d
+            except Exception as exc:
+                print(exc)
+                raise Exception("problem when reading file {0}".format(self.path))
+        else:
+            raise Exception("No current info has been stored: please make sure you read some records first.")
+
     def get_datetime_for_the_last_read_record(self):
+        """
+         returns datetime object corresponding to the last read record
+         """
+        return self.get_cdf_datetime_for_the_last_read_record()
+
+    def __get_datetime_for_the_last_read_record(self):
         """
         returns datetime object corresponding to the last read record
         """
@@ -1100,7 +1356,7 @@ class RPN(object):
         result = {}
         data1 = self.get_first_record_for_name(name)
         while data1 is not None:
-            level = self.get_current_level(level_kind=level_kind)
+            level = self.get_current_level()
             time = self.get_current_validity_date()
 
             if time not in result:
@@ -1124,7 +1380,7 @@ class RPN(object):
         data1 = self.get_first_record_for_name(name)
 
         while data1 is not None:
-            level = self.get_current_level(level_kind=level_kind)
+            level = self.get_current_level()
             time = self.get_datetime_for_the_last_read_record()
 
             time_slice = result.get(time, {})
@@ -1137,19 +1393,19 @@ class RPN(object):
 
         return result
 
-    def get_2D_field_on_all_levels(self, name='SAND', level_kind=level_kinds.ARBITRARY):
+    def get_2D_field_on_all_levels(self, name='SAND'):
         """
         returns a map {level => 2d field}
         Use this method if you are sure that the field yu want to get has only one record per level
         """
         result = {}
         data1 = self.get_first_record_for_name(name)
-        result[self.get_current_level(level_kind=level_kind)] = data1
+        result[self.get_current_level()] = data1
 
         while data1 is not None:
             data1 = self.get_next_record()
             if data1 is not None:
-                result[self.get_current_level(level_kind=level_kind)] = data1
+                result[self.get_current_level()] = data1
         return result
 
     def get_ip1_from_level(self, level, level_kind=level_kinds.ARBITRARY):
@@ -1171,6 +1427,11 @@ class RPN(object):
         @param properties: a dict, contains variable attributes (no ctypes)
                 attributes: name, level, level_kind ...
         """
+
+        # Make the function work with the current_info dictionary
+        if "varname" in properties:
+            properties["name"] = properties["varname"]
+
         self.write_2D_field(data=data, **properties)
 
     def write_2D_field(self, name='', level=1, level_kind=level_kinds.ARBITRARY,
@@ -1204,6 +1465,10 @@ class RPN(object):
 
         if isinstance(grid_type, bytes):
             grid_type = grid_type.decode()
+
+        # Change nbits sign
+        if nbits > 0:
+            nbits *= -1
 
         if nbits == -32 or nbits == -16:
             data = data.astype(np.float32)
@@ -1268,10 +1533,10 @@ class RPN(object):
         else:
             ig1, ig2, ig3, ig4 = map(c_int, [0, 0, 0, 0])
 
-        typvar = create_string_buffer(typ_var.encode())
-        nomvar = create_string_buffer(name.encode())
-        etiket = create_string_buffer(label.encode())
-        grtyp = create_string_buffer(grid_type.encode())
+        typvar = create_string_buffer(typ_var.encode() if hasattr(typ_var, "encode") else typ_var)
+        nomvar = create_string_buffer(name.encode() if hasattr(name, "encode") else name)
+        etiket = create_string_buffer(label.encode() if hasattr(label, "encode") else label)
+        grtyp = create_string_buffer(grid_type.encode() if hasattr(grid_type, "encode") else grid_type)
         datyp = c_int(data_type)
         rewrite = c_int(1)
 
@@ -1350,7 +1615,7 @@ class RPN(object):
         works as self.get_3D_field, but instead of the map
         {level: 2d record} it returns the map {date: 2d record}
         Use this methond only in the case if you are sure that
-        the field you are trying to read containsonly one record for each time step
+        the field you are trying to read contains only one record for each time step
 
         Warning it is not safe to use this RPN object while iterating over the generator
 
@@ -1365,7 +1630,7 @@ class RPN(object):
 
     def get_current_info(self):
         """
-        return current info of just read record
+        return current info of just read record, returns values are not ctype objects
         """
         info_copy = {}
         for k, v in self._current_info.items():
@@ -1380,6 +1645,14 @@ class RPN(object):
             info_copy[k] = v
 
         return info_copy
+
+    # implement with interface
+    def __enter__(self):
+        return self
+
+    # implement with interface
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self.close()
 
 
 def test():

@@ -15,5 +15,7 @@ compressed_short_integer = 130
 compressed_IEEE = 133
 compressed_floating_point = 134
 
+masked_floating_point = 197
+
 if __name__ == "__main__":
     print("Hello World")

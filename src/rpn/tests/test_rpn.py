@@ -23,6 +23,7 @@ def test_write_field_2d_clean():
     """
     import os
     tfile = "temp.rpn"
+    r = None
     try:
         r = RPN(tfile, mode="w")
         data = np.random.randn(10, 10)
@@ -33,7 +34,6 @@ def test_write_field_2d_clean():
         r = RPN(tfile)
         data1 = r.get_first_record_for_name("RAND")
         v0, v1 = data.mean(), data1.mean()
-
 
         ok_(abs(v1 - v0) <= 1e-6, "Saved ({0}) and retrieved ({1}) means are not the same.".format(v0, v1))
 
@@ -50,7 +50,7 @@ def test_write_field_2d_64bits():
     """
     import os
     tfile = "temp.rpn"
-
+    r = None
     try:
         r = RPN(tfile, mode="w")
         data = np.random.randn(10, 10)
@@ -86,23 +86,24 @@ class TestRpn(RPN):
     def test_get_longitudes_and_latitudes_of_the_last_read_record(self):
         """
         Test get_longitudes_and_latitudes_for_the_last_read_rec
-        and get_next_record
         """
         data = []
         nrecords_read = 0
-        nrecords_total = self.get_number_of_records()
         while data is not None:
             data = self.get_next_record()
             if data is None:
                 break
             nrecords_read += 1
+            print(self.get_current_info())
 
-            if self.get_current_info()["varname"] == self.default_var_name:
-                _, _ = self.get_longitudes_and_latitudes_for_the_last_read_rec()
 
-        ok_(nrecords_read == nrecords_total,
-            "Number of records read = {0} is not equal to the"
-            " total number of records in the file = {1}".format(nrecords_read, nrecords_total))
+        ok_(nrecords_read >= 1, msg="At least one record should have been read")
+        ok_(nrecords_read == self.get_number_of_records(), "Should have read all {} records, but got only {}".format(self.get_number_of_records(), nrecords_read))
+
+        # there is only I5 and >>, ^^ in the file, which won't mess the current_info dictionary
+        if self.get_current_info()["varname"] == self.default_var_name:
+            _, _ = self.get_longitudes_and_latitudes_for_the_last_read_rec()
+
 
     def test_compare_with_ggstat(self):
         if not is_rdiag_available():
@@ -163,6 +164,15 @@ class TestRpn(RPN):
         ok_(">>" in the_names, "Expected to find >> variable in {}".format(self.path))
         ok_("^^" in the_names, "Expected to find ^^ variable in {}".format(self.path))
 
+
+    def test_get_tictacs_not_fails(self):
+        i5 = self.get_first_record_for_name("I5")
+        rlon, rlat = self.get_tictacs_for_the_last_read_record()
+        lons, lats = self.get_longitudes_and_latitudes_for_the_last_read_rec()
+
+        ok_(lons.shape == (rlon.shape[0], rlat.shape[0]), "Expected len(rlon)={} and len(rlat)={}, but got len(rlon)={} and len(rlat)={}".format(lons.shape[0], lons.shape[1], len(rlon), len(rlat)))
+
+
     def test_get_grid_parameters_for_the_last_read_rec(self):
         """
         Test if the coordinates of the two equator points are identified correctly from the file
@@ -210,6 +220,23 @@ class TestRpn(RPN):
         ok_(ntimes == 1 and nlevs == 1,
             msg=msg.format(nlevs, ntimes, self.default_var_name))
 
+    def test_ip1_level_kind(self):
+        """
+        Test conversion from ip1 to the real value of a vertical level
+        :return:
+        """
+
+        def __test_ip1_to_level(ip1=72712562, expect_lev=36081.8, tolerance=0.1):
+            calc_lev = self.ip1_to_real_val(ip1=ip1)
+            msg = "Expect {} for ip1={}, but got {}".format(expect_lev, ip1, calc_lev)
+            ok_(np.abs(calc_lev - expect_lev) < tolerance, msg=msg)
+
+        __test_ip1_to_level()
+        __test_ip1_to_level(ip1=93423264, expect_lev=1)  # hydrid
+        __test_ip1_to_level(ip1=0, expect_lev=0)  # surface
+        __test_ip1_to_level(ip1=975, expect_lev=975, tolerance=1.0e-6)  # pressure
+        __test_ip1_to_level(ip1=60068832, expect_lev=3, tolerance=1.0e-6)  # arbitrary
+
     def teardown(self):
         """
             Called after each test
@@ -218,6 +245,7 @@ class TestRpn(RPN):
 
 
 def test_get_records_for_foreacst_hour():
+    r_obj = None
     try:
         r_obj = RPN(in_path)
         n_records = r_obj.get_number_of_records()
@@ -234,7 +262,8 @@ def test_get_records_for_foreacst_hour():
         #assert_(len(res) == 1, msg="Only one record in the file for the forecast_hour = 0")
     
     finally:
-        r_obj.close()
+        if r_obj is not None:
+            r_obj.close()
 
 
 def test_polar_stereographic():
@@ -242,6 +271,7 @@ def test_polar_stereographic():
     Testing polar stereographic grid functions
     """
     path = get_input_file_path("mappe.rpnw", the_dir)
+    r = None
     try:
         r = RPN(path)
         mk = r.get_first_record_for_name("MK")
@@ -264,10 +294,14 @@ def test_polar_stereographic():
         ok_(np.abs(lats[-11, -11] - expect) < 1.0e-2, msg=msg)
 
     finally:
-        r.close()
+        if r is not None:
+            r.close()
+
 
 def teardown():
     print("tearing down the test suite")
+
+
 
 
 if __name__ == "__main__":
