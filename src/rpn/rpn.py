@@ -655,7 +655,12 @@ class RPN(object):
 
             cdf_time = utime("hours since {:%Y-%m-%d %H:%M:%S}".format(self._current_info["dateo"]),
                              calendar=self.calendar)
-            d = cdf_time.num2date(forecast_hour)
+
+            try:
+                d = cdf_time.num2date(forecast_hour)
+            except ValueError as verr:
+                print(info)
+                raise verr
 
             # get the level
             ip1 = info["ip"][0].value
