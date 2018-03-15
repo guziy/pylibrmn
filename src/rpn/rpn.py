@@ -650,7 +650,11 @@ class RPN(object):
             info = self._get_record_info(key)
 
             # get the date for the key
-            forecast_hour = info["ip"][1].value
+
+            # previously was coded like this, but it is not general enough
+            # forecast_hour = info["ip"][1].value
+            forecast_hour = info["deet"].value * info["npas"].value / 3600
+
             from netcdftime import utime
 
             cdf_time = utime("hours since {:%Y-%m-%d %H:%M:%S}".format(self._current_info["dateo"]),
