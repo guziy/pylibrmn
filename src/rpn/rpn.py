@@ -653,7 +653,7 @@ class RPN(object):
 
             # previously was coded like this, but it is not general enough
             # forecast_hour = info["ip"][1].value
-            forecast_hour = info["deet"].value * info["npas"].value / 3600
+            forecast_hour = info["dt_seconds"].value * info["npas"].value / 3600
 
             from netcdftime import utime
 
