@@ -433,10 +433,10 @@ class RPN(object):
         nj = c_int(-1)
         nk = c_int(-1)
 
-        etiket = create_string_buffer(self.ETIKET_DEFAULT)
-        in_typvar = create_string_buffer(self.VARTYPE_DEFAULT)
+        etiket = create_string_buffer(self.ETIKET_DEFAULT.encode())
+        in_typvar = create_string_buffer(self.VARTYPE_DEFAULT.encode())
 
-        in_nomvar = create_string_buffer(var_name)
+        in_nomvar = create_string_buffer(var_name.encode())
 
         key = self._dll.fstinf_wrapper(self._file_unit, byref(ni), byref(nj), byref(nk), c_int(-1), etiket,
                                        ip1, ip2, ip3, in_typvar, in_nomvar)
