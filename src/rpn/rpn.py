@@ -420,7 +420,7 @@ class RPN(object):
 
         dt = date - date_o
 
-        forecast_hour = int(dt.total_seconds())
+        forecast_hour = int(dt.total_seconds() / 3600.0)
 
         ip1 = c_int(-1)
         ip2 = c_int(forecast_hour)
