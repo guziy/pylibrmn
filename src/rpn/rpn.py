@@ -30,7 +30,7 @@ class RPN(object):
         rObj = RPN(path = 'your path', mode = 'w')
 
     methods:
-        get_4d_field(self, name="", level_kind=level_kinds.ARBITRARY)
+        get_4d_field(self, name="", level_kind=level_kinds.ARBITRARY, label=None)
 
         get_list_of_varnames(self)
 
@@ -1358,12 +1358,12 @@ class RPN(object):
         else:
             raise Exception("No current info has been stored: please make sure you read some records first.")
 
-    def get_4d_field_fc_hour_as_time(self, name="", level_kind=level_kinds.ARBITRARY):
+    def get_4d_field_fc_hour_as_time(self, name="", level_kind=level_kinds.ARBITRARY, label=None):
         """
         Returns a map {forecast hour: {z: T(x,y)}}
         """
         result = {}
-        data1 = self.get_first_record_for_name(name)
+        data1 = self.get_first_record_for_name(name, label=label)
         while data1 is not None:
             level = self.get_current_level()
             time = self.get_current_validity_date()
@@ -1380,13 +1380,13 @@ class RPN(object):
 
         pass
 
-    def get_4d_field(self, name="", level_kind=level_kinds.ARBITRARY):
+    def get_4d_field(self, name="", level_kind=level_kinds.ARBITRARY, label=None):
         """
         returns a map
         {t: {z: T(x, y)}}
         """
         result = {}
-        data1 = self.get_first_record_for_name(name)
+        data1 = self.get_first_record_for_name(name, label=label)
 
         while data1 is not None:
             level = self.get_current_level()
