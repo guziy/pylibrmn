@@ -118,6 +118,11 @@ I use the following commands to prepare my environment:
      . s.ssmuse.dot devtools 
      . s.ssmuse.dot diagtools ###Not necessary for using pylibrmn but used for unit testing
 
+The following shortcuts were reported to work on UQAM servers (May 2017):
+
+     . s.ssmuse.dot fulldev-gcc-46 rmnlib-dev
+
+
 To run the tests in ipython:
 
 
