@@ -133,6 +133,13 @@ class RotatedLatLon():
                     llcrnrlon=llcrnrlon, llcrnrlat=llcrnrlat, urcrnrlon=urcrnrlon, urcrnrlat=urcrnrlat)
 
 
+    def get_cartopy_projection_obj(self):
+        import cartopy.crs as ccrs
+        pole_lon, pole_lat = self.get_north_pole_coords()
+        lon_0, _ = self.get_true_pole_coords_in_rotated_system()
+        return ccrs.RotatedPole(pole_longitude=lon_0, pole_latitude=pole_lat)
+
+
 def main():
     rll = RotatedLatLon(lon1=-68, lat1=52, lon2=16.65, lat2=0.0)
     print(rll.rot_matrix)
