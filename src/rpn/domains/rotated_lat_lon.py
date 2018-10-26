@@ -59,7 +59,7 @@ class RotatedLatLon():
                                lon1=self.lon1, lat1=self.lat1, lon2=self.lon2, lat2=self.lat2, label="")
 
         info = rpn_obj.get_current_info
-        ip_xy = map(lambda val: val.value, info["ip"])
+        ip_xy = [val.value for val in info["ip"]]
         ig = ip_xy + [0]
         return ig
 
