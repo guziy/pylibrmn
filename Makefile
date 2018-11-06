@@ -19,6 +19,12 @@ rmnlib_folder=$(dir $(LIBRMN_PATH_FOR_PY))
 rmnlib_name=$(patsubst lib%.so, -l%, $(shell basename $(LIBRMN_PATH_FOR_PY)))
 endif
 
+ifeq ($(strip $(rmnlib_folder)), )
+rmnlib_path = $(shell s.locate --lib 'rmnshared_016*')
+rmnlib_folder = $(dir $(rmnlib_path))
+rmnlib_name = $(patsubst lib%.so, -l%, $(shell basename $(rmnlib_path)))
+endif
+
 
 #V = /sb/software/areas/armnssm/ssm-domains-base/libs/rmnlib-dev/linux24-x86-64/lib/Linux_x86-64/gfortran
 ifeq ($(strip $(rmnlib_folder)), )
