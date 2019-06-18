@@ -28,10 +28,6 @@ def test_write_rpn_32():
         if is_rdiag_available():
             proc = subprocess.Popen(["r.diag", "ggstat", wfile], stdout=subprocess.PIPE)
             (out, err) = proc.communicate()
-            if err != 0:
-                print("Warning: Could not find r.diag, this is not critical, but some tests will not be run.")
-                return
-
             print(out)
             out = out.decode()
             ok_("{:E}".format(arr.max()) in out, "Could not find the max={:E} in {}".format(arr.max(), out))
@@ -61,11 +57,9 @@ def test_write_rpn_compressed():
         r.close()
 
         if is_rdiag_available():
-            proc = subprocess.Popen(["r.diag", "ggstat", wfile], stdout=subprocess.PIPE)
+            proc = subprocess.Popen(["r.diag", "ggstat", wfile], stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                                    shell=False)
             (out, err) = proc.communicate()
-            if err != 0:
-                print("Warning: Could not find r.diag, this is not critical, but some tests will not be run.")
-                return
 
             out = out.decode()
             print(out)

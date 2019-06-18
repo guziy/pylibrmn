@@ -3,6 +3,9 @@ import os
 from nose.tools import ok_
 from rpn.rpn import RPN
 import subprocess
+
+from rpn.util import bash_utils
+
 __author__ = 'huziy'
 
 
@@ -18,11 +21,11 @@ def test_nbits24():
     print(data.shape, data.max(), data.min(), data.mean(), data.var())
     ok_(data.max() <= 1)
 
+    if not bash_utils.is_rdiag_available():
+        return
+    
     proc = subprocess.Popen(["r.diag", "ggstat", path], stdout=subprocess.PIPE)
     (out, err) = proc.communicate()
-    if err != 0:
-        print("Warning: Could not find r.diag, this is not critical, but some tests will not be run.")
-        return
 
     lines = out.split("\n")
     lines = filter(lambda line: ("VF" in line) and ("2 ar" in line), lines)
