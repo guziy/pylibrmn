@@ -7,7 +7,7 @@ The wrapping is done using ctypes python package. The library works with Python 
 News
 ------------
 
-#### Portability 
+#### Portability (2019/06) 
 Now it is possible to install rmnlib (C/Fortran) 
 libraries on your machine using the [rmnlib-install project](https://github.com/mfvalin/rmnlib-install). And then pylibrmn can be linked on top of it. There are some things to tweak (depending on the target Linux system), but it should work.
 
