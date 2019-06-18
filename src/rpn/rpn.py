@@ -89,9 +89,9 @@ class RPN(object):
             print(err)
             self._dll = CDLL('lib/libpyrmn.so', handle=RPN.handle)
 
-        self.VARNAME_DEFAULT = 8 * ' '
-        self.VARTYPE_DEFAULT = 4 * ' '
-        self.ETIKET_DEFAULT = 16 * ' '
+        self.VARNAME_DEFAULT = 5 * ' '
+        self.VARTYPE_DEFAULT = 3 * ' '
+        self.ETIKET_DEFAULT = 13 * ' '
         self.GRIDTYPE_DEFAULT = 'Z'
 
         if ip_new_style:
@@ -120,7 +120,7 @@ class RPN(object):
 
         self._dll.fnom_wrapper.argtypes = [POINTER(c_int), c_char_p, c_char_p, c_int]
         self._dll.fnom_wrapper.restype = c_int
-        self._file_unit = c_int()
+        self._file_unit = c_int(0)
 
         fstouv_options = c_char_p("RND".encode()) if mode == "a" else options
         ierr = self._dll.fnom_wrapper(byref(self._file_unit), rpn_file_path, fstouv_options, dummy)
