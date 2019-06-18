@@ -6,6 +6,12 @@ The wrapping is done using ctypes python package. The library works with Python 
 
 News
 ------------
+
+#### Portability 
+Now it is possible to install rmnlib (C/Fortran) 
+libraries on your machine using the [rmnlib-install project](https://github.com/mfvalin/rmnlib-install). And then pylibrmn can be linked on top of it. There are some things to tweak (depending on the target Linux system), but it should work.
+
+#### New interface
 Recently, in the attempt to simplify the interface of the library and make it usable with dask, the library API was updated. The interface similar to the nteCDF4 was added. 
 So now it is possible to extract data from a file in 3 lines of code. 
 
