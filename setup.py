@@ -1,4 +1,5 @@
-from distutils.core import setup
+# from distutils.core import setup
+from setuptools import setup
 # TODO: get ARMNLIB variable from the environment and compile the rmn_wrapper
 import shutil
 
@@ -77,7 +78,7 @@ Written for python 2.7.x and python 3.x.
 """
 setup(
     name='pylibrmn',
-    version='1.0.0',
+    version='1.0.1',
     packages=['rpn', 'rpn.util', 'rpn.domains', 'rpn.tests', 'rpn_use_examples'],
     # packages=find_packages("."),
     package_dir={'': 'src'},
