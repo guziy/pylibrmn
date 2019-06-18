@@ -96,7 +96,6 @@ class TestRpn(RPN):
             nrecords_read += 1
             print(self.get_current_info())
 
-
         ok_(nrecords_read >= 1, msg="At least one record should have been read")
         ok_(nrecords_read == self.get_number_of_records(), "Should have read all {} records, but got only {}".format(self.get_number_of_records(), nrecords_read))
 
@@ -112,6 +111,9 @@ class TestRpn(RPN):
         data = self.get_first_record_for_name(self.default_var_name)
         proc = subprocess.Popen(["r.diag", "ggstat", self.path], stdout=subprocess.PIPE)
         (out, err) = proc.communicate()
+        if err != 0:
+            print("Warning: Could not find r.diag, this is not critical, but some tests will not be run.")
+            return
 
         lines = out.decode().split("\n")
         lines = list(filter(lambda line: ("I5" in line), lines))

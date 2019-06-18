@@ -28,6 +28,9 @@ def test_write_rpn_32():
         if is_rdiag_available():
             proc = subprocess.Popen(["r.diag", "ggstat", wfile], stdout=subprocess.PIPE)
             (out, err) = proc.communicate()
+            if err != 0:
+                print("Warning: Could not find r.diag, this is not critical, but some tests will not be run.")
+                return
 
             print(out)
             out = out.decode()
@@ -60,6 +63,9 @@ def test_write_rpn_compressed():
         if is_rdiag_available():
             proc = subprocess.Popen(["r.diag", "ggstat", wfile], stdout=subprocess.PIPE)
             (out, err) = proc.communicate()
+            if err != 0:
+                print("Warning: Could not find r.diag, this is not critical, but some tests will not be run.")
+                return
 
             out = out.decode()
             print(out)
