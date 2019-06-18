@@ -23,7 +23,7 @@ def test_nbits24():
 
     if not bash_utils.is_rdiag_available():
         return
-    
+
     proc = subprocess.Popen(["r.diag", "ggstat", path], stdout=subprocess.PIPE)
     (out, err) = proc.communicate()
 
